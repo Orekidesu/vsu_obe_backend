@@ -23,15 +23,23 @@ class RegisteredUserController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role_id' => ['required', 'exists:roles,id'],
+            'college_id' => ['required', 'exists:colleges,id'],
+            'department_id' => ['nullable', 'exists:departments,id'],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id'=> $request->role_id,
+            'college_id'=>$request->college_id,
+            'department_id'=>$request->department_id
         ]);
 
         event(new Registered($user));
@@ -41,8 +49,9 @@ class RegisteredUserController extends Controller
         return response()->json([
             'message' => 'user registered successfully', 
             'credentials' =>[
-            'name'=>$user->name,
-            'username'=> $user->email
+            'full name' => $user->first_name . ' ' . $user->last_name,
+            'username'=> $user->email,
+            'role' => $user->role->name,
             ]
         ],201);
     }
