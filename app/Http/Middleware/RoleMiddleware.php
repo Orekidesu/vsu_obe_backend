@@ -15,16 +15,21 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next,$role): Response
     {
-        if(auth()->check() && auth()->user()->role->name === $role)
+        $user = auth()->user();
+
+        // if user unauthenticated or has no role
+        if(!$user || !$user->role)
         {
-            return $next($request);
+            return response()->json(['message'=>'Unauthorized: no role assigned',403]);
+        }
+        
+        // if user role is not existing
+        if($user->role->name !==$role)
+        {
+            return response()->json(['message'=>'Insufficient permission',403]);
         }
 
-        return response(
-            [
-                'message' => 'unuathorized'
-            ],
-            403
-            );
+        return $next($request);
+
     }
 }

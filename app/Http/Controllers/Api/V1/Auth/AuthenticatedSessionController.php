@@ -18,6 +18,16 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         // $request->session()->regenerate();
+
+        if(!Auth::check())
+        {
+            return response()->json(
+                [
+                    'message' => 'Authentication failed'
+                ],
+                401
+            );
+        }
         $token =$request->user()->createToken('api-token')->plainTextToken;
 
 
@@ -35,13 +45,16 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): Response
     {
         
-        // Auth::guard('web')->logout();
+        if(Auth::check())
+        {
+            return response()->json(
+                [
+                    'message' => 'User is not logged in'   
+                ],401
+                
+            );
+        }
 
-        // $request->session()->invalidate();
-
-        // $request->session()->regenerateToken();
-
-        // return response()->noContent();
         $request->user()->tokens()->delete();
 
         return response([
