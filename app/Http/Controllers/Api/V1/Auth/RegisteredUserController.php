@@ -5,13 +5,13 @@ namespace App\Http\Controllers\API\V1\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Database\Eloquent\Casts\Json;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+
+use App\Http\Requests\Api\V1\Auth\RegisterRequest;
+use App\Http\Resources\Api\V1\User\UserResource;
 
 class RegisteredUserController extends Controller
 {
@@ -20,18 +20,18 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): JsonResponse
+    public function store(RegisterRequest $request): JsonResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        
 
         $user = User::create([
-            'name' => $request->name,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id'=> $request->role_id,
+            'college_id'=>$request->college_id,
+            'department_id'=>$request->department_id
         ]);
 
         event(new Registered($user));
@@ -40,10 +40,7 @@ class RegisteredUserController extends Controller
 
         return response()->json([
             'message' => 'user registered successfully', 
-            'credentials' =>[
-            'name'=>$user->name,
-            'username'=> $user->email
-            ]
+            'user_details' => new UserResource($user), 
         ],201);
     }
 }

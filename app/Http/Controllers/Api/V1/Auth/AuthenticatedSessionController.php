@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\V1\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\Api\V1\LoginRequest;
+use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +18,16 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         // $request->session()->regenerate();
+
+        if(!Auth::check())
+        {
+            return response()->json(
+                [
+                    'message' => 'Authentication failed'
+                ],
+                401
+            );
+        }
         $token =$request->user()->createToken('api-token')->plainTextToken;
 
 
@@ -35,13 +45,16 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): Response
     {
         
-        // Auth::guard('web')->logout();
+        if(Auth::check())
+        {
+            return response()->json(
+                [
+                    'message' => 'User is not logged in'   
+                ],401
+                
+            );
+        }
 
-        // $request->session()->invalidate();
-
-        // $request->session()->regenerateToken();
-
-        // return response()->noContent();
         $request->user()->tokens()->delete();
 
         return response([
