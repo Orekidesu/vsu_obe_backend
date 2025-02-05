@@ -35,7 +35,8 @@ class AuthenticatedSessionController extends Controller
             [
                 'user' => $request->user(),
                 'token' => $token,
-            ]
+                'message' => "login in successfully",
+            ],200
         );
     }
 
