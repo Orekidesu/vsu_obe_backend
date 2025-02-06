@@ -46,7 +46,7 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): Response
     {
         
-        if(Auth::check())
+        if(!Auth::check())
         {
             return response()->json(
                 [
