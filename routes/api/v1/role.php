@@ -1,24 +1,38 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\Admin\VisionController;
 
 
 // Admin Routes
 
-Route::middleware(['role:Admin'])->group(function()
+Route::middleware(['role:Admin'])->prefix('admin')->group(function()
 {
-      // Admin Route
+    //   sample route
       Route::get('/admin/dashboard', function () {
           return response()->json(['message' => 'Welcome Admin']);
       });
+      
+    //   Vision Route
+      Route::apiResource('visions',VisionController::class);
+
+
 });
 
 // Dean Routes
 
-Route::middleware(['role:Dean'])->group(function()
+Route::middleware(['role:Dean'])->prefix('dean')->group(function()
 {
-      // Admin Route
       Route::get('/dean/dashboard', function () {
+          return response()->json(['message' => 'Welcome Dean']);
+      });
+});
+
+
+// Department Routes
+Route::middleware(['role:Department'])->prefix('department')->group(function()
+{
+      Route::get('/department/dashboard', function () {
           return response()->json(['message' => 'Welcome Dean']);
       });
 });
