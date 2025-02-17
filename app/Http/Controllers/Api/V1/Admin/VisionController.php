@@ -83,7 +83,7 @@ class VisionController extends Controller
         }catch(ModelNotFoundException $e){
 
             return response()->json([
-                'message'=> ' Vision not found',
+                'message'=> 'Vision not found',
                 'error' => $e->getMessage(),
             ]);
                 
