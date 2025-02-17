@@ -11,7 +11,7 @@ class MissionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,6 +22,8 @@ class MissionRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'mission_no'=>'required|integer|unique:missions,mission_no,' . $this->route('mission'),
+            'description'=>'required|string',
             //
         ];
     }
