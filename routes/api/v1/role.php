@@ -19,7 +19,7 @@ Route::middleware(['role:Admin'])->prefix('admin')->group(function()
     //   Mission Route
       Route::apiResource('missions',MissionController::class);
     //   Graduate Attribute Route
-      Route::apiResource('missions',GraduateAttributeController::class);
+      Route::apiResource('graduate-attributes',GraduateAttributeController::class);
 
 
 });
