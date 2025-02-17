@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api\V1\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class GraduateAttributeRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class GraduateAttributeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,6 +24,15 @@ class GraduateAttributeRequest extends FormRequest
     {
         return [
             //
+            'ga_no'=>[
+                'required',
+                'integer',
+                Rule::unique('graduate_attributes','ga_no')->ignore($this->route('graduate_attribute')),
+            ],
+            'description'=>[
+                'required',
+                'string',
+            ],
         ];
     }
 }

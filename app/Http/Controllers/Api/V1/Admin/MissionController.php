@@ -128,7 +128,7 @@ class MissionController extends Controller
             return response()->json([
                 'message'=> $e instanceof ModelNotFoundException ? 'mission not found' : 'failed to delete mission',
                 'error' => $e->getMessage(),
-            ]);
+            ],500);
         }
         //
     }
