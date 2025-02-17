@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Admin\MissionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Admin\VisionController;
 
@@ -15,6 +16,8 @@ Route::middleware(['role:Admin'])->prefix('admin')->group(function()
       
     //   Vision Route
       Route::apiResource('visions',VisionController::class);
+    //   Mission Route
+      Route::apiResource('missions',MissionController::class);
 
 
 });
