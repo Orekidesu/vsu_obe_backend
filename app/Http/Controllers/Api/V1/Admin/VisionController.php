@@ -33,8 +33,6 @@ class VisionController extends Controller
 
         }catch(Exception $e)
         {
-          $visions = Vision::all();
-
           return response()->json([
             'message'=>'Failed to retrieve visions',
             'error'=>$e->getMessage(),
@@ -70,11 +68,9 @@ class VisionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(Vision $vision)
     {
         try{
-            $vision = Vision::findOrFail($id);
-            
             return response([
                 'data' => new VisionResource($vision),
                 'message' =>'vision retrieved successfully',
@@ -101,16 +97,18 @@ class VisionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(VisionRequest $request, $id)
+    public function update(VisionRequest $request, Vision $vision)
     {
         try{
-            $vision = Vision::findOrFail($id);
             $vision->update($request->validated());
 
-            return response([
+            return response()->json([
+                
                 'data' => new VisionResource($vision),
                 'message'=> 'vision updated successfully'
+            
             ],200);
+
         }catch(ModelNotFoundException $e){
             return response()->json([
                 'message' => 'vision not found',
@@ -128,13 +126,10 @@ class VisionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Vision $vision)
     {
-        //
        try{
-            $vision = Vision::findOrFail($id);
             $vision->delete();
-
             return response([
                 'message' => 'vision deleted successfully'
             ],200);
