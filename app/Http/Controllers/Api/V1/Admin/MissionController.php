@@ -94,7 +94,7 @@ class MissionController extends Controller
     {
         try{
             $mission->update($request->validated());
-
+            
             return response()->json([
                 'data'=>new MissionResource($mission),
                 'message'=>'mission updated successfully',

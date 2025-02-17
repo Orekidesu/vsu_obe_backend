@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api\V1\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class MissionRequest extends FormRequest
 {
@@ -22,8 +23,15 @@ class MissionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'mission_no'=>'required|integer|unique:missions,mission_no,' . $this->route('mission'),
-            'description'=>'required|string',
+            'mission_no'=>[
+                'required',
+                'integer',
+                Rule::unique('missions','mission_no')->ignore($this->route('mission')),
+            ],
+            'description'=>[
+                'required',
+                'string',
+            ],
             //
         ];
     }
