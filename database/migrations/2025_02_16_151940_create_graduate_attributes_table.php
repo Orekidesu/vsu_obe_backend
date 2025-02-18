@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger("ga_no");
             $table->text('description');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

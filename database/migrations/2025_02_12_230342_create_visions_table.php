@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('visions', function (Blueprint $table) {
             $table->id();
             $table->text('description');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

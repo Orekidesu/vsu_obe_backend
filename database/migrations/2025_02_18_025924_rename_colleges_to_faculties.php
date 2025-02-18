@@ -11,13 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('missions', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedInteger('mission_no');
-            $table->text('description');
-            $table->softDeletes();
-            $table->timestamps();
-        });
+       Schema::rename('colleges','faculties');
     }
 
     /**
@@ -25,6 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('missions');
+        Schema::rename('faculties','colleges');
     }
 };

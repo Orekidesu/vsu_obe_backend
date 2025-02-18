@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('missions', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedInteger('mission_no');
-            $table->text('description');
-            $table->softDeletes();
-            $table->timestamps();
+        Schema::table('departments', function (Blueprint $table) {
+            //
+            $table->foreignId('faculty_id')->constrained('faculties')->onDelete('cascade');
         });
     }
 
@@ -25,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('missions');
+        Schema::table('departments', function (Blueprint $table) {
+            $table->dropColumn('faculty_id');
+        });
     }
 };
