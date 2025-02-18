@@ -5,7 +5,7 @@ namespace App\Http\Requests\Api\V1\Admin;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class MissionRequest extends FormRequest
+class FacultyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,18 +23,20 @@ class MissionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'mission_no'=>[
-                'sometimes',
-                'required',
-                'integer',
-                Rule::unique('missions','mission_no')->ignore($this->route('mission')),
-            ],
-            'description'=>[
+            'name'=>[
                 'sometimes',
                 'required',
                 'string',
+                'max:255',
+                Rule::unique('faculties','name')->ignore($this->route('faculty')),
             ],
-            //
+            'abbreviation'=>[
+                'sometimes',
+                'required',
+                'string',
+                'max:10',
+                Rule::unique('faculties','abbreviation')->ignore($this->route('faculty')),
+            ]
         ];
     }
 }

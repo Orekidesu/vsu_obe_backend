@@ -24,7 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
-        'college_id',
+        'faculty_id',
         'department_id',
     ];
 
@@ -54,9 +54,9 @@ class User extends Authenticatable
 
     }
 
-    public function college():BelongsTo
+    public function faculty():BelongsTo
     {
-        return $this->belongsTo(College::class,'college_id');
+        return $this->belongsTo(Faculty::class,'faculty_id');
     }
 
     public function department():BelongsTo
@@ -64,5 +64,3 @@ class User extends Authenticatable
         return $this->belongsTo(Department::class, 'department_id');
     }
 }
-
-
