@@ -27,8 +27,8 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'string', 'max:255','unique:users,email'],
             'password' => ['required','confirmed',Rules\Password::default()],
             'role_id' => ['required', 'exists:roles,id'],
-            'faculty_id' => ['nullable', 'exists:faculties,id'],
-            'department_id' => ['nullable', 'exists:departments,id'],
+            'faculty_id' => ['sometimes', 'exists:faculties,id'],
+            'department_id' => ['sometimes', 'exists:departments,id'],
 
         ];
     }

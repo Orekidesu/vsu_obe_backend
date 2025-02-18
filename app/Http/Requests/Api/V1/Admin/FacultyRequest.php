@@ -24,12 +24,14 @@ class FacultyRequest extends FormRequest
     {
         return [
             'name'=>[
+                'sometimes',
                 'required',
                 'string',
                 'max:255',
                 Rule::unique('faculties','name')->ignore($this->route('faculty')),
             ],
             'abbreviation'=>[
+                'sometimes',
                 'required',
                 'string',
                 'max:10',

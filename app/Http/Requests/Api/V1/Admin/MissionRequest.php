@@ -24,11 +24,13 @@ class MissionRequest extends FormRequest
     {
         return [
             'mission_no'=>[
+                'sometimes',
                 'required',
                 'integer',
                 Rule::unique('missions','mission_no')->ignore($this->route('mission')),
             ],
             'description'=>[
+                'sometimes',
                 'required',
                 'string',
             ],
