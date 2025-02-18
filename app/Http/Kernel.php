@@ -23,7 +23,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
     ];
 
-    protected $roleMiddleware = [
+    protected $routeMiddleware = [
         'role' => \App\Http\Middleware\RoleMiddleware::class,
     ];  
     /**

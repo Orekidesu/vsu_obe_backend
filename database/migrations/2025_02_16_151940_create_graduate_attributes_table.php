@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('colleges', function (Blueprint $table) {
+        Schema::create('graduate_attributes', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('abbreviation')->unique();
+            $table->unsignedInteger("ga_no");
+            $table->text('description');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('colleges');
+        Schema::dropIfExists('graduate_attributes');
     }
 };
