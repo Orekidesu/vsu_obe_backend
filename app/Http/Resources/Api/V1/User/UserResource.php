@@ -22,7 +22,7 @@ class UserResource extends JsonResource
         'role' => $this->role->name,
         'faculty' => $this->faculty ? $this->faculty->name:null,
         'department' => $this->department ? $this->department->name:null,
-        'create_at' => $this->created_at->toDateTimeString(),
+        'created_at' => $this->created_at->toDateTimeString(),
         ];
     }
 }
