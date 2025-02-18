@@ -18,6 +18,7 @@ class GraduateAttributeResource extends JsonResource
             'id'=>$this->id,
             'ga_no'=>$this->ga_no,
             'description'=>$this->description,
+            
         ];
     }
 }
