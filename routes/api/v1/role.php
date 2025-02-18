@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Admin\FacultyController;
 use App\Http\Controllers\Api\V1\Admin\GraduateAttributeController;
 use App\Http\Controllers\Api\V1\Admin\MissionController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,8 @@ Route::middleware(['role:Admin'])->prefix('admin')->group(function()
       Route::apiResource('missions',MissionController::class);
     //   Graduate Attribute Route
       Route::apiResource('graduate-attributes',GraduateAttributeController::class);
+    //  Faculty Route
+      Route::apiResource('faculties',FacultyController::class);
 
 
 });

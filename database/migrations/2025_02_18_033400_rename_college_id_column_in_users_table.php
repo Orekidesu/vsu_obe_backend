@@ -21,7 +21,7 @@ return new class extends Migration
 
             // Re add foreign key constraint
 
-            $table->foreign('faculty_id')->references('id')->on('faculties')->onDelete('cascade');
+            $table->foreign('faculty_id')->nullable()->references('id')->on('faculties')->onDelete('cascade');
 
 
 
@@ -44,7 +44,7 @@ return new class extends Migration
 
             // Re add foreign key constraint
 
-            $table->foreign('college_id')->references('id')->on('faculties')->onDelete('cascade');
+            $table->foreign('college_id')->nullable()->references('id')->on('faculties')->onDelete('cascade');
         });
     }
 };
