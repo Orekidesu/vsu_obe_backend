@@ -29,7 +29,7 @@ class RegisterRequest extends FormRequest
             'role_id' => ['required', 'exists:roles,id'],
             'faculty_id' => ['sometimes', 'exists:faculties,id'],
             'department_id' => ['sometimes', 'exists:departments,id'],
-
+            
         ];
     }
 }

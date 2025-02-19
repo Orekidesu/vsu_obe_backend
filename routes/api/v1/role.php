@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\Admin\DepartmentController;
 use App\Http\Controllers\Api\V1\Admin\FacultyController;
 use App\Http\Controllers\Api\V1\Admin\GraduateAttributeController;
 use App\Http\Controllers\Api\V1\Admin\MissionController;
+use App\Http\Controllers\Api\V1\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Admin\VisionController;
 
@@ -27,7 +28,10 @@ Route::middleware(['role:Admin'])->prefix('admin')->group(function()
     //  Department Route
       Route::apiResource('departments',DepartmentController::class);
 
-
+    // User Management Route
+      Route::apiResource('users',UserController::class);
+      Route::post('/users/{user}/reset-password',[UserController::class,'resetPassword']);
+    
 });
 
 // Dean Routes
