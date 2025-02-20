@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\V1\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\API\V1\Auth\LoginController;
 use App\Http\Controllers\API\V1\Auth\RegisteredUserController;
 use App\Http\Controllers\API\V1\Auth\PasswordResetLinkController;
 use App\Http\Controllers\API\V1\Auth\NewPasswordController;
@@ -12,7 +12,7 @@ Route::post('/register', [RegisteredUserController::class, 'store'])
      ->middleware('guest')
      ->name('register');
 
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+Route::post('/login', [LoginController::class, 'store'])
      ->middleware('guest')
      ->name('login');
 
@@ -25,13 +25,13 @@ Route::post('/reset-password', [NewPasswordController::class, 'store'])
      ->name('password.store');
 
 Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
-     ->middleware(['auth', 'signed', 'throttle:6,1'])
+     ->middleware(['auth:sanctum', 'signed', 'throttle:6,1'])
      ->name('verification.verify');
 
 Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
-     ->middleware(['auth', 'throttle:6,1'])
+     ->middleware(['auth:sanctum', 'throttle:6,1'])
      ->name('verification.send');
 
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+Route::post('/logout', [LoginController::class, 'destroy'])
      ->middleware('auth:sanctum')
      ->name('logout');
