@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('graduate_attributes', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger("ga_no");
+            $table->string("name")->unique();
             $table->text('description');
             $table->softDeletes();
             $table->timestamps();
