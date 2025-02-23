@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('departments', function (Blueprint $table) {
-            //
+        Schema::create('departments', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->string('abbreviation')->unique();
             $table->foreignId('faculty_id')->constrained('faculties')->onDelete('cascade');
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 
@@ -22,8 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('departments', function (Blueprint $table) {
-            $table->dropColumn('faculty_id');
-        });
+        Schema::dropIfExists('departments');
     }
 };

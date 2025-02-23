@@ -14,11 +14,12 @@ class GraduateAttributeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return[
-            'id'=>$this->id,
-            'ga_no'=>$this->ga_no,
-            'description'=>$this->description,
-            
+        return [
+            'id' => $this->id,
+            'ga_no' => $this->ga_no,
+            'name' => $this->name,
+            'description' => $this->description,
+
         ];
     }
 }

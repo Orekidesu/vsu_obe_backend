@@ -11,7 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::rename('colleges','faculties');
+        Schema::create('faculties', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->string('abbreviation')->unique();
+            $table->softDeletes();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -19,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::rename('faculties','colleges');
+        Schema::dropIfExists('faculties');
     }
 };
