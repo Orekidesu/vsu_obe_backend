@@ -1,12 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\V1\Auth\LoginController;
-use App\Http\Controllers\API\V1\Auth\RegisteredUserController;
-use App\Http\Controllers\API\V1\Auth\PasswordResetLinkController;
-use App\Http\Controllers\API\V1\Auth\NewPasswordController;
-use App\Http\Controllers\API\V1\Auth\VerifyEmailController;
-use App\Http\Controllers\API\V1\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Api\V1\Auth\LoginController;
+use App\Http\Controllers\Api\V1\Auth\RegisteredUserController;
+use App\Http\Controllers\Api\V1\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Api\V1\Auth\NewPasswordController;
+use App\Http\Controllers\Api\V1\Auth\VerifyEmailController;
+use App\Http\Controllers\Api\V1\Auth\EmailVerificationNotificationController;
 
 Route::post('/register', [RegisteredUserController::class, 'store'])
      ->middleware('guest')
