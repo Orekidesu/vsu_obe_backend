@@ -12,10 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         //
-        Schema::table('users', function (Blueprint $table)
-            {
+        Schema::table(
+            'users',
+            function (Blueprint $table) {
                 $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
-                $table->foreignId('college_id')->nullable()->constrained('colleges')->onDelete('cascade');
+                $table->foreignId('faculty_id')->nullable()->constrained('faculties')->onDelete('cascade');
                 $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('cascade');
             }
         );
@@ -27,19 +28,19 @@ return new class extends Migration
     public function down(): void
     {
         //
-        Schema::table('users',function(Blueprint $table)
-            {
+        Schema::table(
+            'users',
+            function (Blueprint $table) {
                 $table->dropForeign(['role_id']);
                 $table->dropColumn(['role_id']);
 
-                $table->dropForeign(['college_id']);
-                $table->dropColumn(['college_id']);
-                
+                $table->dropForeign(['faculty_id']);
+                $table->dropColumn(['faculty_id']);
+
                 $table->dropForeign(['department_id']);
                 $table->dropColumn(['department_id']);
             }
 
         );
-        
     }
 };

@@ -24,13 +24,19 @@ class GraduateAttributeRequest extends FormRequest
     {
         return [
             //
-            'ga_no'=>[
+            'ga_no' => [
                 'sometimes',
                 'required',
                 'integer',
-                Rule::unique('graduate_attributes','ga_no')->ignore($this->route('graduate_attribute')),
+                Rule::unique('graduate_attributes', 'ga_no')->ignore($this->route('graduate_attribute')),
             ],
-            'description'=>[
+            'name' => [
+                'sometimes',
+                'required',
+                'string',
+                'max:255',
+            ],
+            'description' => [
                 'sometimes',
                 'required',
                 'string',

@@ -11,6 +11,7 @@ class GraduateAttribute extends Model
 
     protected $fillable = [
         'ga_no',
+        'name',
         'description',
     ];
 }
