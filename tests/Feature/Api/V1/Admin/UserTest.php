@@ -17,17 +17,22 @@ class UserTest extends TestCase
      */
     use RefreshDatabase;
 
+    protected $admin;
+
     protected function setup(): void
     {
         parent::setup();
+
+
         Role::factory()->create(['id' => 1, 'name' => 'Admin']);
         Role::factory()->create(['id' => 2, 'name' => 'Dean']);
         Faculty::factory()->create(['id' => 1]);
         Department::factory()->create(['id' => 1]);
+        $this->admin = User::factory()->create(['role_id' => 1]);
+        Sanctum::actingAs($this->admin);
     }
     public function test_admin_can_list_all_users()
     {
-        Sanctum::actingAs(User::factory()->create(['role_id' => 1]));
 
         User::factory()->count(3)->create();
 
@@ -36,18 +41,9 @@ class UserTest extends TestCase
         $response->assertStatus(200)->assertJsonStructure(['data', 'message',]);
     }
 
-    public function test_non_admin_cannot_access_users_list()
-    {
-        Sanctum::actingAs(User::factory()->create(['role_id' => 2]));
-
-        $response = $this->getJson('/api/v1/admin/users');
-
-        $response->assertStatus(403);
-    }
 
     public function test_admin_can_create_user()
     {
-        Sanctum::actingAs(User::factory()->create(['role_id' => 1]));
         $userData = [
             'first_name' => 'John',
             'last_name' => 'Doe',
@@ -67,9 +63,27 @@ class UserTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'john@example.com']);
     }
 
+    public function test_admin_can_update_user()
+    {
+
+
+        $existingUser = User::factory()->create();
+        $updateData = [
+            "first_name" => "Edward",
+            "last_name" =>  "Newgate",
+        ];
+
+        $response = $this->patchJson("/api/v1/admin/users/{$existingUser->id}", $updateData);
+
+
+        $response->assertStatus(200)->assertJson(['data' => [
+            'first_name' => 'Edward',
+            'last_name' => 'Newgate',
+        ]]);
+    }
+
     public function test_admin_can_delete_user()
     {
-        Sanctum::actingAs(User::factory()->create(['role_id' => 1]));
 
         $user = User::factory()->create();
 
@@ -79,5 +93,26 @@ class UserTest extends TestCase
         $response->assertStatus(200)->assertJson(['message' => "user deleted successfully"]);
 
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
+    }
+
+    public function test_admin_can_reset_user_password()
+    {
+        $existingUser = User::factory()->create();
+
+        $response = $this->postJson("/api/v1/admin/users/{$existingUser->id}/reset-password");
+
+        $response->assertStatus(200);
+    }
+
+
+    public function test_non_admin_cannot_access_users_list()
+    {
+        $user = User::factory()->create(['role_id' => 2]); // Assuming 2 is a regular user
+
+        Sanctum::actingAs($user);
+
+        $response = $this->getJson('/api/v1/admin/users');
+
+        $response->assertStatus(403);
     }
 }
