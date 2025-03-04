@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Api\V1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Admin\VisionRequest;
 use App\Http\Resources\Api\V1\Admin\VisionResource;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Vision;
-use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 class VisionController extends Controller
 {
     /**
@@ -17,26 +16,24 @@ class VisionController extends Controller
      */
 
     public function __construct()
-    {   
+    {
         $this->middleware('auth:sanctum');
         $this->middleware('role:Admin');
-    } 
+    }
     public function index()
     {
-        try{
+        try {
             $visions = Vision::all();
 
             return response()->json([
-                'data'=>VisionResource::collection($visions),
-                'message'=>"vision retrieved successfully",
-            ],200);
-
-        }catch(Exception $e)
-        {
-          return response()->json([
-            'message'=>'Failed to retrieve visions',
-            'error'=>$e->getMessage(),
-          ],500);
+                'data' => VisionResource::collection($visions),
+                'message' => "vision retrieved successfully",
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Failed to retrieve visions',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -45,24 +42,21 @@ class VisionController extends Controller
      */
     public function store(VisionRequest $request)
     {
-        
-        try{
+
+        try {
             $vision = Vision::create($request->validated());
 
             return response()->json([
                 'data' => new VisionResource($vision),
-                'message'=> 'vision successfully created',
-            ],201);
-
-        }catch(Exception $e){
+                'message' => 'vision successfully created',
+            ], 201);
+        } catch (Exception $e) {
 
             return response()->json([
-                'message'=>'Failed to create vision',
+                'message' => 'Failed to create vision',
                 'error' => $e->getMessage(),
-            ],500);
-
+            ], 500);
         }
-       
     }
 
     /**
@@ -70,28 +64,24 @@ class VisionController extends Controller
      */
     public function show(Vision $vision)
     {
-        try{
+        try {
             return response([
                 'data' => new VisionResource($vision),
-                'message' =>'vision retrieved successfully',
-            ],200);
-            
-        }catch(ModelNotFoundException $e){
+                'message' => 'vision retrieved successfully',
+            ], 200);
+        } catch (ModelNotFoundException $e) {
 
             return response()->json([
-                'message'=> 'Vision not found',
+                'message' => 'Vision not found',
                 'error' => $e->getMessage(),
             ]);
-                
-        }catch(Exception $e){
+        } catch (Exception $e) {
 
             return response()->json([
                 'message' => 'Failed to retrive vision',
-                'error' =>$e->getMessage(),
+                'error' => $e->getMessage(),
             ]);
-
-        }   
-        
+        }
     }
 
     /**
@@ -99,56 +89,49 @@ class VisionController extends Controller
      */
     public function update(VisionRequest $request, Vision $vision)
     {
-        try{
+        try {
             $vision->update($request->validated());
 
             return response()->json([
-                
-                'data' => new VisionResource($vision),
-                'message'=> 'vision updated successfully'
-            
-            ],200);
 
-        }catch(ModelNotFoundException $e){
+                'data' => new VisionResource($vision),
+                'message' => 'vision updated successfully'
+
+            ], 200);
+        } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'vision not found',
                 'error' => $e->getMessage(),
             ]);
-
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return response()->json([
-                'message'=> 'failed to update vision',
-                'error'=> $e->getMessage(),
+                'message' => 'failed to update vision',
+                'error' => $e->getMessage(),
             ]);
         }
-
     }
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Vision $vision)
     {
-       try{
+        try {
             $vision->delete();
             return response([
                 'message' => 'vision deleted successfully'
-            ],200);
-
-       }catch(ModelNotFoundException $e){
+            ], 200);
+        } catch (ModelNotFoundException $e) {
 
             return response()->json([
-                'message'=>'vision not found',
+                'message' => 'vision not found',
                 'error' => $e->getMessage(),
             ]);
-    
+        } catch (Exception $e) {
 
-       }catch(Exception $e){
-
-        return response()->json([
-            'message'=> 'failed to delete vision',
-            'error'=> $e->getMessage(),
-        ]);
-
-       }
+            return response()->json([
+                'message' => 'failed to delete vision',
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }
