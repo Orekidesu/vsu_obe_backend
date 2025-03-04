@@ -62,7 +62,9 @@ class UserController extends Controller
         try {
             $validatedData = $request->validated();
 
-            $validatedData['password'] = Hash::make($validatedData['password']);
+            if (isset($validatedData['password'])) {
+                $validatedData['password'] = Hash::make($validatedData['password']);
+            }
 
             $user = User::create($validatedData);
 
