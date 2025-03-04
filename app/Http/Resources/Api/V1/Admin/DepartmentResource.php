@@ -14,12 +14,14 @@ class DepartmentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return 
-        [
-            'id'=>$this->id,
-            'name'=>$this->name,
-            'abbreviation'=>$this->abbreviation,
-            'faculty'=>$this->faculty->name,
-        ];
+        return
+            [
+                'id' => $this->id,
+                'name' => $this->name,
+                'abbreviation' => $this->abbreviation,
+                'faculty' => $this->faculty->name,
+                'faculty_id' => $this->faculty_id,
+
+            ];
     }
 }
