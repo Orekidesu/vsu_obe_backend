@@ -2,22 +2,18 @@
 
 namespace Database\Factories;
 
+use App\Models\Mission;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Mission>
- */
 class MissionFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
+    protected $model = Mission::class;
+
+    public function definition()
     {
         return [
-            //
+            'mission_no' => $this->faker->unique()->numerify('M###'),
+            'description' => $this->faker->paragraph,
         ];
     }
 }
