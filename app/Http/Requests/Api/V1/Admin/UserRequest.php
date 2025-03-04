@@ -67,4 +67,23 @@ class UserRequest extends FormRequest
 
         ];
     }
+    public function messages(): array
+    {
+        return [
+            'first_name.required' => 'The first name is required.',
+            'last_name.required' => 'The last name is required.',
+            'email.required' => 'The email is required.',
+            'email.email' => 'The email must be a valid email address.',
+            'email.unique' => 'The email has already been taken.',
+            'password.required' => 'The password is required.',
+            'password.confirmed' => 'The password confirmation does not match.',
+            'password.min' => 'The password must be at least 8 characters.',
+            'role_id.required' => 'The role ID is required.',
+            'role_id.exists' => 'The selected role ID is invalid.',
+            'faculty_id.required' => 'The faculty ID is required.',
+            'faculty_id.exists' => 'The selected faculty ID is invalid.',
+            'department_id.required' => 'The department ID is required.',
+            'department_id.exists' => 'The selected department ID is invalid.',
+        ];
+    }
 }
