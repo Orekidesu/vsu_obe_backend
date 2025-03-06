@@ -26,20 +26,7 @@ class UserController extends Controller
         try {
             $users = User::whereHas('role', function ($query) {
                 $query->where('roles.name', '!=', 'Admin');
-            })->paginate(5);
-
-            // return response()->json([
-            //     'data' => UserResource::collection($users),
-            //     'message' => 'users retrieved successfully',
-            //     'pagination' => [
-            //         'total' => $users->total(),
-            //         'per_page' => $users->perPage(),
-            //         'current_page' => $users->currentPage(),
-            //         'last_page' => $users->lastPage(),
-            //         'from' => $users->firstItem(),
-            //         'to' => $users->lastItem(),
-            //     ],
-            // ], 200);
+            })->orderBy('first_name', 'asc')->get();
 
             return UserResource::collection($users)->additional([
                 'message' => 'users retrieved successfully'
