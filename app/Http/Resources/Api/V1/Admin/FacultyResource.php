@@ -18,6 +18,7 @@ class FacultyResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'abbreviation' => $this->abbreviation,
+            'departments' => DepartmentResource::collection($this->department),
 
         ];
     }

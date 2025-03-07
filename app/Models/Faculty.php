@@ -17,13 +17,13 @@ class Faculty extends Model
     ];
 
 
-    public function user():HasMany
+    public function user(): HasMany
     {
-        return $this->hasMany(User::class,'faculty_id');
+        return $this->hasMany(User::class, 'faculty_id');
     }
 
-    public function department():HasMany
+    public function department(): HasMany
     {
-        return $this->hasMany(Department::class,'department_id');
+        return $this->hasMany(Department::class, 'faculty_id');
     }
 }

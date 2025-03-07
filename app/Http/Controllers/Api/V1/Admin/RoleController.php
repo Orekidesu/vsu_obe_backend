@@ -25,7 +25,7 @@ class RoleController extends Controller
             return response()->json([
                 'data' => $roles,
                 'message' => 'roles retrieved successfuully'
-            ]);
+            ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'failed to retrieve roles',
