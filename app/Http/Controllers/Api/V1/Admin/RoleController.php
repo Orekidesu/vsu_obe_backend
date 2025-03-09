@@ -21,7 +21,7 @@ class RoleController extends Controller
     public function index()
     {
         try {
-            $roles = Role::all();
+            $roles = Role::where('name', '!=', 'Admin')->get();
             return response()->json([
                 'data' => $roles,
                 'message' => 'roles retrieved successfuully'
