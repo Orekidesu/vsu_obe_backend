@@ -2,28 +2,24 @@
 
 namespace App\Http\Requests\Api\V1\Admin;
 
+use App\Models\Role;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Rules\UniqueRolePerFacultyAndDepartment;
+
 
 class UserRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
+        $userId = $this->route('user') ? $this->route('user')->id : null;
+
         return [
-            //
             'first_name' => [
                 'sometimes',
                 'required',
@@ -40,7 +36,7 @@ class UserRequest extends FormRequest
                 'sometimes',
                 'required',
                 'email',
-                Rule::unique('users', 'email')->ignore($this->route('user')),
+                Rule::unique('users', 'email')->ignore($userId),
             ],
             'password' => [
                 'sometimes',
@@ -52,6 +48,12 @@ class UserRequest extends FormRequest
                 'sometimes',
                 'required',
                 Rule::exists('roles', 'id'),
+                new UniqueRolePerFacultyAndDepartment(
+                    Role::find($this->input('role_id'))->name,
+                    $this->input('faculty_id'),
+                    $this->input('department_id'),
+                    $userId
+                ),
             ],
             'faculty_id' => [
                 'sometimes',
@@ -63,10 +65,9 @@ class UserRequest extends FormRequest
                 'required',
                 Rule::exists('departments', 'id'),
             ],
-
-
         ];
     }
+
     public function messages(): array
     {
         return [
