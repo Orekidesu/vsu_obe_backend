@@ -134,10 +134,10 @@ class UserController extends Controller
     public function resetPassword(User $user)
     {
         try {
-            $user->updateQuietly(['password' => Hash::make('password123')]);
+            $user->updateQuietly(['password' => Hash::make('passwordReset123')]);
 
             return response()->json([
-                'message' => 'Password reset. Default password: password123',
+                'message' => 'Password reset. Default password: passwordReset123',
             ], 200);
         } catch (Exception $e) {
             return response()->json([
