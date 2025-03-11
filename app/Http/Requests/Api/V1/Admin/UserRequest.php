@@ -18,6 +18,7 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         $userId = $this->route('user') ? $this->route('user')->id : null;
+        $role = Role::find($this->input('role_id'));
 
         return [
             'first_name' => [
@@ -48,12 +49,12 @@ class UserRequest extends FormRequest
                 'sometimes',
                 'required',
                 Rule::exists('roles', 'id'),
-                new UniqueRolePerFacultyAndDepartment(
-                    Role::find($this->input('role_id'))->name,
+                $role ? new UniqueRolePerFacultyAndDepartment(
+                    $role->name,
                     $this->input('faculty_id'),
                     $this->input('department_id'),
                     $userId
-                ),
+                ) : null,
             ],
             'faculty_id' => [
                 'sometimes',
