@@ -18,6 +18,11 @@ class ProgramFactory extends Factory
     {
         return [
             //
+            'name' => $this->faker->unique()->company,
+            'abbreviation' => strtoupper($this->faker->unique()->lexify('???')),
+            'department_id' => \App\Models\Department::factory(),
+
+
         ];
     }
 }
