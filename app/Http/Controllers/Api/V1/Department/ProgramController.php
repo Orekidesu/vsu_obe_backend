@@ -85,13 +85,13 @@ class ProgramController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Program $program)
+    public function update(ProgramRequest $request, Program $program)
     {
         //
         try {
-            $updatedProgram = $program->update($request->validated());
+            $program->update($request->validated());
 
-            return (new ProgramResource($updatedProgram))->additional([
+            return (new ProgramResource($program))->additional([
                 'message' => 'program updated successfully',
             ]);
         } catch (Exception $e) {
