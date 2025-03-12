@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Admin\MissionController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\VisionController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
+use App\Http\Controllers\Api\V1\Department\ProgramController;
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes
@@ -50,4 +51,7 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   Route::get('/department/dashboard', function () {
     return response()->json(['message' => 'Welcome Dean']);
   });
+
+  // Program Routes
+  Route::apiResource('programs', ProgramController::class);
 });
