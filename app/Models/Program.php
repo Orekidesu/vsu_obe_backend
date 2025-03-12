@@ -17,6 +17,9 @@ class Program extends Model
         'abbreviation',
     ];
 
+    // now whenever we query a particular program, it always eager load the department it associated with
+    protected $with = ['department'];
+
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department_id');
