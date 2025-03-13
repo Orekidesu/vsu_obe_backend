@@ -23,7 +23,8 @@ class DepartmentController extends Controller
     public function index()
     {
         try {
-            $departments = Department::all();
+            // $departments = Department::all();
+            $departments = Department::with('program')->get();
 
             return response()->json([
                 'data' => DepartmentResource::collection($departments),
