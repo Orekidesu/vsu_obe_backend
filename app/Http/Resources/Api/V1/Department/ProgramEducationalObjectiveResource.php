@@ -17,6 +17,7 @@ class ProgramEducationalObjectiveResource extends JsonResource
         return [
             'peo_no' => $this->peo_no,
             'statement' => $this->statement,
+            'program' => new ProgramResource($this->whenLoaded('program')),
         ];
     }
 }
