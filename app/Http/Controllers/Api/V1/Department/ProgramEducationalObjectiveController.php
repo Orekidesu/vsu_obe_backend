@@ -24,9 +24,12 @@ class ProgramEducationalObjectiveController extends Controller
     {
         try {
 
-            $PEOS = ProgramEducationalObjective::all();
+            $peos = ProgramEducationalObjective::with(['program' => function ($query) {
+                $query->without('department');
+            }])->get();
 
-            return ProgramEducationalObjectiveResource::collection($PEOS)->additional([
+
+            return ProgramEducationalObjectiveResource::collection($peos)->additional([
                 'message' => 'PEOs retrieved successfully'
             ]);
         } catch (Exception $e) {
