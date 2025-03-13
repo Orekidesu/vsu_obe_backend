@@ -7,7 +7,6 @@ use App\Http\Requests\Api\V1\Department\ProgramRequest;
 use App\Http\Resources\Api\V1\Department\ProgramResource;
 use App\Models\Program;
 use Exception;
-use Illuminate\Http\Request;
 
 class ProgramController extends Controller
 {
@@ -26,7 +25,6 @@ class ProgramController extends Controller
         try {
             // eager load using with(relationship) function
             // since we eager loaded it in the model already, no need for manual with() function
-
 
             $programs = Program::all();
 
@@ -48,6 +46,11 @@ class ProgramController extends Controller
     {
         try {
             $program = Program::create($request->validated());
+            //in this case, the department isnt included in the response because it is newly created 
+            // thus, eager loading isnt applied yet
+            // so, to include the department in the response, we need to explicitly load the department
+            // only do this, if it is really necessary to include in the response
+            $program->load('department');
 
             return (new ProgramResource($program))->additional([
                 'message' => 'program created successfully',
