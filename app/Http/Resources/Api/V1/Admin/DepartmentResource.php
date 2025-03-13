@@ -19,7 +19,8 @@ class DepartmentResource extends JsonResource
                 'id' => $this->id,
                 'name' => $this->name,
                 'abbreviation' => $this->abbreviation,
-                'faculty' => $this->faculty,
+                // 'faculty' => $this->faculty,
+                'faculty' => new FacultyResource($this->whenLoaded('faculty')),
 
             ];
     }

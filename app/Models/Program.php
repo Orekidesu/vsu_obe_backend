@@ -18,6 +18,7 @@ class Program extends Model
     ];
 
     // now whenever we query a particular program, it always eager load the department it associated with
+    // only use with when the relationship is belongs so or hasOne
     protected $with = ['department'];
 
     public function department(): BelongsTo

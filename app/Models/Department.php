@@ -17,6 +17,8 @@ class Department extends Model
         'faculty_id',
     ];
 
+    protected $with = ['faculty'];
+
     public function user(): HasMany
     {
         return $this->hasMany(User::class, 'department_id');
