@@ -17,7 +17,9 @@ class ProgramEducationalObjectiveFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'peo_no' => $this->faker->unique()->numberBetween(1, 20),
+            'statement' => $this->faker->paragraph(),
+            'program_id' => \App\Models\Program::factory(),
         ];
     }
 }
