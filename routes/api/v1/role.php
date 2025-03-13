@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\VisionController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
 use App\Http\Controllers\Api\V1\Department\ProgramController;
+use App\Http\Controllers\Api\V1\Department\ProgramEducationalObjectiveController;
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes
@@ -49,9 +50,10 @@ Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
 // Department Routes
 Route::middleware(['role:Department'])->prefix('department')->group(function () {
   Route::get('/department/dashboard', function () {
-    return response()->json(['message' => 'Welcome Dean']);
+    return response()->json(['message' => 'Welcome Department']);
   });
 
   // Program Routes
   Route::apiResource('programs', ProgramController::class);
+  Route::apiResource('program-educational-objectives', ProgramEducationalObjectiveController::class);
 });
