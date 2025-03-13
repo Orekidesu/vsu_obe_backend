@@ -16,6 +16,8 @@ class ProgramEducationalObjective extends Model
         'statement',
     ];
 
+    protected $with = ['program'];
+
     public function program(): BelongsTo
     {
         return $this->belongsTo(Program::class, 'program_id');
