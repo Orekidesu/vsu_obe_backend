@@ -35,32 +35,18 @@ class ProgramEducationalObjectiveRequestTest extends TestCase
     {
         $response = $this->postJson('api/v1/department/program-educational-objectives', [
             'statement' => '',
-            'peo_no' => null,
             'program_id' => null,
 
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['statement', 'peo_no', 'program_id']);
+        $response->assertJsonValidationErrors(['statement', 'program_id']);
     }
-    public function test_peo_enforces_unique_peo_no()
-    {
-        ProgramEducationalObjective::factory()->create([
-            'peo_no' => 1,
-        ]);
 
-        $response = $this->postJson('/api/v1/department/program-educational-objectives', [
-            'peo_no' => 1,
-            'program_id' => $this->program->id,
-        ]);
-
-        $response->assertStatus(422)->assertJsonValidationErrors(['peo_no']);
-    }
 
     public function test_peo_requires_program_id_to_exist()
     {
         $response = $this->postJson('api/v1/department/program-educational-objectives', [
-            'peo_no' => 1,
             'statement' => "sample statement",
             'program_id' => 999
         ]);
@@ -71,7 +57,6 @@ class ProgramEducationalObjectiveRequestTest extends TestCase
     public function test_peo_allows_valid_request()
     {
         $validData = [
-            'peo_no' => 1,
             'statement' => 'valid statement',
             'program_id' => $this->program->id
         ];
@@ -87,13 +72,11 @@ class ProgramEducationalObjectiveRequestTest extends TestCase
     public function test_peo_allows_partial_update()
     {
         $data = [
-            'peo_no' => 1,
             'statement' => 'valid statement',
             'program_id' => $this->program->id
         ];
         $peo = ProgramEducationalObjective::factory()->create($data);
         $partialData = [
-            'peo_no' => 3,
             'statement' => 'updated statement',
         ];
         $response = $this->putJson("api/v1/department/program-educational-objectives/{$peo->id}", $partialData);
