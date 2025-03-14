@@ -12,7 +12,6 @@ class ProgramOutcome extends Model
 
     protected $fillable = [
         'program_id',
-        'po_no',
         'name',
         'statement',
     ];
