@@ -17,8 +17,11 @@ class ProgramOutcomeFactory extends Factory
     public function definition(): array
     {
         return [
-            
-            
+            'name' => $this->faker->unique()->company(),
+            'statement' => $this->faker->paragraph(),
+            'program_id' => \App\Models\Program::factory(),
+
+
         ];
     }
 }
