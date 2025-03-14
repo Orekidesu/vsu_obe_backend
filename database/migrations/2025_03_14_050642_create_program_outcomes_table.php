@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->text('statement');
+            $table->foreignId('program_id')->constrained('programs')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
         });
