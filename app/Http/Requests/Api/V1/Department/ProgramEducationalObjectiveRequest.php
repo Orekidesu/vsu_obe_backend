@@ -24,12 +24,6 @@ class ProgramEducationalObjectiveRequest extends FormRequest
     {
         $peoID = $this->route('program-educational-objective');
         return [
-            'peo_no' => [
-                'sometimes',
-                'required',
-                'integer',
-                Rule::unique('program_educational_objectives')->ignore($peoID),
-            ],
             'statement' => [
                 'sometimes',
                 'required',
@@ -46,9 +40,6 @@ class ProgramEducationalObjectiveRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'peo_no.required' => 'The PEO number is required.',
-            'peo_no.integer' => 'The PEO number must be an integer.',
-            'peo_no.unique' => 'The PEO number has already been taken.',
             'statement.required' => 'The statement is required.',
             'statement.string' => 'The statement must be a string.',
             'program_id.required' => 'The program ID is required.',
