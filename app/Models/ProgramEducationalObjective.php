@@ -12,7 +12,6 @@ class ProgramEducationalObjective extends Model
 
     protected $fillable = [
         'program_id',
-        'peo_no',
         'statement',
     ];
 
