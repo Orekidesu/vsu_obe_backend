@@ -29,7 +29,7 @@ class ProgramEducationalTest extends TestCase
         // create a program
         $this->program = Program::factory()->create();
         //  create user
-        $this->departmentUser = User::factory()->create(['role_id' => '3']);
+        $this->departmentUser = User::factory()->create(['role_id' => 3]);
         $this->actingAs($this->departmentUser);
         //create a peo
         $this->peo = ProgramEducationalObjective::factory()->create();
