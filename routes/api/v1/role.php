@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\Admin\VisionController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
 use App\Http\Controllers\Api\V1\Department\ProgramController;
 use App\Http\Controllers\Api\V1\Department\ProgramEducationalObjectiveController;
+use App\Http\Controllers\Api\V1\Department\ProgramOutcomeController;
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes
@@ -56,4 +57,5 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   // Program Routes
   Route::apiResource('programs', ProgramController::class);
   Route::apiResource('program-educational-objectives', ProgramEducationalObjectiveController::class);
+  Route::apiResource('program-outcomes', ProgramOutcomeController::class);
 });
