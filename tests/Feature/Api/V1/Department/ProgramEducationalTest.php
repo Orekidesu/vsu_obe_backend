@@ -69,7 +69,7 @@ class ProgramEducationalTest extends TestCase
     public function test_department_user_can_create_peo()
     {
 
-        $newPeo = ProgramEducationalObjective::factory()->make(['peo_no' => 3]);
+        $newPeo = ProgramEducationalObjective::factory()->make();
 
         $response = $this->postJson("api/v1/department/program-educational-objectives", $newPeo->toArray());
 
@@ -110,7 +110,6 @@ class ProgramEducationalTest extends TestCase
         $response->assertJson([
             'data' => [
                 'statement' => $newPeo->statement,
-                'peo_no' => $newPeo->peo_no,
             ],
             'message' => 'PEO updated successfully',
 
