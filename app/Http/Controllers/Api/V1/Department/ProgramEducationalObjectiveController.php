@@ -27,8 +27,6 @@ class ProgramEducationalObjectiveController extends Controller
             $peos = ProgramEducationalObjective::with(['program' => function ($query) {
                 $query->without('department');
             }])->get();
-
-
             return ProgramEducationalObjectiveResource::collection($peos)->additional([
                 'message' => 'PEOs retrieved successfully'
             ]);
@@ -83,6 +81,8 @@ class ProgramEducationalObjectiveController extends Controller
     {
         try {
             $programEducationalObjective->update($request->validated());
+
+
             return (new ProgramEducationalObjectiveResource($programEducationalObjective))->additional([
                 'message' => 'PEO updated successfully',
             ]);
