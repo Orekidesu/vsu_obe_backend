@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('program_educational_objectives', function (Blueprint $table) {
             $table->id();
             $table->foreignId('program_id')->constrained()->onDelete('cascade');
-            $table->unsignedInteger('peo_no')->unique();
             $table->text('statement');
             $table->softDeletes();
             $table->timestamps();
