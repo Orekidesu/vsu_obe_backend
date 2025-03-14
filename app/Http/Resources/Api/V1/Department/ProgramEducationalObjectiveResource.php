@@ -15,7 +15,6 @@ class ProgramEducationalObjectiveResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'peo_no' => $this->peo_no,
             'statement' => $this->statement,
             'program' => new ProgramResource($this->whenLoaded('program')),
         ];
