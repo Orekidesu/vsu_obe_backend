@@ -16,9 +16,9 @@ class ProgramOutcome extends Model
         'statement',
     ];
 
-    protected $with = [
-        'program'
-    ];
+    // protected $with = [
+    //     'program'
+    // ];
 
     public function program(): BelongsTo
     {
