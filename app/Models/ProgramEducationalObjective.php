@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ProgramEducationalObjective extends Model
 {
@@ -20,5 +21,10 @@ class ProgramEducationalObjective extends Model
     public function program(): BelongsTo
     {
         return $this->belongsTo(Program::class, 'program_id');
+    }
+
+    public function missions(): BelongsToMany
+    {
+        return $this->belongsToMany(Mission::class, 'program_educational_objective_mission', 'peo_id', 'mission_id');
     }
 }
