@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api\V1\Department;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Department\PeoMissionRequest;
+use App\Http\Resources\Api\V1\Department\PeoMissionResource;
+use App\Http\Resources\Api\V1\Department\ProgramEducationalObjectiveResource;
 use App\Models\ProgramEducationalObjective;
 use Illuminate\Http\Request;
 use Exception;
+use Tests\Feature\Api\V1\Department\ProgramEducationalTest;
 
 class PeoMissionController extends Controller
 {
@@ -22,11 +25,11 @@ class PeoMissionController extends Controller
     public function index()
     {
         try {
-
-            return response()->json([
-                'data' => ProgramEducationalObjective::with('missions')->get(),
+            // Temporarily disable eager loading of the 'program' relationship
+            $peos = ProgramEducationalObjective::with('missions')->get();
+            return PeoMissionResource::collection($peos)->additional([
                 'message' => 'All PEO-Missions mappings retrieved successfully',
-            ], 200);
+            ]);
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'failed to retrieved PEO-Missions Mappings',
@@ -40,11 +43,11 @@ class PeoMissionController extends Controller
     public function show(ProgramEducationalObjective $peo)
     {
         try {
+
             $peo->load('missions');
-            return response()->json([
-                'data' => $peo,
-                'message' => 'PEO with mapped missions retrieved successfully'
-            ], 200);
+            return (new PeoMissionResource($peo))->additional([
+                'message' => 'PEO with mapped missions retrieved successfully',
+            ]);
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'failed to fetch PEO with mapped missions',
