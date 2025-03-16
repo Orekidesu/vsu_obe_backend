@@ -58,7 +58,8 @@ class PeoMissionController extends Controller
     {
 
         try {
-            $peo->missions()->syncWithoutDetaching($request->validated());
+            $validated = $request->validated();
+            $peo->missions()->syncWithoutDetaching($validated['mission_ids']);
 
             return response()->json([
                 'message' => 'Missions mapped to PEO successfully'
@@ -74,7 +75,8 @@ class PeoMissionController extends Controller
     public function detach(PeoMissionRequest $request, ProgramEducationalObjective $peo)
     {
         try {
-            $peo->missions()->detach($request->validated());
+            $validated = $request->validated();
+            $peo->missions()->detach($validated['mission_ids']);
 
             return response()->json([
                 'message' => 'Missions unmapped to PEO successfully'
@@ -90,6 +92,6 @@ class PeoMissionController extends Controller
     // Next step:
     /* 
         1. Make Tests on both the request and the controller
-        2.Understand the attach and detach function
+        2. Understand the attach and detach function
     */
 }

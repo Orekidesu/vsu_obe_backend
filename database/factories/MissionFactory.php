@@ -12,7 +12,7 @@ class MissionFactory extends Factory
     public function definition()
     {
         return [
-            'mission_no' => $this->faker->unique()->numerify('M###'),
+            'mission_no' => $this->faker->numberBetween(1, 1000),
             'description' => $this->faker->paragraph,
         ];
     }
