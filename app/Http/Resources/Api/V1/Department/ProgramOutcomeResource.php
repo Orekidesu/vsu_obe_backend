@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Api\V1\Admin;
+namespace App\Http\Resources\Api\V1\Department;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class FacultyResource extends JsonResource
+class ProgramOutcomeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,11 +15,9 @@ class FacultyResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'program' => new ProgramResource($this->whenLoaded('program')),
             'name' => $this->name,
-            'abbreviation' => $this->abbreviation,
-            'departments' => DepartmentResource::collection($this->whenLoaded('department')),
-
+            'statement' => $this->statement,
         ];
     }
 }

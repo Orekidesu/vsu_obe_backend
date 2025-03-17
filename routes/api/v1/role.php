@@ -7,6 +7,11 @@ use App\Http\Controllers\Api\V1\Admin\MissionController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\VisionController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
+use App\Http\Controllers\Api\V1\Department\PeoMissionController;
+use App\Http\Controllers\Api\V1\Department\ProgramController;
+use App\Http\Controllers\Api\V1\Department\ProgramEducationalObjectiveController;
+use App\Http\Controllers\Api\V1\Department\ProgramOutcomeController;
+use App\Http\Requests\Api\V1\Department\PeoMissionRequest;
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes
@@ -48,6 +53,19 @@ Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
 // Department Routes
 Route::middleware(['role:Department'])->prefix('department')->group(function () {
   Route::get('/department/dashboard', function () {
-    return response()->json(['message' => 'Welcome Dean']);
+    return response()->json(['message' => 'Welcome Department']);
   });
+
+  // Program Routes
+  Route::apiResource('programs', ProgramController::class);
+  // PEO routes
+  Route::apiResource('program-educational-objectives', ProgramEducationalObjectiveController::class);
+  // PO routes
+  Route::apiResource('program-outcomes', ProgramOutcomeController::class);
+
+  // PEOMISSION ROUTE
+  Route::get('/peo-mission', [PeoMissionController::class, 'index']);
+  Route::get('/peo-mission/{peo}', [PeoMissionController::class, 'show']);
+  Route::post('/peo-mission/{peo}/attach', [PeoMissionController::class, 'attach']);
+  Route::post('/peo-mission/{peo}/detach', [PeoMissionController::class, 'detach']);
 });
