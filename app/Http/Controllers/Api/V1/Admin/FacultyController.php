@@ -21,27 +21,24 @@ class FacultyController extends Controller
     {
         $this->middleware('auth:sanctum');
         $this->middleware('role:Admin');
-        
     }
 
     public function index()
     {
-        try{
-            $faculties = Faculty::all();
-            
+        try {
+            $faculties = Faculty::with('department')->without('department.faculty')->get();
+
             return response()->json([
-                'data'=> FacultyResource::collection($faculties),
-                'message'=>'facultyies retrieved successfully',
+                'data' => FacultyResource::collection($faculties),
+                'message' => 'facultyies retrieved successfully',
 
-            ],200);
+            ], 200);
+        } catch (Exception $e) {
 
-        }catch(Exception $e){
-        
             return response()->json([
-                'message'=>'failed to retrieved faculties',
-                'error'=>$e->getMessage(),
-            ],500);
-
+                'message' => 'failed to retrieved faculties',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -50,19 +47,19 @@ class FacultyController extends Controller
      */
     public function store(FacultyRequest $request)
     {
-        try{
+        try {
             $faculty = Faculty::create($request->validated());
 
             return response()->json([
-                'data'=> new FacultyResource($faculty),
-                'message'=>'faculty created successfully',
-            ],201);
-        }catch(Exception $e){
+                'data' => new FacultyResource($faculty),
+                'message' => 'faculty created successfully',
+            ], 201);
+        } catch (Exception $e) {
 
             return response()->json([
-                'message'=>'failed to create faculty',
-                'error'=>$e->getMessage(),
-            ],500);
+                'message' => 'failed to create faculty',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -71,20 +68,20 @@ class FacultyController extends Controller
      */
     public function show(Faculty $faculty)
     {
-        try{
+        try {
             return response()->json([
-                'data'=>new FacultyResource($faculty),
-                'message'=>'faculty retrieved successfully',
-            ],200);
-        }catch(ModelNotFoundException $e){
+                'data' => new FacultyResource($faculty),
+                'message' => 'faculty retrieved successfully',
+            ], 200);
+        } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message'=>'faculty not found',
-            ],404);
-        }catch(Exception $e){
+                'message' => 'faculty not found',
+            ], 404);
+        } catch (Exception $e) {
             return response()->json([
-                'message'=> 'failed to retrieve faculty',
-                'error'=>$e->getMessage(),
-            ],500);
+                'message' => 'failed to retrieve faculty',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -93,23 +90,22 @@ class FacultyController extends Controller
      */
     public function update(FacultyRequest $request, Faculty $faculty)
     {
-        try{
+        try {
             $faculty->update($request->validated());
 
             return response()->json([
-                'data'=> new FacultyResource($faculty),
-                'message'=>'faculty updated successfully',
+                'data' => new FacultyResource($faculty),
+                'message' => 'faculty updated successfully',
             ]);
-            
-        }catch(ModelNotFoundException $e){
+        } catch (ModelNotFoundException $e) {
             return response()->json([
-            'message'=>'faculty not found',
-            ],404);
-        }catch(Exception $e){
+                'message' => 'faculty not found',
+            ], 404);
+        } catch (Exception $e) {
             return response()->json([
-                'message'=>'failed to updated faculty',
-                'error'=>$e->getMessage(),
-            ],500);            
+                'message' => 'failed to updated faculty',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -118,22 +114,21 @@ class FacultyController extends Controller
      */
     public function destroy(Faculty $faculty)
     {
-        
-        try{
+
+        try {
             $faculty->delete();
 
             return response()->json([
-                'message'=>'faculty deleted successfully',
+                'message' => 'faculty deleted successfully',
             ]);
-
-        }catch(ModelNotFoundException $e){
+        } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message'=>'faculty not found',
+                'message' => 'faculty not found',
             ]);
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return response()->json([
-                'message'=>'failed to delete faculty',
-                'error'=>$e->getMessage(),
+                'message' => 'failed to delete faculty',
+                'error' => $e->getMessage(),
             ]);
         }
     }

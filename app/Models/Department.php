@@ -17,13 +17,20 @@ class Department extends Model
         'faculty_id',
     ];
 
-    public function user():HasMany
+    protected $with = ['faculty'];
+
+    public function user(): HasMany
     {
-        return $this->hasMany(User::class,'department_id');
+        return $this->hasMany(User::class, 'department_id');
     }
 
-    public function faculty():BelongsTo
+    public function faculty(): BelongsTo
     {
-        return $this->belongsTo(Faculty::class,'faculty_id');
+        return $this->belongsTo(Faculty::class, 'faculty_id');
+    }
+
+    public function program(): HasMany
+    {
+        return $this->hasMany(Program::class, 'department_id');
     }
 }
