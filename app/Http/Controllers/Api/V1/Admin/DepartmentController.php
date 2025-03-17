@@ -19,32 +19,22 @@ class DepartmentController extends Controller
     {
         $this->middleware('auth:sanctum');
         $this->middleware('role:Admin');
-
     }
     public function index()
     {
-        try{
-            $departments = Department::paginate(5);
+        try {
+            $departments = Department::all();
 
             return response()->json([
-                'data'=> DepartmentResource::collection($departments),
-                'message'=>'Departments retrieved successfully',
-                'pagination' =>[
-                    'total'=> $departments->total(),
-                    'per_page'=>$departments->perPage(),
-                    'current_page'=>$departments->currentPage(),
-                    'last_page'=>$departments->lastPage(),
-                    'from'=>$departments->firstItem(),
-                    'to'=>$departments->lastItem(),
+                'data' => DepartmentResource::collection($departments),
+                'message' => 'Departments retrieved successfully',
 
-                ],
             ]);
-
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return response()->json([
-                'message'=>'failed to retrieved departments',
-                'error'=>$e->getMessage(),
-            ],500);
+                'message' => 'failed to retrieved departments',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -53,19 +43,18 @@ class DepartmentController extends Controller
      */
     public function store(DepartmentRequest $request)
     {
-        try{
+        try {
             $department = Department::create($request->validated());
 
             return response()->json([
-                'data'=>new DepartmentResource($department),
-                'message'=>'department created successfully',
-            ],201);
-
-        }catch(Exception $e){
+                'data' => new DepartmentResource($department),
+                'message' => 'department created successfully',
+            ], 201);
+        } catch (Exception $e) {
             return response()->json([
-                'message'=>'failed to create department',
-                'error'=> $e->getMessage(),
-            ],500);
+                'message' => 'failed to create department',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -74,25 +63,22 @@ class DepartmentController extends Controller
      */
     public function show(Department $department)
     {
-        try{
-            
-            return response()->json([
-                'data'=>new DepartmentResource($department),
-                'message'=>'department retrieved successfully',
-            ],200);
+        try {
 
-        }catch(ModelNotFoundException $e){
             return response()->json([
-                'message'=>'department not found',
-                
-            ],404);
-        }
-        catch(Exception $e){
+                'data' => new DepartmentResource($department),
+                'message' => 'department retrieved successfully',
+            ], 200);
+        } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message'=>'failed to retrieve deparment',
-                'error'=>$e->getMessage(),
-            ],500);
+                'message' => 'department not found',
 
+            ], 404);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'failed to retrieve deparment',
+                'error' => $e->getMessage(),
+            ], 500);
         }
         //
     }
@@ -103,23 +89,22 @@ class DepartmentController extends Controller
     public function update(DepartmentRequest $request, Department $department)
     {
         //
-        try{
+        try {
             $department->update($request->validated());
 
             return response()->json([
-                'data'=>new DepartmentResource($department),
-                'message'=>'department updated successfully',
-            ],200);
-
-        }catch(ModelNotFoundException $e){
+                'data' => new DepartmentResource($department),
+                'message' => 'department updated successfully',
+            ], 200);
+        } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message'=> 'department not found',
-            ],404);
-        }catch(Exception $e){
+                'message' => 'department not found',
+            ], 404);
+        } catch (Exception $e) {
             return response()->json([
-                'message'=>'failed to updated department',
-                'error'=>$e->getMessage(),
-            ],500);
+                'message' => 'failed to updated department',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -128,20 +113,20 @@ class DepartmentController extends Controller
      */
     public function destroy(Department $department)
     {
-        try{
+        try {
             $department->delete();
 
             return response()->json([
-                'message'=>'department deleted successfully',
+                'message' => 'department deleted successfully',
             ]);
-        }catch(ModelNotFoundException $e){
+        } catch (ModelNotFoundException $e) {
             return response()->json([
-                'message'=>'department not found',
+                'message' => 'department not found',
             ]);
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return response()->json([
-                'message'=>'failed to delete department',
-                'error'=>$e->getMessage(),
+                'message' => 'failed to delete department',
+                'error' => $e->getMessage(),
             ]);
         }
     }

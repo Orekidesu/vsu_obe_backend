@@ -26,20 +26,7 @@ class UserController extends Controller
         try {
             $users = User::whereHas('role', function ($query) {
                 $query->where('roles.name', '!=', 'Admin');
-            })->paginate(5);
-
-            // return response()->json([
-            //     'data' => UserResource::collection($users),
-            //     'message' => 'users retrieved successfully',
-            //     'pagination' => [
-            //         'total' => $users->total(),
-            //         'per_page' => $users->perPage(),
-            //         'current_page' => $users->currentPage(),
-            //         'last_page' => $users->lastPage(),
-            //         'from' => $users->firstItem(),
-            //         'to' => $users->lastItem(),
-            //     ],
-            // ], 200);
+            })->orderBy('first_name', 'asc')->get();
 
             return UserResource::collection($users)->additional([
                 'message' => 'users retrieved successfully'
@@ -62,7 +49,11 @@ class UserController extends Controller
         try {
             $validatedData = $request->validated();
 
-            $validatedData['password'] = Hash::make($validatedData['password']);
+            if (!isset($validatedData['password'])) {
+                $validatedData['password'] = Hash::make('password123');
+            } else {
+                $validatedData['password'] = Hash::make($validatedData['password']);
+            }
 
             $user = User::create($validatedData);
 
@@ -143,10 +134,10 @@ class UserController extends Controller
     public function resetPassword(User $user)
     {
         try {
-            $user->updateQuietly(['password' => Hash::make('password123')]);
+            $user->updateQuietly(['password' => Hash::make('passwordReset123')]);
 
             return response()->json([
-                'message' => 'Password reset. Default password: password123',
+                'message' => 'Password reset. Default password: passwordReset123',
             ], 200);
         } catch (Exception $e) {
             return response()->json([

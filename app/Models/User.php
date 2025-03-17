@@ -48,18 +48,17 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function role():BelongsTo
+    public function role(): BelongsTo
     {
-        return $this->belongsTo(Role::class,'role_id');
-
+        return $this->belongsTo(Role::class, 'role_id');
     }
 
-    public function faculty():BelongsTo
+    public function faculty(): BelongsTo
     {
-        return $this->belongsTo(Faculty::class,'faculty_id');
+        return $this->belongsTo(Faculty::class, 'faculty_id');
     }
 
-    public function department():BelongsTo
+    public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department_id');
     }

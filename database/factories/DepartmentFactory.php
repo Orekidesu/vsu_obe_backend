@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Department;
+
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Department>
@@ -14,10 +16,14 @@ class DepartmentFactory extends Factory
      *
      * @return array<string, mixed>
      */
+    protected $model = Department::class;
     public function definition(): array
     {
         return [
             //
+            'name' => $this->faker->unique()->company,
+            'abbreviation' => strtoupper($this->faker->unique()->lexify('???')),
+            'faculty_id' => \App\Models\Faculty::factory(),
         ];
     }
 }
