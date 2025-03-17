@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
+Route::get('/health', function () {
+  return response()->json(['status' => 'Healthy']);
+});
 
 // Load API versioned routes dynamically
 require __DIR__ . '/api/v1.php';
