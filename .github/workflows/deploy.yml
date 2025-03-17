@@ -21,6 +21,7 @@ jobs:
       - name: Deploy to server
         run: |
           ssh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "cd ${{ secrets.DEPLOY_PATH }} && git pull origin main"
+          ssh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "cd ${{ secrets.DEPLOY_PATH }} && rm -rf vendor composer.lock"
           ssh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "cd ${{ secrets.DEPLOY_PATH }} && composer install --no-dev --optimize-autoloader"
           ssh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "cd ${{ secrets.DEPLOY_PATH }} && php artisan migrate --force"
           ssh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "cd ${{ secrets.DEPLOY_PATH }} && php artisan config:cache"
