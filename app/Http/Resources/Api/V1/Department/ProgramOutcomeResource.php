@@ -15,6 +15,7 @@ class ProgramOutcomeResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'program' => new ProgramResource($this->whenLoaded('program')),
             'name' => $this->name,
             'statement' => $this->statement,
