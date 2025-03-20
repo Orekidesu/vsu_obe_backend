@@ -15,16 +15,10 @@ return [
     |
     */
 
-    'paths' => ['api/*'],
-
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        env('FRONTEND_URL', 'http://localhost:3000'),  // Load from .env or use default
-        'https://vsu-obe-frontend-git-master-orekis-projects.vercel.app',
-        'https://vsu-obe-frontend-pkbk5oc63-orekis-projects.vercel.app',
-        'https://vsu-obe-frontend.vercel.app/'
-    ],
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 
