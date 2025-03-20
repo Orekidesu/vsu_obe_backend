@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/health', function () {
-  return response()->json(['status' => 'Suuuuuper Very Very Ultra Healthy!']);
+  return response()->json(['status' => 'Suuuuuper Very Very Ultra Healthy Mega Max!']);
 });
 
 // Load API versioned routes dynamically
