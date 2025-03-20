@@ -57,13 +57,17 @@ jobs:
         run: |
           ssh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
             cd ${{ secrets.DEPLOY_PATH }}
+
+            # Pull latest changes
             git reset --hard HEAD
-            git pull origin main
+            git pull origin main || exit 1
+            
+            # Install dependencies
             rm -rf vendor composer.lock
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
 
-            # 🛠️ Run Laravel cache commands as www-data to prevent permission issues
+            # 🛠️ Fix Laravel cache issues
             sudo -u www-data php artisan config:clear
             sudo -u www-data php artisan cache:clear
             sudo -u www-data php artisan route:clear
@@ -74,12 +78,13 @@ jobs:
             sudo -u www-data php artisan view:cache
             sudo -u www-data php artisan optimize
             
-            #  Ensure storage and cache directories exist
-            mkdir -p storage/logs bootstrap/cache
-            
-            # Set correct ownership and permissions for the entire project
-            sudo chown -R www-data:www-data .
+            # 🔥 Ensure correct ownership and permissions
+            sudo chown -R ubuntu:www-data .
+            sudo chmod -R 775 .
+
+            # 🔒 Specifically fix permissions for storage & cache (Laravel needs write access)
             sudo chmod -R 775 storage bootstrap/cache
+            sudo chown -R www-data:www-data storage bootstrap/cache
 
             # Restart Apache to apply changes
             sudo systemctl restart apache2
