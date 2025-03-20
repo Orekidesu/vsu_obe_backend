@@ -74,12 +74,15 @@ jobs:
             sudo -u www-data php artisan view:cache
             sudo -u www-data php artisan optimize
             
-            # 🔧 Ensure storage and cache directories exist
+            #  Ensure storage and cache directories exist
             mkdir -p storage/logs bootstrap/cache
             
-            # 🔒 Set correct ownership and permissions for the entire project
+            # Set correct ownership and permissions for the entire project
             sudo chown -R www-data:www-data .
             sudo chmod -R 775 storage bootstrap/cache
+
+            # Restart Apache to apply changes
+            sudo systemctl restart apache2
           EOF
 
 
