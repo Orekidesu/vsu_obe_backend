@@ -19,6 +19,8 @@ class ProgramResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'abbreviation' => $this->abbreviation,
+            'status' => $this->status,
+            'version' => $this->version,
             'department' => new DepartmentResource($this->whenLoaded('department')),
 
 
