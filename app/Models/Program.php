@@ -15,6 +15,8 @@ class Program extends Model
         'department_id',
         'name',
         'abbreviation',
+        'status',
+        'version',
     ];
 
     // now whenever we query a particular program, it always eager load the department it associated with
