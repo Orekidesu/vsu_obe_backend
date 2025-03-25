@@ -29,14 +29,12 @@ class ProgramRequest extends FormRequest
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('programs')->ignore($programId),
             ],
             'abbreviation' => [
                 'sometimes',
                 'required',
                 'string',
                 'max:20',
-                Rule::unique('programs')->ignore($programId),
             ],
             'department_id' => [
                 'sometimes',
