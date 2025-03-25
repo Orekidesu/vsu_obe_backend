@@ -45,7 +45,16 @@ class ProgramController extends Controller
     public function store(ProgramRequest $request)
     {
         try {
-            $program = Program::create($request->validated());
+
+            // latest version of program
+            $latestVersion = Program::where('name', $request->name)->where('abbreviation', $request->abbreviation)->max('version');
+
+            // add 1 if a previous program exist, set value to 1 if none
+            $newVersion = $latestVersion ? $latestVersion + 1 : 1;
+
+            $data = array_merge($request->validated(), ['version' => $newVersion], ['status' => 'pending']);
+
+            $program = Program::create($data);
             //in this case, the department isnt included in the response because it is newly created 
             // thus, eager loading isnt applied yet
             // so, to include the department in the response, we need to explicitly load the department
