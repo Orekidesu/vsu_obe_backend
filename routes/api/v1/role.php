@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Admin\MissionController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\VisionController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
+use App\Http\Controllers\Api\V1\Department\GraduateAttributePeoController;
 use App\Http\Controllers\Api\V1\Department\PeoMissionController;
 use App\Http\Controllers\Api\V1\Department\ProgramController;
 use App\Http\Controllers\Api\V1\Department\ProgramEducationalObjectiveController;
@@ -64,8 +65,14 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   Route::apiResource('program-outcomes', ProgramOutcomeController::class);
 
   // PEOMISSION ROUTE
-  Route::get('/peo-mission', [PeoMissionController::class, 'index']);
-  Route::get('/peo-mission/{peo}', [PeoMissionController::class, 'show']);
-  Route::post('/peo-mission/{peo}/attach', [PeoMissionController::class, 'attach']);
-  Route::post('/peo-mission/{peo}/detach', [PeoMissionController::class, 'detach']);
+  Route::get('/peo-missions', [PeoMissionController::class, 'index']);
+  Route::get('/peo-missions/{peo}', [PeoMissionController::class, 'show']);
+  Route::post('/peo-missions/{peo}/attach', [PeoMissionController::class, 'attach']);
+  Route::post('/peo-missions/{peo}/detach', [PeoMissionController::class, 'detach']);
+
+  // GAPEO ROUTE
+  Route::get('/graduate-attribute-peos', [GraduateAttributePeoController::class, 'index']);
+  Route::get('/graduate-attribute-peos/{graduate_attribute}', [GraduateAttributePeoController::class, 'show']);
+  Route::post('/graduate-attribute-peos/{graduate_attribute}/attach', [GraduateAttributePeoController::class, 'attach']);
+  Route::post('/graduate-attribute-peos/{graduat_attribute}/detach', [GraduateAttributePeoController::class, 'detach']);
 });
