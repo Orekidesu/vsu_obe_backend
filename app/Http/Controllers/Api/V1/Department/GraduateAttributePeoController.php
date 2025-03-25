@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Department\GraduateAttributePeoRequest;
 use App\Http\Resources\Api\V1\Department\GraduateAttributePeoResource;
 use App\Models\GraduateAttribute;
-use App\Models\ProgramEducationalObjective;
 use Exception;
 
 class GraduateAttributePeoController extends Controller
@@ -81,7 +80,7 @@ class GraduateAttributePeoController extends Controller
             return response()->json([
                 'message' => 'failed to unmap PEOs to GA',
                 'error' => $e->getMessage(),
-            ]);
+            ], 500);
         }
     }
 }
