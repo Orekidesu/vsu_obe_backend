@@ -7,6 +7,7 @@ use App\Http\Requests\Api\V1\Department\GraduateAttributePeoRequest;
 use App\Http\Resources\Api\V1\Department\GraduateAttributePeoResource;
 use App\Models\GraduateAttribute;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class GraduateAttributePeoController extends Controller
 {
@@ -53,7 +54,7 @@ class GraduateAttributePeoController extends Controller
     {
         try {
             $validated = $request->validated();
-            $graduateAttribute->peos()->syncWithoutDetaching($validated['mission_ids']);
+            $graduateAttribute->peos()->syncWithoutDetaching($validated['peo_ids']);
 
             return response()->json([
                 'message' => 'PEOs mapped to GA successfully',
