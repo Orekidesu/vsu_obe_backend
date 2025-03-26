@@ -30,6 +30,11 @@ class ProgramEducationalObjective extends Model
 
     public function gas(): BelongsToMany
     {
-        return $this->belongsToMany(GraduateAttribute::class, 'graduate_attribute_peo', 'ga_id', 'peo_id');
+        return $this->belongsToMany(GraduateAttribute::class, 'graduate_attribute_peo', 'peo_id', 'ga_id');
+    }
+
+    public function pos(): BelongsToMany
+    {
+        return $this->belongsToMany(ProgramOutcome::class, 'program_outcome_peo', 'peo_id', 'po_id');
     }
 }
