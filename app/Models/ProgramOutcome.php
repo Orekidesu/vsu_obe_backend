@@ -29,4 +29,8 @@ class ProgramOutcome extends Model
     {
         return $this->belongsToMany(ProgramEducationalObjective::class, 'program_outcome_peo', 'po_id', 'peo_id');
     }
+    public function gas(): BelongsToMany
+    {
+        return $this->belongsToMany(GraduateAttribute::class, 'program_outcome_ga', 'po_id', 'ga_id');
+    }
 }
