@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\Department\PeoMissionController;
 use App\Http\Controllers\Api\V1\Department\ProgramController;
 use App\Http\Controllers\Api\V1\Department\ProgramEducationalObjectiveController;
 use App\Http\Controllers\Api\V1\Department\ProgramOutcomeController;
+use App\Http\Controllers\Api\V1\Department\ProgramOutcomePeoController;
 use App\Http\Requests\Api\V1\Department\PeoMissionRequest;
 use Illuminate\Support\Facades\Route;
 
@@ -64,15 +65,21 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   // PO routes
   Route::apiResource('program-outcomes', ProgramOutcomeController::class);
 
-  // PEOMISSION ROUTE
+  // PEO-MISSION ROUTE
   Route::get('/peo-missions', [PeoMissionController::class, 'index']);
   Route::get('/peo-missions/{peo}', [PeoMissionController::class, 'show']);
   Route::post('/peo-missions/{peo}/attach', [PeoMissionController::class, 'attach']);
   Route::post('/peo-missions/{peo}/detach', [PeoMissionController::class, 'detach']);
 
-  // GAPEO ROUTE
+  // GA-PEO ROUTE
   Route::get('/graduate-attribute-peos', [GraduateAttributePeoController::class, 'index']);
   Route::get('/graduate-attribute-peos/{graduate_attribute}', [GraduateAttributePeoController::class, 'show']);
   Route::post('/graduate-attribute-peos/{graduate_attribute}/attach', [GraduateAttributePeoController::class, 'attach']);
   Route::post('/graduate-attribute-peos/{graduate_attribute}/detach', [GraduateAttributePeoController::class, 'detach']);
+
+  // PO-PEO
+  Route::get('/program-outcome-peos', [ProgramOutcomePeoController::class, 'index']);
+  Route::get('/program-outcome-peos/{program_outcome}', [ProgramOutcomePeoController::class, 'show']);
+  Route::post('/program-outcome-peos/{program_outcome}/attach', [ProgramOutcomePeoController::class, 'attach']);
+  Route::post('/program-outcome-peos/{program_outcome}/detach', [ProgramOutcomePeoController::class, 'detach']);
 });
