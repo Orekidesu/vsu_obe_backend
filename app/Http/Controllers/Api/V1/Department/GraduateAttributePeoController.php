@@ -59,7 +59,7 @@ class GraduateAttributePeoController extends Controller
             return response()->json([
                 'message' => 'PEOs mapped to GA successfully',
             ], 200);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'message' => 'failed to map PEOs to GA',
                 'error' => $e->getMessage(),
@@ -67,17 +67,18 @@ class GraduateAttributePeoController extends Controller
         }
     }
 
+
     public function detach(GraduateAttributePeoRequest $request, GraduateAttribute $graduateAttribute)
     {
         try {
             $validated = $request->validated();
+
             $graduateAttribute->peos()->detach($validated['peo_ids']);
 
             return response()->json([
                 'message' => 'PEOs unmapped to GA successfully'
             ], 200);
-        } catch (\Throwable $e) {
-            //throw $th;
+        } catch (Exception $e) {
             return response()->json([
                 'message' => 'failed to unmap PEOs to GA',
                 'error' => $e->getMessage(),
