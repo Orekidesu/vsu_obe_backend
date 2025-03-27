@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\Department\PeoMissionController;
 use App\Http\Controllers\Api\V1\Department\ProgramController;
 use App\Http\Controllers\Api\V1\Department\ProgramEducationalObjectiveController;
 use App\Http\Controllers\Api\V1\Department\ProgramOutcomeController;
+use App\Http\Controllers\Api\V1\Department\ProgramOutcomeGaController;
 use App\Http\Controllers\Api\V1\Department\ProgramOutcomePeoController;
 use App\Http\Requests\Api\V1\Department\PeoMissionRequest;
 use Illuminate\Support\Facades\Route;
@@ -82,4 +83,10 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   Route::get('/program-outcome-peos/{program_outcome}', [ProgramOutcomePeoController::class, 'show']);
   Route::post('/program-outcome-peos/{program_outcome}/attach', [ProgramOutcomePeoController::class, 'attach']);
   Route::post('/program-outcome-peos/{program_outcome}/detach', [ProgramOutcomePeoController::class, 'detach']);
+
+  // PO-GA
+  Route::get('/program-outcome-gas', [ProgramOutcomeGaController::class, 'index']);
+  Route::get('/program-outcome-gas/{program_outcome}', [ProgramOutcomeGaController::class, 'show']);
+  Route::post('/program-outcome-gas/{program_outcome}/attach', [ProgramOutcomeGaController::class, 'attach']);
+  Route::post('/program-outcome-gas/{program_outcome}/detach', [ProgramOutcomeGaController::class, 'detach']);
 });
