@@ -16,7 +16,6 @@ class GraduateAttribute extends Model
         'description',
     ];
 
-
     public function peos(): BelongsToMany
     {
         return $this->belongsToMany(ProgramEducationalObjective::class, 'graduate_attribute_peo', 'ga_id', 'peo_id');
