@@ -74,5 +74,5 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   Route::get('/graduate-attribute-peos', [GraduateAttributePeoController::class, 'index']);
   Route::get('/graduate-attribute-peos/{graduate_attribute}', [GraduateAttributePeoController::class, 'show']);
   Route::post('/graduate-attribute-peos/{graduate_attribute}/attach', [GraduateAttributePeoController::class, 'attach']);
-  Route::post('/graduate-attribute-peos/{graduat_attribute}/detach', [GraduateAttributePeoController::class, 'detach']);
+  Route::post('/graduate-attribute-peos/{graduate_attribute}/detach', [GraduateAttributePeoController::class, 'detach']);
 });
