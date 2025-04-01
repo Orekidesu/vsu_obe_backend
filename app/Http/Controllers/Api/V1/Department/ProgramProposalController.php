@@ -50,11 +50,12 @@ class ProgramProposalController extends Controller
         DB::beginTransaction();
         try {
             // Ensure the referenced program exist
-            $program = Program::findOrFail($request->program_id);
+            $validated = $request->validated();
+            $program = Program::findOrFail($validated['program_id']);
 
             // check first if there is an existing pending proposal,
 
-            $existingPendingProposal = ProgramProposal::where('program_id', $request->program_id)
+            $existingPendingProposal = ProgramProposal::where('program_id', $validated['program_id'])
                 ->where('status', 'pending')
                 ->exists();
 
