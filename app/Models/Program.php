@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Program extends Model
 {
@@ -32,5 +33,10 @@ class Program extends Model
     public function programEducationalObjective(): HasMany
     {
         return $this->hasMany(ProgramEducationalObjective::class, 'program_id');
+    }
+
+    public function proposal(): HasOne
+    {
+        return $this->hasOne(ProgramProposal::class, 'program_id');
     }
 }
