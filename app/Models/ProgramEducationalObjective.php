@@ -16,7 +16,7 @@ class ProgramEducationalObjective extends Model
         'statement',
     ];
 
-    protected $with = ['program'];
+    // protected $with = ['program'];
 
     public function program(): BelongsTo
     {
@@ -26,5 +26,15 @@ class ProgramEducationalObjective extends Model
     public function missions(): BelongsToMany
     {
         return $this->belongsToMany(Mission::class, 'program_educational_objective_mission', 'peo_id', 'mission_id');
+    }
+
+    public function gas(): BelongsToMany
+    {
+        return $this->belongsToMany(GraduateAttribute::class, 'graduate_attribute_peo', 'peo_id', 'ga_id');
+    }
+
+    public function pos(): BelongsToMany
+    {
+        return $this->belongsToMany(ProgramOutcome::class, 'program_outcome_peo', 'peo_id', 'po_id');
     }
 }

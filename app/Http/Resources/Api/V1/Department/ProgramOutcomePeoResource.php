@@ -2,11 +2,11 @@
 
 namespace App\Http\Resources\Api\V1\Department;
 
-use App\Http\Resources\Api\V1\Admin\DepartmentResource;
+use App\Models\ProgramEducationalObjective;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProgramResource extends JsonResource
+class ProgramOutcomePeoResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,12 +18,8 @@ class ProgramResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'abbreviation' => $this->abbreviation,
-            'status' => $this->status,
-            'version' => $this->version,
-            'department' => new DepartmentResource($this->whenLoaded('department')),
-
-
+            'statement' => $this->statement,
+            'peos' => ProgramEducationalObjectiveResource::collection($this->whenLoaded('peos')),
         ];
     }
 }

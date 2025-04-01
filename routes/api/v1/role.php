@@ -7,11 +7,14 @@ use App\Http\Controllers\Api\V1\Admin\MissionController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\VisionController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
+use App\Http\Controllers\Api\V1\Department\GraduateAttributePeoController;
 use App\Http\Controllers\Api\V1\Department\PeoMissionController;
 use App\Http\Controllers\Api\V1\Department\ProgramController;
 use App\Http\Controllers\Api\V1\Department\ProgramEducationalObjectiveController;
 use App\Http\Controllers\Api\V1\Department\ProgramOutcomeController;
-use App\Http\Requests\Api\V1\Department\PeoMissionRequest;
+use App\Http\Controllers\Api\V1\Department\ProgramOutcomeGaController;
+use App\Http\Controllers\Api\V1\Department\ProgramOutcomePeoController;
+use App\Http\Controllers\Api\V1\Department\ProgramProposalController;
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes
@@ -44,7 +47,7 @@ Route::middleware(['role:Admin'])->prefix('admin')->group(function () {
 // Dean Routes
 
 Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
-  Route::get('/dean/dashboard', function () {
+  Route::get('/dashboard', function () {
     return response()->json(['message' => 'Welcome Dean']);
   });
 });
@@ -63,9 +66,46 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   // PO routes
   Route::apiResource('program-outcomes', ProgramOutcomeController::class);
 
-  // PEOMISSION ROUTE
-  Route::get('/peo-mission', [PeoMissionController::class, 'index']);
-  Route::get('/peo-mission/{peo}', [PeoMissionController::class, 'show']);
-  Route::post('/peo-mission/{peo}/attach', [PeoMissionController::class, 'attach']);
-  Route::post('/peo-mission/{peo}/detach', [PeoMissionController::class, 'detach']);
+  // PEO-MISSION ROUTE
+  Route::get('/peo-missions', [PeoMissionController::class, 'index']);
+  Route::get('/peo-missions/{peo}', [PeoMissionController::class, 'show']);
+  Route::post('/peo-missions/{peo}/attach', [PeoMissionController::class, 'attach']);
+  Route::post('/peo-missions/{peo}/detach', [PeoMissionController::class, 'detach']);
+
+  // GA-PEO ROUTE
+  Route::get('/graduate-attribute-peos', [GraduateAttributePeoController::class, 'index']);
+  Route::get('/graduate-attribute-peos/{graduate_attribute}', [GraduateAttributePeoController::class, 'show']);
+  Route::post('/graduate-attribute-peos/{graduate_attribute}/attach', [GraduateAttributePeoController::class, 'attach']);
+  Route::post('/graduate-attribute-peos/{graduate_attribute}/detach', [GraduateAttributePeoController::class, 'detach']);
+
+  // PO-PEO
+  Route::get('/program-outcome-peos', [ProgramOutcomePeoController::class, 'index']);
+  Route::get('/program-outcome-peos/{program_outcome}', [ProgramOutcomePeoController::class, 'show']);
+  Route::post('/program-outcome-peos/{program_outcome}/attach', [ProgramOutcomePeoController::class, 'attach']);
+  Route::post('/program-outcome-peos/{program_outcome}/detach', [ProgramOutcomePeoController::class, 'detach']);
+
+  // PO-GA
+  Route::get('/program-outcome-gas', [ProgramOutcomeGaController::class, 'index']);
+  Route::get('/program-outcome-gas/{program_outcome}', [ProgramOutcomeGaController::class, 'show']);
+  Route::post('/program-outcome-gas/{program_outcome}/attach', [ProgramOutcomeGaController::class, 'attach']);
+  Route::post('/program-outcome-gas/{program_outcome}/detach', [ProgramOutcomeGaController::class, 'detach']);
 });
+
+
+//=================== Department & Dean Route Program Proposal Controller =====================//
+
+// Department Routes
+Route::middleware(['role:Department'])->prefix('department')->group(function () {
+  // Program Proposal Routes
+  Route::get('/program-proposals', [ProgramProposalController::class, 'index']); // List all proposals
+  Route::get('/program-proposals/{programProposal}', [ProgramProposalController::class, 'show']); // Show a specific proposal
+  Route::post('/program-proposals', [ProgramProposalController::class, 'store']); // Create a new proposal
+});
+
+// Dean Routes
+Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
+  // Program Proposal Review Route
+  Route::patch('/program-proposals/{programProposal}/review', [ProgramProposalController::class, 'review']);
+  // Review a proposal
+});
+//=================== Department & Dean Route Program Proposal Controller =====================//

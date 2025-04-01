@@ -13,14 +13,13 @@ class LoginController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): Response
+    public function store(LoginRequest $request)
     {
         $request->authenticate();
 
         // $request->session()->regenerate();
 
-        if(!Auth::check())
-        {
+        if (!Auth::check()) {
             return response()->json(
                 [
                     'message' => 'Authentication failed'
@@ -28,7 +27,7 @@ class LoginController extends Controller
                 401
             );
         }
-        $token =$request->user()->createToken('api-token')->plainTextToken;
+        $token = $request->user()->createToken('api-token')->plainTextToken;
 
 
         return response(
@@ -36,23 +35,24 @@ class LoginController extends Controller
                 'user' => $request->user(),
                 'token' => $token,
                 'message' => "login in successfully",
-            ],200
+            ],
+            200
         );
     }
 
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): Response
+    public function destroy(Request $request)
     {
-        
-        if(!Auth::check())
-        {
+
+        if (!Auth::check()) {
             return response()->json(
                 [
-                    'message' => 'User is not logged in'   
-                ],401
-                
+                    'message' => 'User is not logged in'
+                ],
+                401
+
             );
         }
 
