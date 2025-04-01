@@ -20,7 +20,7 @@ class ProgramProposalResource extends JsonResource
             'status' => $this->status,
             'version' => $this->version,
             'comment' => $this->comment,
-            'program' => ProgramResource::collection($this->whenLoaded('program')),
+            'program' => new ProgramResource($this->whenLoaded('program')),
         ];
     }
 }
