@@ -47,7 +47,7 @@ Route::middleware(['role:Admin'])->prefix('admin')->group(function () {
 // Dean Routes
 
 Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
-  Route::get('/dean/dashboard', function () {
+  Route::get('/dashboard', function () {
     return response()->json(['message' => 'Welcome Dean']);
   });
 });
@@ -105,6 +105,7 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
 // Dean Routes
 Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
   // Program Proposal Review Route
-  Route::post('/program-proposals/{programProposal}/review', [ProgramProposalController::class, 'review']); // Review a proposal
+  Route::patch('/program-proposals/{programProposal}/review', [ProgramProposalController::class, 'review']);
+  // Review a proposal
 });
 //=================== Department & Dean Route Program Proposal Controller =====================//
