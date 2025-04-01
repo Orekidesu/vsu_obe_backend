@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api\V1\Department;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Department\ProgramRequest;
+use App\Http\Resources\Api\V1\Department\ProgramProposalResource;
 use App\Http\Resources\Api\V1\Department\ProgramResource;
 use App\Models\Program;
 use Exception;
+use Illuminate\Support\Facades\DB;
+use App\Models\ProgramProposal;
 
 class ProgramController extends Controller
 {
@@ -44,10 +47,22 @@ class ProgramController extends Controller
      */
     public function store(ProgramRequest $request)
     {
+        DB::beginTransaction();
         try {
+            $existingPending = Program::where('name', $request->name)
+                ->where('abbreviation', $request->abbreviation)
+                ->where('status', 'pending')
+                ->exists();
+            if ($existingPending) {
+                return response()->json([
+                    'message' => 'A pending version of program already exist',
+                ], 409);
+            }
 
             // latest version of program
-            $latestVersion = Program::where('name', $request->name)->where('abbreviation', $request->abbreviation)->max('version');
+            $latestVersion = Program::where('name', $request->name)
+                ->where('abbreviation', $request->abbreviation)
+                ->max('version');
 
             // add 1 if a previous program exist, set value to 1 if none
             $newVersion = $latestVersion ? $latestVersion + 1 : 1;
@@ -61,11 +76,26 @@ class ProgramController extends Controller
             // only do this, if it is really necessary to include in the response
             $program->load('department');
 
-            return (new ProgramResource($program))->additional([
-                'message' => 'program created successfully',
+            $newProposal = ProgramProposal::create([
+                'program_id' => $program->id,
+                'abbreviation' => $program->abbreviation,
+                'version' => $program->version,
+                'status' => 'pending',
+                'comment' => null, //no comments in creation
             ]);
+
+            DB::commit();
+
+            return response()->json([
+                'data' => [
+                    'program' => new ProgramResource($program),
+                    'proposal' => new ProgramProposalResource($newProposal),
+                ],
+                'message' => 'Program created and submitted for approval successfully'
+            ], 201);
         } catch (Exception $e) {
 
+            DB::rollBack();
             return response()->json([
                 'message' => 'failed to create program',
                 'error' => $e->getMessage(),
