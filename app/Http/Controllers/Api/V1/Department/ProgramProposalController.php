@@ -183,8 +183,10 @@ class ProgramProposalController extends Controller
 
                 // If approved, update the associated program status and archive
                 if ($request->status === 'approved') {
+                    $program = $programProposal->program;
                     // Archive the currently active program (if there's any)
-                    Program::where('id', $programProposal->program_id)
+                    Program::where('name', $program->name)
+                        ->where('abbreviation', $program->abbreviation)
                         ->where('status', 'active') // Find the currently active program
                         ->update(['status' => 'archived']);
 
