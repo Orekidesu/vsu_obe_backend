@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\V1\Department\ProgramOutcomeController;
 use App\Http\Controllers\Api\V1\Department\ProgramOutcomeGaController;
 use App\Http\Controllers\Api\V1\Department\ProgramOutcomePeoController;
 use App\Http\Controllers\Api\V1\Department\ProgramProposalController;
+use App\Models\Semester;
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes
@@ -97,6 +98,9 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
 
   // Course
   Route::apiResource('courses', CourseController::class);
+
+  // Semester
+  Route::apiResource('semesters', Semester::class);
 });
 
 
