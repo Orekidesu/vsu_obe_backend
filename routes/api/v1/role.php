@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Admin\MissionController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\VisionController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
+use App\Http\Controllers\Api\V1\Department\CurriculumController;
 use App\Http\Controllers\Api\V1\Department\GraduateAttributePeoController;
 use App\Http\Controllers\Api\V1\Department\PeoMissionController;
 use App\Http\Controllers\Api\V1\Department\ProgramController;
@@ -89,6 +90,9 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   Route::get('/program-outcome-gas/{program_outcome}', [ProgramOutcomeGaController::class, 'show']);
   Route::post('/program-outcome-gas/{program_outcome}/attach', [ProgramOutcomeGaController::class, 'attach']);
   Route::post('/program-outcome-gas/{program_outcome}/detach', [ProgramOutcomeGaController::class, 'detach']);
+
+  // Curriculum
+  Route::apiResource('curriculums', CurriculumController::class);
 });
 
 
