@@ -23,7 +23,7 @@ class CurriculumController extends Controller
     public function index()
     {
         try {
-            $curriculums = Curriculum::with('program');
+            $curriculums = Curriculum::with('program')->get();
 
             return CurriculumResource::collection($curriculums)->additional([
                 'message' => 'curricula retrieved successfully',

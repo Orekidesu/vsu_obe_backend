@@ -22,11 +22,15 @@ class CurriculumRequest extends FormRequest
      */
     public function rules(): array
     {
+        $curriculumId = request()->route('curriculum');
+
         return [
             'program_id' => [
                 'sometimes',
                 'required',
-                Rule::exists('programs', 'id')
+                Rule::exists('programs', 'id'),
+                Rule::unique('curricula', 'program_id')->ignore($curriculumId),
+
             ],
             'name' => [
                 'sometimes',
