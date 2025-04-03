@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('curriculum_course_po', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('curriculum_course_id')->constrained('curriculum_courses')->cascadeOnDelete();
+            $table->foreignId('po_id')->constrained('program_outcomes')->cascadeOnDelete();
+            $table->enum('ird', ['I', 'R', 'D']);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
