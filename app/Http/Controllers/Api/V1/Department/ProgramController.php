@@ -45,64 +45,6 @@ class ProgramController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    /*public function store(ProgramRequest $request)
-    {
-        DB::beginTransaction();
-        try {
-            $existingPending = Program::where('name', $request->name)
-                ->where('abbreviation', $request->abbreviation)
-                ->where('status', 'pending')
-                ->exists();
-            if ($existingPending) {
-                return response()->json([
-                    'message' => 'A pending version of program already exist',
-                ], 409);
-            }
-
-            // latest version of program
-            $latestVersion = Program::where('name', $request->name)
-                ->where('abbreviation', $request->abbreviation)
-                ->max('version');
-
-            // add 1 if a previous program exist, set value to 1 if none
-            $newVersion = $latestVersion ? $latestVersion + 1 : 1;
-
-            $data = array_merge($request->validated(), ['version' => $newVersion], ['status' => 'pending']);
-
-            $program = Program::create($data);
-            //in this case, the department isnt included in the response because it is newly created 
-            // thus, eager loading isnt applied yet
-            // so, to include the department in the response, we need to explicitly load the department
-            // only do this, if it is really necessary to include in the response
-            $program->load('department');
-
-            $newProposal = ProgramProposal::create([
-                'program_id' => $program->id,
-                'abbreviation' => $program->abbreviation,
-                'version' => $program->version,
-                'status' => 'pending',
-                'comment' => null, //no comments in creation
-            ]);
-
-            DB::commit();
-
-            return response()->json([
-                'data' => [
-                    'program' => new ProgramResource($program),
-                    'proposal' => new ProgramProposalResource($newProposal),
-                ],
-                'message' => 'Program created and submitted for approval successfully'
-            ], 201);
-        } catch (Exception $e) {
-
-            DB::rollBack();
-            return response()->json([
-                'message' => 'failed to create program',
-                'error' => $e->getMessage(),
-            ]);
-        }
-    }*/
-
     public function store(ProgramRequest $request)
     {
         DB::beginTransaction();
@@ -135,6 +77,10 @@ class ProgramController extends Controller
             ]);
 
             $program = Program::create($data);
+            //in this case, the department isnt included in the response because it is newly created 
+            // thus, eager loading isnt applied yet
+            // so, to include the department in the response, we need to explicitly load the department
+            // only do this, if it is really necessary to include in the response
             $program->load('department');
 
             $newProposal = ProgramProposal::create([
