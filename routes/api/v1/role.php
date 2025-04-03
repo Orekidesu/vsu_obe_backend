@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Admin\MissionController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\VisionController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
+use App\Http\Controllers\Api\V1\Department\CourseCategoryController;
 use App\Http\Controllers\Api\V1\Department\CourseController;
 use App\Http\Controllers\Api\V1\Department\CurriculumController;
 use App\Http\Controllers\Api\V1\Department\GraduateAttributePeoController;
@@ -102,6 +103,9 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
 
   // Semester
   Route::apiResource('semesters', SemesterController::class);
+
+  // Course Category
+  Route::apiResource('course-categories', CourseCategoryController::class);
 });
 
 
