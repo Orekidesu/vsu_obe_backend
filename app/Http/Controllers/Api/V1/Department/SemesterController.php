@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\Department\SemesterResource;
 use App\Models\Semester;
 use Exception;
-use Illuminate\Http\Request;
 use App\Http\Requests\Api\V1\Department\SemesterRequest;
 
 class SemesterController extends Controller

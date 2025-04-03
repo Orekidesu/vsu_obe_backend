@@ -20,14 +20,19 @@ class SemesterRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
+
+    /* Need this */
+    /** @var \Illuminate\Http\Request $this */
+
     public function rules(): array
     {
+        $semesterId = request()->route('semester');
         return [
             'name' => [
                 'sometimes',
                 'required',
                 'string',
-                Rule::unique('semesters', 'name')->ignore($this->route('semester')),
+                Rule::unique('semesters', 'name')->ignore($semesterId),
             ],
 
         ];
