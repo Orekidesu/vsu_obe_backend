@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Department\CurriculumCourseRequest;
 use App\Http\Resources\Api\V1\Department\CurriculumCourseResource;
 use App\Models\CurriculumCourse;
-use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
