@@ -33,4 +33,9 @@ class ProgramOutcome extends Model
     {
         return $this->belongsToMany(GraduateAttribute::class, 'program_outcome_ga', 'po_id', 'ga_id');
     }
+
+    public function curriculumCourses(): BelongsToMany
+    {
+        return $this->belongsToMany(CurriculumCourse::class, 'curriculum_course_po', 'po_id', 'curriculum_course_id');
+    }
 }

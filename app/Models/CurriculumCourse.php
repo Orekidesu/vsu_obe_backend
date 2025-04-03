@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class CurriculumCourse extends Model
 {
@@ -36,5 +37,10 @@ class CurriculumCourse extends Model
     public function semester(): BelongsTo
     {
         return $this->belongsTo(Semester::class, 'semester_id');
+    }
+
+    public function pos(): BelongsToMany
+    {
+        return $this->belongsToMany(ProgramOutcome::class, 'curriculum_course_po', 'curriculum_course_id', 'po_id');
     }
 }
