@@ -5,7 +5,7 @@ namespace App\Http\Requests\Api\V1\Department;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CourseRequest extends FormRequest
+class CourseCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,33 +20,33 @@ class CourseRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
+    /** @var \Illuminate\Http\Request $this */
     public function rules(): array
     {
-        $courseId = request()->route('course');
-        $departmentId = $this->input('department_id');
+        $courseCategoryId = request()->route('course_category');
+        $curriculumId = $this->input('curriculum_id'); // Get curriculum_id safely
+
         return [
-            'department_id' => [
+            'name' => [
                 'sometimes',
                 'required',
-                Rule::exists('departments', 'id'),
+                'string',
+                Rule::unique('course_categories', 'name')
+                    ->where('curriculum_id', $curriculumId)
+                    ->ignore($courseCategoryId),
             ],
             'code' => [
                 'sometimes',
                 'required',
                 'string',
-                'max:20',
-                Rule::unique('courses', 'code')
-                    ->where('department_id', $departmentId)
-                    ->ignore($courseId),
-
+                Rule::unique('course_categories', 'code')
+                    ->where('curriculum_id', $curriculumId)
+                    ->ignore($courseCategoryId),
             ],
-            'descriptive_title' => [
+            'curriculum_id' => [
                 'sometimes',
                 'required',
-                'string',
-                Rule::unique('courses', 'descriptive_title')
-                    ->where('department_id', $departmentId)
-                    ->ignore($courseId),
+                Rule::exists('curricula', 'id'),
             ],
         ];
     }
