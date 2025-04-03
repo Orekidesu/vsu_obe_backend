@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('curriculum_courses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('curriculum_id')->constrained('curricula')->cascadeOnDelete();
+            $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
+            $table->foreignId('course_category_id')->constrained('course_categories')->cascadeOnDelete();
+            $table->foreignId('semester_id')->constrained('semesters')->cascadeOnDelete();
+            $table->decimal('unit', 8, 2);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
