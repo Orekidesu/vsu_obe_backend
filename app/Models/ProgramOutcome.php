@@ -36,6 +36,7 @@ class ProgramOutcome extends Model
 
     public function curriculumCourses(): BelongsToMany
     {
-        return $this->belongsToMany(CurriculumCourse::class, 'curriculum_course_po', 'po_id', 'curriculum_course_id');
+        return $this->belongsToMany(CurriculumCourse::class, 'curriculum_course_po', 'po_id', 'curriculum_course_id')
+            ->withPivot('ird');
     }
 }

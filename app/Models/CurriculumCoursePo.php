@@ -23,7 +23,7 @@ class CurriculumCoursePo extends Model
     {
         return $this->belongsTo(CurriculumCourse::class, 'curriculum_course_id');
     }
-    
+
     public function po(): BelongsTo
     {
         return $this->belongsTo(ProgramOutcome::class, 'po_id');

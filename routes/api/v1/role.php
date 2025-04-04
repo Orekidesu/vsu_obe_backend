@@ -109,8 +109,10 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   Route::apiResource('course-categories', CourseCategoryController::class);
 
   // Curriculum Course
-
   Route::apiResource('curriculum-courses', CurriculumCourseController::class);
+
+  // Curriculum Course to PO
+  Route::apiResource('curriculum-course-po');
 });
 
 

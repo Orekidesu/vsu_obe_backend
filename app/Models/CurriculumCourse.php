@@ -41,6 +41,7 @@ class CurriculumCourse extends Model
 
     public function pos(): BelongsToMany
     {
-        return $this->belongsToMany(ProgramOutcome::class, 'curriculum_course_po', 'curriculum_course_id', 'po_id');
+        return $this->belongsToMany(ProgramOutcome::class, 'curriculum_course_po', 'curriculum_course_id', 'po_id')
+            ->withPivot('ird');
     }
 }
