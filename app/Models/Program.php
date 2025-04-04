@@ -39,4 +39,9 @@ class Program extends Model
     {
         return $this->hasOne(ProgramProposal::class, 'program_id');
     }
+
+    public function curriculum(): HasOne
+    {
+        return $this->hasOne(Curriculum::class, 'program_id');
+    }
 }

@@ -7,6 +7,10 @@ use App\Http\Controllers\Api\V1\Admin\MissionController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\VisionController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
+use App\Http\Controllers\Api\V1\Department\CourseCategoryController;
+use App\Http\Controllers\Api\V1\Department\CourseController;
+use App\Http\Controllers\Api\V1\Department\CurriculumController;
+use App\Http\Controllers\Api\V1\Department\CurriculumCourseController;
 use App\Http\Controllers\Api\V1\Department\GraduateAttributePeoController;
 use App\Http\Controllers\Api\V1\Department\PeoMissionController;
 use App\Http\Controllers\Api\V1\Department\ProgramController;
@@ -15,6 +19,8 @@ use App\Http\Controllers\Api\V1\Department\ProgramOutcomeController;
 use App\Http\Controllers\Api\V1\Department\ProgramOutcomeGaController;
 use App\Http\Controllers\Api\V1\Department\ProgramOutcomePeoController;
 use App\Http\Controllers\Api\V1\Department\ProgramProposalController;
+use App\Http\Controllers\Api\V1\Department\SemesterController;
+use App\Models\Semester;
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes
@@ -89,6 +95,24 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   Route::get('/program-outcome-gas/{program_outcome}', [ProgramOutcomeGaController::class, 'show']);
   Route::post('/program-outcome-gas/{program_outcome}/attach', [ProgramOutcomeGaController::class, 'attach']);
   Route::post('/program-outcome-gas/{program_outcome}/detach', [ProgramOutcomeGaController::class, 'detach']);
+
+  // Curriculum
+  Route::apiResource('curriculums', CurriculumController::class);
+
+  // Course
+  Route::apiResource('courses', CourseController::class);
+
+  // Semester
+  Route::apiResource('semesters', SemesterController::class);
+
+  // Course Category
+  Route::apiResource('course-categories', CourseCategoryController::class);
+
+  // Curriculum Course
+  Route::apiResource('curriculum-courses', CurriculumCourseController::class);
+
+  // Curriculum Course to PO
+  Route::apiResource('curriculum-course-po');
 });
 
 
