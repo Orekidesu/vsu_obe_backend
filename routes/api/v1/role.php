@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\Department\ProgramOutcomeGaController;
 use App\Http\Controllers\Api\V1\Department\ProgramOutcomePeoController;
 use App\Http\Controllers\Api\V1\Department\ProgramProposalController;
 use App\Http\Controllers\Api\V1\Department\SemesterController;
+use App\Models\CurriculumCoursePo;
 use App\Models\Semester;
 use Illuminate\Support\Facades\Route;
 
@@ -112,7 +113,7 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   Route::apiResource('curriculum-courses', CurriculumCourseController::class);
 
   // Curriculum Course to PO
-  Route::apiResource('curriculum-course-po');
+  // Route::apiResource('curriculum-course-po',CurriculumCourseP);
 });
 
 
