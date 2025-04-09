@@ -66,6 +66,13 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
     return response()->json(['message' => 'Welcome Department']);
   });
 
+  // Mission route:
+  Route::apiResource('missions', MissionController::class);
+
+  // GA Route
+  Route::apiResource('graduate-attributes', GraduateAttributeController::class);
+
+
   // Program Routes
   Route::apiResource('programs', ProgramController::class);
   // PEO routes
