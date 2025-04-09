@@ -29,7 +29,7 @@ class ProgramController extends Controller
             // eager load using with(relationship) function
             // since we eager loaded it in the model already, no need for manual with() function
 
-            $programs = Program::all();
+            $programs = Program::with('department')->get();
 
             return ProgramResource::collection($programs)->additional([
                 'message' => 'Programs retrieved successfully'

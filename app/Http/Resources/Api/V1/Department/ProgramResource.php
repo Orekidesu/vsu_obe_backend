@@ -22,7 +22,7 @@ class ProgramResource extends JsonResource
             'status' => $this->status,
             'version' => $this->version,
             'department' => new DepartmentResource($this->whenLoaded('department')),
-
+            'updated_at' => $this->updated_at,
 
         ];
     }

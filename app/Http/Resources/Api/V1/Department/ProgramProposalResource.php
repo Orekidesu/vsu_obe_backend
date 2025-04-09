@@ -21,6 +21,8 @@ class ProgramProposalResource extends JsonResource
             'version' => $this->version,
             'comment' => $this->comment,
             'program' => new ProgramResource($this->whenLoaded('program')),
+            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at,
         ];
     }
 }
