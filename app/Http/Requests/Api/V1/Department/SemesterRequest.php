@@ -4,6 +4,7 @@ namespace App\Http\Requests\Api\V1\Department;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\Semester;
 
 class SemesterRequest extends FormRequest
 {
@@ -28,13 +29,34 @@ class SemesterRequest extends FormRequest
     {
         $semesterId = request()->route('semester');
         return [
-            'name' => [
+            'year' => [
+                'sometimes',
+                'required',
+                'integer',
+                'min:1',
+                'max:10',
+            ],
+            'sem' => [
                 'sometimes',
                 'required',
                 'string',
-                Rule::unique('semesters', 'name')->ignore($semesterId),
+                Rule::in(Semester::getValidSemesterNames()),
+                // Unique combination of year and name
+                Rule::unique('semesters')
+                    ->where(function ($query) {
+                        return $query->where('year', request()->input('year'));
+                    })
+                    ->ignore($semesterId),
             ],
 
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.in' => 'The semester name must be one of: First, Second, or Midyear.',
+            'name.unique' => 'A semester with this year and name combination already exists.',
         ];
     }
 }

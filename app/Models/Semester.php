@@ -10,6 +10,25 @@ class Semester extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
+        'year',
+        'sem',
     ];
+
+    public const FIRST = 'first';
+    public const SECOND = 'second';
+    public const MIDYEAR = 'midyear';
+    /**
+     * Get all valid semester names
+     * 
+     * @return array
+     */
+
+    public static function getValidSemesterNames(): array
+    {
+        return [
+            self::FIRST,
+            self::SECOND,
+            self::MIDYEAR,
+        ];
+    }
 }
