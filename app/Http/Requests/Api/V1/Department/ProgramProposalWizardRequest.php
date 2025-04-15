@@ -26,13 +26,11 @@ class ProgramProposalWizardRequest extends FormRequest
 
             // Program
             'program.name' => [
-                'sometimes',
                 'required',
                 'string',
                 'max:50',
             ],
             'program.abbreviation' => [
-                'sometimes',
                 'required',
                 'string',
                 'max:20',
@@ -99,7 +97,7 @@ class ProgramProposalWizardRequest extends FormRequest
                 'string',
                 'max:50',
             ],
-            'pos.*.description' => [
+            'pos.*.statement' => [
                 'required',
                 'string',
             ],
@@ -132,7 +130,7 @@ class ProgramProposalWizardRequest extends FormRequest
                 'integer',
                 'min:0'
             ],
-            'po_ga_mappings.*.graduate_attribute_id' => [
+            'po_ga_mappings.*.ga_id' => [
                 'required',
                 Rule::exists('graduate_attributes', 'id'),
             ],
