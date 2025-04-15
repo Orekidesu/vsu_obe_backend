@@ -136,7 +136,7 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   Route::get('/program-proposals/{programProposal}', [ProgramProposalController::class, 'show']); // Show a specific proposal
   Route::post('/program-proposals', [ProgramProposalController::class, 'store']); // Create a new proposal
   // Program Proposal Wizard
-  Route::post('/program/proposals/full-submit', [ProgramProposalWizardController::class, 'submit']);
+  Route::post('/program-proposals/full-submit', [ProgramProposalWizardController::class, 'submit']);
 });
 
 // Dean Routes
