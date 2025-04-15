@@ -73,17 +73,17 @@ class ProgramProposalWizardRequest extends FormRequest
             ],
 
             // PEO to Graduate Attribute
-            'peo_ga_mappings' => [
+            'ga_peo_mappings' => [
                 'required',
                 'array',
                 'min:1',
             ],
-            'peo_ga_mappings.*.peo_index' => [
+            'ga_peo_mappings.*.peo_index' => [
                 'required',
                 'integer',
                 'min:0',
             ],
-            'peo_ga_mappings.*.ga_id' => [
+            'ga_peo_mappings.*.ga_id' => [
                 'required',
                 Rule::exists('graduate_attributes', 'id'),
             ],
