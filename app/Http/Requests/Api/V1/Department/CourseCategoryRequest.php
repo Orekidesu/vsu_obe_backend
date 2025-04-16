@@ -24,7 +24,6 @@ class CourseCategoryRequest extends FormRequest
     public function rules(): array
     {
         $courseCategoryId = request()->route('course_category');
-        $curriculumId = $this->input('curriculum_id'); // Get curriculum_id safely
 
         return [
             'name' => [
@@ -32,22 +31,15 @@ class CourseCategoryRequest extends FormRequest
                 'required',
                 'string',
                 Rule::unique('course_categories', 'name')
-                    ->where('curriculum_id', $curriculumId)
-                    ->ignore($courseCategoryId),
+
             ],
             'code' => [
                 'sometimes',
                 'required',
                 'string',
                 Rule::unique('course_categories', 'code')
-                    ->where('curriculum_id', $curriculumId)
-                    ->ignore($courseCategoryId),
             ],
-            'curriculum_id' => [
-                'sometimes',
-                'required',
-                Rule::exists('curricula', 'id'),
-            ],
+
         ];
     }
 }
