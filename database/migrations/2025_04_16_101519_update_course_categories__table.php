@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::table('course_categories', function (Blueprint $table) {
             $table->dropForeign(['curriculum_id']);
+            $table->dropColumn('curriculum_id');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('course_categories', function (Blueprint $table) {
+            $table->unsignedBigInteger('curriculum_id')->nullable();
             $table->foreign('curriculum_id')->references('id')->on('curricula');
         });
     }
