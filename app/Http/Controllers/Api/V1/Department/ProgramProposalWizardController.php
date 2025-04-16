@@ -207,7 +207,8 @@ class ProgramProposalWizardController extends Controller
             foreach ($courses as $courseData) {
                 // check if the course exist
 
-                $existingCourse = DB::table('courses')->where('code', $courseData['code'])->first();
+                $existingCourse = DB::table('courses')->where('code', $courseData['code'])
+                    ->where('descriptive_title', $courseData['descriptive_title'])->first();
 
                 if ($existingCourse) {
                     $courseId = $existingCourse->id;
