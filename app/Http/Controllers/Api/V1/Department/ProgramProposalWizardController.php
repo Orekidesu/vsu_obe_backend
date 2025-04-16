@@ -90,6 +90,8 @@ class ProgramProposalWizardController extends Controller
                 DB::table('program_educational_objective_mission')->insert([
                     'peo_id' => $peoId,
                     'mission_id' => $map['mission_id'],
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ]);
             }
             /*4. GA to PEO */
@@ -101,6 +103,8 @@ class ProgramProposalWizardController extends Controller
                 DB::table('graduate_attribute_peo')->insert([
                     'ga_id' => $map['ga_id'],
                     'peo_id' => $peoId,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ]);
             }
 
@@ -125,6 +129,8 @@ class ProgramProposalWizardController extends Controller
                 DB::table('program_outcome_peo')->insert([
                     'po_id' => $poId,
                     'peo_id' => $peoId,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ]);
             }
 
@@ -137,6 +143,8 @@ class ProgramProposalWizardController extends Controller
                 DB::table('program_outcome_ga')->insert([
                     'po_id' => $poId,
                     'ga_id' => $map['ga_id'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
             }
             /*8. Curriculum */
