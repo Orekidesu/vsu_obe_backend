@@ -173,10 +173,20 @@ class ProgramProposalWizardController extends Controller
             $categoryMap = [];
 
             foreach ($courseCategories as $categoryData) {
-                $category = $curriculum->courseCategories()->create([
-                    'name' => $categoryData['name'],
-                    'code' => $categoryData['code'],
-                ]);
+                // Check if category already exists for this curriculum
+                $existingCategory = $curriculum->courseCategories()
+                    ->where('name', $categoryData['name'])
+                    ->where('code', $categoryData['code'])
+                    ->first();
+
+                if ($existingCategory) {
+                    $category = $existingCategory;
+                } else {
+                    $category = $curriculum->courseCategories()->create([
+                        'name' => $categoryData['name'],
+                        'code' => $categoryData['code'],
+                    ]);
+                }
 
                 $categoryMap[$categoryData['code']] = $category->id;
             }
