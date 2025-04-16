@@ -174,21 +174,26 @@ class ProgramProposalWizardController extends Controller
 
             foreach ($courseCategories as $categoryData) {
                 // Check if category already exists for this curriculum
-                $existingCategory = $curriculum->courseCategories()
+                $existingCategory = DB::table('course_categories')
                     ->where('name', $categoryData['name'])
                     ->where('code', $categoryData['code'])
                     ->first();
 
                 if ($existingCategory) {
                     $category = $existingCategory;
+                    $categoryId = $existingCategory->id;
                 } else {
-                    $category = $curriculum->courseCategories()->create([
+                    $category = DB::table('course_categories')->insert([
                         'name' => $categoryData['name'],
                         'code' => $categoryData['code'],
+                        'created_at' => now(),
+                        'updated_at' => now()
                     ]);
+
+                    $categoryId = DB::getPdo()->lastInsertId();
                 }
 
-                $categoryMap[$categoryData['code']] = $category->id;
+                $categoryMap[$categoryData['code']] = $categoryId;
             }
 
             /*11. Courses and Curriculum Courses */
