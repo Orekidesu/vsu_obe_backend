@@ -11,13 +11,7 @@ class CourseCategory extends Model
     use HasFactory;
 
     protected $fillable = [
-        'curriculum_id',
         'name',
         'code',
     ];
-
-    public function curriculum(): BelongsTo
-    {
-        return $this->belongsTo(Curriculum::class, 'curriculum_id');
-    }
 }
