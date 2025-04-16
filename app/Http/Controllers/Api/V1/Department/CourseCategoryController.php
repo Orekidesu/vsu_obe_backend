@@ -22,7 +22,7 @@ class CourseCategoryController extends Controller
     public function index()
     {
         try {
-            $courseCategories = CourseCategory::with('curriculum')->get();
+            $courseCategories = CourseCategory::all();
 
             return CourseCategoryResource::collection($courseCategories)->additional([
                 'message' => 'course categories retrieved successfully',
