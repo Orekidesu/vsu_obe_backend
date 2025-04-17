@@ -21,8 +21,7 @@ use App\Http\Controllers\Api\V1\Department\ProgramOutcomePeoController;
 use App\Http\Controllers\Api\V1\Department\ProgramProposalController;
 use App\Http\Controllers\Api\V1\Department\ProgramProposalWizardController;
 use App\Http\Controllers\Api\V1\Department\SemesterController;
-use App\Models\CurriculumCoursePo;
-use App\Models\Semester;
+
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes
