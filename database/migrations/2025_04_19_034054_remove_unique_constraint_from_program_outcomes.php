@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('program_outcomes', function (Blueprint $table) {
 
-            $table->dropUnique('name');
+            $table->dropUnique(['name']);
         });
     }
 
