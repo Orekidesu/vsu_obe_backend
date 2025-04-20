@@ -26,18 +26,81 @@ class ProgramProposalController extends Controller
         $this->middleware('role:Dean')->only(['review']);
     }
 
+    // public function index(Request $request)
+    // {
+    //     try {
+    //         // Get user for role-based filtering
+    //         $user = auth()->user();
+
+    //         // Start building the query
+    //         $query = ProgramProposal::with([
+    //             'program.department',
+    //             'program.programEducationalObjectives:id,program_id,statement',
+    //             'program.programOutcomes:id,program_id,name,statement',
+    //             'program.curriculum:id,program_id,name'
+    //         ]);
+
+    //         // Filter by department if user is from Department role
+    //         if ($user->role->name === 'Department') {
+    //             $departmentId = $user->department_id;
+    //             $query->whereHas('program', function ($q) use ($departmentId) {
+    //                 $q->where('department_id', $departmentId);
+    //             });
+    //         }
+
+    //         // Filter by status if provided
+    //         if ($request->has('status') && in_array($request->status, ['pending', 'approved', 'rejected', 'revision'])) {
+    //             $query->where('status', $request->status);
+    //         }
+
+    //         // Order by latest first
+    //         $query->latest();
+
+    //         // Paginate results if requested
+    //         if ($request->has('per_page')) {
+    //             $proposals = $query->paginate($request->per_page);
+    //         } else {
+    //             $proposals = $query->get();
+    //         }
+
+    //         // Return collection with additional metadata
+    //         return ProgramProposalResource::collection($proposals)->additional([
+    //             'message' => 'Program proposals retrieved successfully',
+    //             'meta' => [
+    //                 'total_pending' => ProgramProposal::where('status', 'pending')->count(),
+    //                 'total_approved' => ProgramProposal::where('status', 'approved')->count(),
+    //                 'total_rejected' => ProgramProposal::where('status', 'rejected')->count(),
+    //                 'total_revision' => ProgramProposal::where('status', 'revision')->count(),
+    //                 'department_counts' => $this->getDepartmentProposalCounts(),
+    //             ],
+    //         ]);
+    //     } catch (Exception $e) {
+    //         Log::error('Failed to retrieve program proposals', ['error' => $e->getMessage()]);
+
+    //         return response()->json([
+    //             'message' => 'Failed to retrieve program proposals',
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
     public function index(Request $request)
     {
         try {
             // Get user for role-based filtering
             $user = auth()->user();
 
-            // Start building the query
+            // Start building the query with all relationships needed for detailed view
             $query = ProgramProposal::with([
                 'program.department',
-                'program.programEducationalObjectives:id,program_id,statement',
-                'program.programOutcomes:id,program_id,name,statement',
-                'program.curriculum:id,program_id,name'
+                'program.programEducationalObjectives.missions',
+                'program.programEducationalObjectives.gas',
+                'program.programOutcomes.peos',
+                'program.programOutcomes.gas',
+                'program.curriculum.curriculumCourses.course',
+                'program.curriculum.curriculumCourses.courseCategory',
+                'program.curriculum.curriculumCourses.semester',
+                'program.curriculum.curriculumCourses.pos',
             ]);
 
             // Filter by department if user is from Department role
@@ -66,13 +129,13 @@ class ProgramProposalController extends Controller
             // Return collection with additional metadata
             return ProgramProposalResource::collection($proposals)->additional([
                 'message' => 'Program proposals retrieved successfully',
-                'meta' => [
-                    'total_pending' => ProgramProposal::where('status', 'pending')->count(),
-                    'total_approved' => ProgramProposal::where('status', 'approved')->count(),
-                    'total_rejected' => ProgramProposal::where('status', 'rejected')->count(),
-                    'total_revision' => ProgramProposal::where('status', 'revision')->count(),
-                    'department_counts' => $this->getDepartmentProposalCounts(),
-                ],
+                // 'meta' => [
+                //     'total_pending' => ProgramProposal::where('status', 'pending')->count(),
+                //     'total_approved' => ProgramProposal::where('status', 'approved')->count(),
+                //     'total_rejected' => ProgramProposal::where('status', 'rejected')->count(),
+                //     'total_revision' => ProgramProposal::where('status', 'revision')->count(),
+                //     'department_counts' => $this->getDepartmentProposalCounts(),
+                // ],
             ]);
         } catch (Exception $e) {
             Log::error('Failed to retrieve program proposals', ['error' => $e->getMessage()]);

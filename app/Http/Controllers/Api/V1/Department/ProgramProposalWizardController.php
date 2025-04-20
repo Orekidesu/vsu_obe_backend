@@ -77,7 +77,7 @@ class ProgramProposalWizardController extends Controller
             $peoIndexMap = [];
 
             foreach ($peos as $index => $peoData) {
-                $peo = $program->programEducationalObjective()->create(['statement' => $peoData['statement']]);
+                $peo = $program->programEducationalObjectives()->create(['statement' => $peoData['statement']]);
                 $peoIndexMap[$index] = $peo->id;
             }
 
