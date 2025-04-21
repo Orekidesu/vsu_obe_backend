@@ -18,7 +18,7 @@ class ChangeUserPasswordController extends Controller
         $this->middleware("role:Admin|Department|Dean|Staff");
     }
 
-    public function changePassword(ChangeUserPasswordRequest $request)
+    public function store(ChangeUserPasswordRequest $request)
     {
 
         try {

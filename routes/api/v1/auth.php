@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Auth\ChangeUserPasswordController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Auth\LoginController;
 use App\Http\Controllers\Api\V1\Auth\RegisteredUserController;
@@ -35,3 +36,5 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 Route::post('/logout', [LoginController::class, 'destroy'])
      ->middleware('auth:sanctum')
      ->name('logout');
+
+Route::post('/change-password', [ChangeUserPasswordController::class, 'store']);
