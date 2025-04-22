@@ -201,7 +201,7 @@ class ProgramProposalWizardController extends Controller
             $courses = $validated['courses'];
             $curriculumCourses = $validated['curriculum_courses'];
             $courseMap = [];
-            $departmentId = auth()->user()->department_id;
+            // $departmentId = auth()->user()->department_id;
 
             // First create or update courses
             foreach ($courses as $courseData) {
@@ -217,7 +217,7 @@ class ProgramProposalWizardController extends Controller
                     DB::table('courses')->insert([
                         'code' => $courseData['code'],
                         'descriptive_title' => $courseData['descriptive_title'],
-                        'department_id' => $departmentId,
+                        // 'department_id' => $departmentId,
                         'created_at' => now(),
                         'updated_at' => now()
 
