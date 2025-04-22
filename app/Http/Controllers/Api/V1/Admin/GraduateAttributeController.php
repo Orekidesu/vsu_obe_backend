@@ -17,25 +17,24 @@ class GraduateAttributeController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->middleware('role:Admin');
+        $this->middleware('role:Admin,Department');
     }
 
     public function index()
     {
         //
-        try{
+        try {
             $graduateAttributes = GraduateAttribute::All();
 
             return response()->json([
-                'data'=> GraduateAttributeResource::collection($graduateAttributes),
-                'message'=>'graduate attributes successfully retrieved',
-            ],200);
-
-        }catch(Exception $e){
+                'data' => GraduateAttributeResource::collection($graduateAttributes),
+                'message' => 'graduate attributes successfully retrieved',
+            ], 200);
+        } catch (Exception $e) {
             return response()->json([
-                'message'=>'failed to retrieve graduate attributes',
-                'error'=> $e->getMessage(),
-            ],500);
+                'message' => 'failed to retrieve graduate attributes',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -44,19 +43,18 @@ class GraduateAttributeController extends Controller
      */
     public function store(GraduateAttributeRequest $request)
     {
-        try{
+        try {
             $graduateAttribute = GraduateAttribute::create($request->validated());
 
             return response()->json([
-                'data'=> new GraduateAttributeResource($graduateAttribute),
-                'message'=>'graduate attribute created successfully',
-            ],201);
-
-        }catch(Exception $e){
+                'data' => new GraduateAttributeResource($graduateAttribute),
+                'message' => 'graduate attribute created successfully',
+            ], 201);
+        } catch (Exception $e) {
             return response()->json([
-                'message'=>'failed to create graduate attribute',
-                'error'=>$e->getMessage(),
-            ],500);
+                'message' => 'failed to create graduate attribute',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -65,16 +63,16 @@ class GraduateAttributeController extends Controller
      */
     public function show(GraduateAttribute $graduateAttribute)
     {
-        try{
+        try {
             return response()->json([
-                'data'=>new GraduateAttributeResource($graduateAttribute),
-                'message'=>'graduate attribute retrieved successfully',
-            ],200);
-        }catch(Exception $e){
+                'data' => new GraduateAttributeResource($graduateAttribute),
+                'message' => 'graduate attribute retrieved successfully',
+            ], 200);
+        } catch (Exception $e) {
             return response()->json([
-                'message'=>$e instanceof ModelNotFoundException ? 'graduate attribute not found' : 'failed to retrieve graduate attribute',
-                'error'=> $e->getMessage(),
-            ],500);
+                'message' => $e instanceof ModelNotFoundException ? 'graduate attribute not found' : 'failed to retrieve graduate attribute',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -83,19 +81,18 @@ class GraduateAttributeController extends Controller
      */
     public function update(GraduateAttributeRequest $request, GraduateAttribute $graduateAttribute)
     {
-        try{
+        try {
             $graduateAttribute->update($request->validated());
 
             return response()->json([
-                'data'=>new GraduateAttributeResource($graduateAttribute),
-                'message'=>'graduate attribute updated successfully'
-            ],200);
-
-        }catch(Exception $e){
+                'data' => new GraduateAttributeResource($graduateAttribute),
+                'message' => 'graduate attribute updated successfully'
+            ], 200);
+        } catch (Exception $e) {
             return response()->json([
-                'message'=>$e instanceof ModelNotFoundException ? 'graduate attribute not found' :'failed to update graduate attribute',
-                'error'=>$e->getMessage(),
-            ],500);
+                'message' => $e instanceof ModelNotFoundException ? 'graduate attribute not found' : 'failed to update graduate attribute',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -104,17 +101,17 @@ class GraduateAttributeController extends Controller
      */
     public function destroy(GraduateAttribute $graduateAttribute)
     {
-        try{
+        try {
             $graduateAttribute->delete();
-            
-            return response()->json([
-                'message'=>'graduate attribute deleted successfully'
-            ],200);
-        }catch(Exception $e){
 
             return response()->json([
-                'message'=> $e instanceof ModelNotFoundException ? 'graduate attribute not found' : 'failed to delete graduate attribute',
-            ],500);
+                'message' => 'graduate attribute deleted successfully'
+            ], 200);
+        } catch (Exception $e) {
+
+            return response()->json([
+                'message' => $e instanceof ModelNotFoundException ? 'graduate attribute not found' : 'failed to delete graduate attribute',
+            ], 500);
         }
     }
 }

@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Http\Requests\Api\V1\Department;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class CourseRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        $courseId = request()->route('course');
+        $departmentId = $this->input('department_id');
+        return [
+            'department_id' => [
+                'sometimes',
+                'required',
+                Rule::exists('departments', 'id'),
+            ],
+            'code' => [
+                'sometimes',
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('courses', 'code')
+                    ->where('department_id', $departmentId)
+                    ->ignore($courseId),
+
+            ],
+            'descriptive_title' => [
+                'sometimes',
+                'required',
+                'string',
+                Rule::unique('courses', 'descriptive_title')
+                    ->where('department_id', $departmentId)
+                    ->ignore($courseId),
+            ],
+        ];
+    }
+}

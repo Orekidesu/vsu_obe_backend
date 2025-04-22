@@ -17,6 +17,7 @@ class PeoMissionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'statement' => $this->statement,
             'missions' => MissionResource::collection($this->whenLoaded('missions')),
         ];
