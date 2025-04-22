@@ -18,7 +18,6 @@ class CourseCategoryResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'code' => $this->code,
-            'curriculum' => new CurriculumResource($this->whenLoaded('curriculum')),
         ];
     }
 }

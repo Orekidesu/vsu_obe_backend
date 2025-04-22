@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Api\V1\Department;
+namespace App\Http\Requests\Api\V1\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CourseCategoryRequest extends FormRequest
+class ChangeUserInfoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,26 +20,30 @@ class CourseCategoryRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    /** @var \Illuminate\Http\Request $this */
     public function rules(): array
     {
-        $courseCategoryId = request()->route('course_category');
+        $userId = auth()->id();
 
         return [
-            'name' => [
+            //
+            'first_name' => [
                 'sometimes',
                 'required',
                 'string',
-                Rule::unique('course_categories', 'name')
-
+                'max:50'
             ],
-            'code' => [
+            'last_name' => [
                 'sometimes',
                 'required',
                 'string',
-                Rule::unique('course_categories', 'code')
+                'max:50',
             ],
-
+            'email' => [
+                'sometimes',
+                'required',
+                'email',
+                Rule::unique('users', 'email')->ignore($userId),
+            ],
         ];
     }
 }

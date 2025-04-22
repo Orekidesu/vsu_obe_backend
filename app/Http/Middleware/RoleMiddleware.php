@@ -13,7 +13,7 @@ class RoleMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, $role): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
         $user = auth()->user();
 
@@ -22,8 +22,14 @@ class RoleMiddleware
             return response()->json(['message' => 'Unauthorized: no role assigned'], 403);
         }
 
+        $allowedRoles = [];
+
+        foreach ($roles as $role) {
+            $allowedRoles = array_merge($allowedRoles, explode(',', $role));
+        }
+
         // if user role is not existing
-        if ($user->role->name !== $role) {
+        if (!in_array($user->role->name, $allowedRoles)) {
             return response()->json(['message' => 'Insufficient permission'], 403);
         }
 

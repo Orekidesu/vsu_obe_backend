@@ -19,9 +19,8 @@ class Curriculum extends Model
     {
         return $this->belongsTo(Program::class, 'program_id');
     }
-
-    public function courseCategories(): HasMany
+    public function curriculumCourses(): HasMany
     {
-        return $this->hasMany(CourseCategory::class, 'curriculum_id');
+        return $this->hasMany(CurriculumCourse::class, 'curriculum_id');
     }
 }

@@ -17,26 +17,25 @@ class MissionController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->middleware('role:Admin');
+        $this->middleware('role:Admin,Department');
     }
 
     public function index()
     {
         //
-        try{
+        try {
             $missions = Mission::all();
 
             return response()->json([
-                'data'=> MissionResource::collection($missions),
-                'message' =>'missions retrieved successfully'
-            ],200);
+                'data' => MissionResource::collection($missions),
+                'message' => 'missions retrieved successfully'
+            ], 200);
+        } catch (Exception $e) {
 
-        }catch(Exception $e){
-            
             return response()->json([
-                'message'=>'failed to retrieved missions',
-                'error'=>$e->getMessage(),
-            ],500);
+                'message' => 'failed to retrieved missions',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -46,21 +45,19 @@ class MissionController extends Controller
     public function store(MissionRequest $request)
     {
 
-        try{
+        try {
             $vision = Mission::create($request->validated());
 
             return response()->json([
-                'data'=>new MissionResource($vision),
-                'message'=>'mission created successfully'
-            ],201);
-
-        }catch(Exception $e){
+                'data' => new MissionResource($vision),
+                'message' => 'mission created successfully'
+            ], 201);
+        } catch (Exception $e) {
 
             return response()->json([
-                'message'=>'failed to create mission',
-                'error'=>$e->getMessage(),
-            ],500);
-
+                'message' => 'failed to create mission',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -70,20 +67,18 @@ class MissionController extends Controller
     public function show(Mission $mission)
     {
         //
-        try{
-            
-            return response()->json([
-                'data'=>new MissionResource($mission),
-                'message'=>'mission retrieved successfully',
-            ],200);
-
-            
-        }catch(Exception $e){
+        try {
 
             return response()->json([
-                'message'=>$e instanceof ModelNotFoundException ? 'mission not found' : 'failed to retrieved mission',
-                'error'=>$e->getMessage(),
-            ],500);
+                'data' => new MissionResource($mission),
+                'message' => 'mission retrieved successfully',
+            ], 200);
+        } catch (Exception $e) {
+
+            return response()->json([
+                'message' => $e instanceof ModelNotFoundException ? 'mission not found' : 'failed to retrieved mission',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -92,21 +87,19 @@ class MissionController extends Controller
      */
     public function update(MissionRequest $request, Mission $mission)
     {
-        try{
+        try {
             $mission->update($request->validated());
-            
-            return response()->json([
-                'data'=>new MissionResource($mission),
-                'message'=>'mission updated successfully',
-            ],200);
-
-        }catch(Exception $e){
 
             return response()->json([
-                'message'=> $e instanceof ModelNotFoundException ? 'mission not found' : 'failed to update mission',
-                'error'=>$e->getMessage(),
-            ],500);
-            
+                'data' => new MissionResource($mission),
+                'message' => 'mission updated successfully',
+            ], 200);
+        } catch (Exception $e) {
+
+            return response()->json([
+                'message' => $e instanceof ModelNotFoundException ? 'mission not found' : 'failed to update mission',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -115,20 +108,18 @@ class MissionController extends Controller
      */
     public function destroy(Mission $mission)
     {
-        try{
+        try {
             $mission->delete();
 
             return response()->json([
-                'message'=>'mission deleted successfully',
-            ],200);
-
-
-        }catch(Exception $e){
+                'message' => 'mission deleted successfully',
+            ], 200);
+        } catch (Exception $e) {
 
             return response()->json([
-                'message'=> $e instanceof ModelNotFoundException ? 'mission not found' : 'failed to delete mission',
+                'message' => $e instanceof ModelNotFoundException ? 'mission not found' : 'failed to delete mission',
                 'error' => $e->getMessage(),
-            ],500);
+            ], 500);
         }
         //
     }

@@ -19,8 +19,9 @@ use App\Http\Controllers\Api\V1\Department\ProgramOutcomeController;
 use App\Http\Controllers\Api\V1\Department\ProgramOutcomeGaController;
 use App\Http\Controllers\Api\V1\Department\ProgramOutcomePeoController;
 use App\Http\Controllers\Api\V1\Department\ProgramProposalController;
+use App\Http\Controllers\Api\V1\Department\ProgramProposalWizardController;
 use App\Http\Controllers\Api\V1\Department\SemesterController;
-use App\Models\Semester;
+
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes
@@ -64,6 +65,13 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   Route::get('/department/dashboard', function () {
     return response()->json(['message' => 'Welcome Department']);
   });
+
+  // Mission route:
+  Route::apiResource('missions', MissionController::class);
+
+  // GA Route
+  Route::apiResource('graduate-attributes', GraduateAttributeController::class);
+
 
   // Program Routes
   Route::apiResource('programs', ProgramController::class);
@@ -111,8 +119,10 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   // Curriculum Course
   Route::apiResource('curriculum-courses', CurriculumCourseController::class);
 
+
+
   // Curriculum Course to PO
-  Route::apiResource('curriculum-course-po');
+  // Route::apiResource('curriculum-course-po',CurriculumCourseP);
 });
 
 
@@ -124,6 +134,8 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   Route::get('/program-proposals', [ProgramProposalController::class, 'index']); // List all proposals
   Route::get('/program-proposals/{programProposal}', [ProgramProposalController::class, 'show']); // Show a specific proposal
   Route::post('/program-proposals', [ProgramProposalController::class, 'store']); // Create a new proposal
+  // Program Proposal Wizard
+  Route::post('/program-proposals/full-submit', [ProgramProposalWizardController::class, 'submit']);
 });
 
 // Dean Routes

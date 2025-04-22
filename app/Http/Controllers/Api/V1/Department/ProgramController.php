@@ -26,17 +26,46 @@ class ProgramController extends Controller
     public function index()
     {
         try {
-            // eager load using with(relationship) function
-            // since we eager loaded it in the model already, no need for manual with() function
+            // Get user for role-based filtering
+            $user = auth()->user();
 
-            $programs = Program::all();
+            // Start building the query with all relationships needed for detailed view
+            $query = Program::with([
+                'department',
+                'programEducationalObjectives.missions',
+                'programEducationalObjectives.gas',
+                'programOutcomes.peos',
+                'programOutcomes.gas',
+                'curriculum.curriculumCourses.course',
+                'curriculum.curriculumCourses.courseCategory',
+                'curriculum.curriculumCourses.semester',
+                'curriculum.curriculumCourses.pos',
+                'proposal',
+            ]);
+
+            // Filter by department if user is from Department role
+            if ($user->role->name === 'Department') {
+                $departmentId = $user->department_id;
+                $query->where('department_id', $departmentId);
+            }
+
+            // Order by latest first
+            $query->latest();
+
+            // Get the programs
+            $programs = $query->get();
 
             return ProgramResource::collection($programs)->additional([
-                'message' => 'Programs retrieved successfully'
+                'message' => 'Programs retrieved successfully',
+                'meta' => [
+                    'total_pending' => Program::where('status', 'pending')->count(),
+                    'total_active' => Program::where('status', 'active')->count(),
+                    'total_archived' => Program::where('status', 'archived')->count(),
+                ],
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'failed to retrieve programs',
+                'message' => 'Failed to retrieve programs',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -114,19 +143,29 @@ class ProgramController extends Controller
      */
     public function show(Program $program)
     {
-        //
         try {
+            // Load all necessary relationships
+            $program->load([
+                'department',
+                'programEducationalObjectives.missions',
+                'programEducationalObjectives.gas',
+                'programOutcomes.peos',
+                'programOutcomes.gas',
+                'curriculum.curriculumCourses.course',
+                'curriculum.curriculumCourses.courseCategory',
+                'curriculum.curriculumCourses.semester',
+                'curriculum.curriculumCourses.pos',
+                'proposal',
+            ]);
+
             return (new ProgramResource($program))->additional([
                 'message' => 'Program retrieved successfully'
             ]);
         } catch (Exception $e) {
-
-            return response()->json(
-                [
-                    'message' => 'failed to retrieve program',
-                    'error' => $e->getMessage(),
-                ]
-            );
+            return response()->json([
+                'message' => 'Failed to retrieve program',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
