@@ -30,7 +30,7 @@ class ChangeUserInfoController extends Controller
                 $user->last_name = $validated['last_name'];
             }
             if (isset($validated['email'])) {
-                $user->last_name = $validated['email'];
+                $user->email = $validated['email'];
             }
 
             $user->save();

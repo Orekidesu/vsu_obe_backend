@@ -22,7 +22,7 @@ class ChangeUserInfoRequest extends FormRequest
      */
     public function rules(): array
     {
-        $userId = request()->route('user') ? request()->route('user')->id : null;
+        $userId = auth()->id();
 
         return [
             //
