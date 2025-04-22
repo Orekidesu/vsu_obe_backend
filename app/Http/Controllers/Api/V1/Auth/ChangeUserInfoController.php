@@ -27,11 +27,18 @@ class ChangeUserInfoController extends Controller
                 $user->first_name = $validated['first_name'];
             }
             if (isset($validated['last_name'])) {
-                $user->last_name = $validated['first_name'];
+                $user->last_name = $validated['last_name'];
             }
             if (isset($validated['email'])) {
                 $user->last_name = $validated['email'];
             }
+
+            $user->save();
+
+            return response()->json([
+                'message' => 'user info changed successfully',
+
+            ], 200);
         } catch (Exception $e) {
 
             return response()->json([

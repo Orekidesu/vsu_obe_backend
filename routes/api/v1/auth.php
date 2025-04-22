@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Auth\ChangeUserInfoController;
 use App\Http\Controllers\Api\V1\Auth\ChangeUserPasswordController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Auth\LoginController;
@@ -38,3 +39,4 @@ Route::post('/logout', [LoginController::class, 'destroy'])
      ->name('logout');
 
 Route::post('/change-password', [ChangeUserPasswordController::class, 'store']);
+Route::post('/change-user-info', [ChangeUserInfoController::class, 'store']);
