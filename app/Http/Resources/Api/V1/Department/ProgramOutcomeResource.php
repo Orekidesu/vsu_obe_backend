@@ -16,7 +16,7 @@ class ProgramOutcomeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'program' => new ProgramResource($this->whenLoaded('program')),
+            'program' => new ProgramResource($this->programProposal->program),
             'name' => $this->name,
             'statement' => $this->statement,
         ];

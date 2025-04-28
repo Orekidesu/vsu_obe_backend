@@ -17,7 +17,7 @@ class CurriculumResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'program' => new ProgramResource($this->whenLoaded('program')),
+            'program' => new ProgramResource($this->programProposal->program),
         ];
     }
 }
