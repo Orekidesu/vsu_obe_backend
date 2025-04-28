@@ -14,30 +14,33 @@ class ProgramProposalResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $program = $this->program;
 
-        $program->load([
-            'programEducationalObjectives.missions',
-            'programEducationalObjectives.gas',
-            'programOutcomes.peos',
-            'programOutcomes.gas',
+        $this->load([
+            'peos.missions',
+            'peos.gas',
+            'pos.peos',
+            'pos.gas',
             'curriculum.curriculumCourses.course',
             'curriculum.curriculumCourses.courseCategory',
             'curriculum.curriculumCourses.semester',
             'curriculum.curriculumCourses.pos',
+            'committees.user',
+            'committees.curriculumCourses.course',
         ]);
+        $program = $this->program;
 
         // Get Peos with relationships
-        $peos = $program->programEducationalObjectives;
+        $peos = $this->peos;
 
         // Get POs with relationsiops
 
-        $pos = $program->programOutcomes;
+        $pos = $this->pos;
 
         // getcurriculum with courses
+        $curriculum = $this->curriculum;
 
-        $curriculum = $program->curriculum;
-
+        // Get Committees
+        $committees = $this->committees;
         return [
             'id' => $this->id,
             'status' => $this->status,
@@ -126,6 +129,30 @@ class ProgramProposalResource extends JsonResource
                     ];
                 }),
             ] : null,
+            'committees' => $committees ? $committees->map(function ($committee) {
+                return [
+                    'id' => $committee->id,
+                    'user' => [
+                        'id' => $committee->user->id,
+                        'first_name' => $committee->user->first_name,
+                        'last_name' => $committee->user->last_name,
+                        'email' => $committee->user->email,
+                    ],
+                    'assigned_by' => [
+                        'id' => $committee->assignedBy->id,
+                        'first_name' => $committee->assignedBy->first_name,
+                        'last_name' => $committee->assignedBy->last_name,
+                    ],
+                    'assigned_courses' => $committee->curriculumCourses->map(function ($cc) {
+                        return [
+                            'curriculum_course_id' => $cc->id,
+                            'course_code' => $cc->course->code,
+                            'descriptive_title' => $cc->course->descriptive_title,
+                        ];
+                    }),
+                ];
+            }) : [],
+
 
         ];
     }

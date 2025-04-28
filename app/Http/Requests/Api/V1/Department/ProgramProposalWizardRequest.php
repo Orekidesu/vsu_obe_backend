@@ -247,7 +247,37 @@ class ProgramProposalWizardRequest extends FormRequest
                 'required',
                 'in:I,R,D'
             ],
+            'committees' => [
+                'required',
+                'array',
+                'min:1'
+            ],
+            'committees.*.user_id' => [
+                'required',
+                'integer',
+                'exists:users,id',
+            ],
 
+            // Committee course assignments
+            'committee_course_assignments' => [
+                'required',
+                'array',
+                'min:1'
+            ],
+            'committee_course_assignments.*.user_id' => [
+                'required',
+                'integer',
+                'exists:users,id',
+            ],
+            'committee_course_assignments.*.course_codes' => [
+                'required',
+                'array',
+                'min:1'
+            ],
+            'committee_course_assignments.*.course_codes.*' => [
+                'required',
+                'string',
+            ],
 
 
 

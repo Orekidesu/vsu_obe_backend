@@ -77,7 +77,8 @@ class ProgramProposalWizardController extends Controller
             $peoIndexMap = [];
 
             foreach ($peos as $index => $peoData) {
-                $peo = $program->programEducationalObjectives()->create(['statement' => $peoData['statement']]);
+                // $peo = $program->programEducationalObjectives()->create(['statement' => $peoData['statement']]);
+                $peo = $proposal->peos()->create(['statement' => $peoData['statement']]);
                 $peoIndexMap[$index] = $peo->id;
             }
 
@@ -113,7 +114,11 @@ class ProgramProposalWizardController extends Controller
             $poIndexMap = [];
 
             foreach ($pos as $index => $poData) {
-                $po = $program->programOutcomes()->create([
+                // $po = $program->programOutcomes()->create([
+                //     'name' => $poData['name'],
+                //     'statement' => $poData['statement'],
+                // ]);
+                $po = $proposal->pos()->create([
                     'name' => $poData['name'],
                     'statement' => $poData['statement'],
                 ]);
@@ -149,7 +154,7 @@ class ProgramProposalWizardController extends Controller
             }
             /*8. Curriculum */
             $curriculumData = $validated['curriculum'];
-            $curriculum = $program->curriculum()->create([
+            $curriculum = $proposal->curriculum()->create([
                 'name' => $curriculumData['name'],
             ]);
             /*9. Semester */
@@ -243,7 +248,6 @@ class ProgramProposalWizardController extends Controller
             }
 
             /*12. Curriculum Course to PO with IRD */
-
             $coursePOMappings = $validated['course_po_mappings'];
             foreach ($coursePOMappings as $mapping) {
                 $courseId = $courseMap[$mapping['course_code']];
@@ -283,6 +287,54 @@ class ProgramProposalWizardController extends Controller
                     ]);
                 }
             }
+
+            /*13. Committees */
+            $committees = $validated['committees'];
+            $committeeMap = []; // Map user_id to committee_id
+
+            foreach ($committees as $committeeData) {
+                $committee = DB::table('committees')->insert([
+                    'program_proposal_id' => $proposal->id,
+                    'user_id' => $committeeData['user_id'],
+                    'created_by' => auth()->id(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $committeeId = DB::getPdo()->lastInsertId();
+                $committeeMap[$committeeData['user_id']] = $committeeId;
+            }
+
+            /*14. Committee Course Assignments */
+            $committeeCourseAssignments = $validated['committee_course_assignments'];
+
+            foreach ($committeeCourseAssignments as $assignment) {
+                $userId = $assignment['user_id'];
+                $committeeId = $committeeMap[$userId];
+
+                foreach ($assignment['course_codes'] as $courseCode) {
+                    $courseId = $courseMap[$courseCode];
+
+                    // Find curriculum course ID
+                    $curriculumCourseId = DB::table('curriculum_courses')
+                        ->where('curriculum_id', $curriculum->id)
+                        ->where('course_id', $courseId)
+                        ->value('id');
+
+                    if (!$curriculumCourseId) {
+                        continue; // Skip if curriculum course not found
+                    }
+
+                    // Create the assignment
+                    DB::table('committee_course_assignments')->insert([
+                        'committee_id' => $committeeId,
+                        'curriculum_course_id' => $curriculumCourseId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+
             DB::commit();
             return response()->json([
                 'message' => 'proposal submitted successfully',
