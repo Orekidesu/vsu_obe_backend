@@ -25,10 +25,10 @@ class CurriculumRequest extends FormRequest
         $curriculumId = request()->route('curriculum');
 
         return [
-            'program_id' => [
+            'program_proposal_id' => [
                 'sometimes',
                 'required',
-                Rule::exists('programs', 'id'),
+                Rule::exists('program_proposal_id', 'id'),
                 Rule::unique('curricula', 'program_id')->ignore($curriculumId),
 
             ],
