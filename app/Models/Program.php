@@ -30,23 +30,10 @@ class Program extends Model
         return $this->belongsTo(Department::class, 'department_id');
     }
 
-    public function programEducationalObjectives(): HasMany
-    {
-        return $this->hasMany(ProgramEducationalObjective::class, 'program_id');
-    }
 
-    public function programOutcomes(): HasMany
-    {
-        return $this->hasMany(ProgramOutcome::class, 'program_id');
-    }
 
-    public function proposal(): HasOne
+    public function proposal(): HasMany
     {
-        return $this->hasOne(ProgramProposal::class, 'program_id');
-    }
-
-    public function curriculum(): HasOne
-    {
-        return $this->hasOne(Curriculum::class, 'program_id');
+        return $this->hasMany(ProgramProposal::class, 'program_id');
     }
 }
