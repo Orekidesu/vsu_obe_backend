@@ -29,19 +29,8 @@ class ProgramController extends Controller
             // Get user for role-based filtering
             $user = auth()->user();
 
-            // Start building the query with all relationships needed for detailed view
-            $query = Program::with([
-                'department',
-                'programEducationalObjectives.missions',
-                'programEducationalObjectives.gas',
-                'programOutcomes.peos',
-                'programOutcomes.gas',
-                'curriculum.curriculumCourses.course',
-                'curriculum.curriculumCourses.courseCategory',
-                'curriculum.curriculumCourses.semester',
-                'curriculum.curriculumCourses.pos',
-                'proposal',
-            ]);
+            // Start building the query with the department relationship
+            $query = Program::with('department');
 
             // Filter by department if user is from Department role
             if ($user->role->name === 'Department') {
@@ -49,18 +38,70 @@ class ProgramController extends Controller
                 $query->where('department_id', $departmentId);
             }
 
-            // Order by latest first
-            $query->latest();
+            // Filter by status if provided
+            if (request()->has('status') && in_array(request()->status, ['active', 'pending', 'archived'])) {
+                $query->where('status', request()->status);
+            }
 
-            // Get the programs
-            $programs = $query->get();
+            // First get programs without loading heavy relationships yet
+            $programs = $query->latest()->get();
 
-            return ProgramResource::collection($programs)->additional([
+            // Now load relevant proposals for each program based on program status
+            $programs->load([
+                'proposal' => function ($query) {
+                    $query->latest(); // Always get the latest proposals first
+                },
+                'proposal.peos.missions',
+                'proposal.peos.gas',
+                'proposal.pos.peos',
+                'proposal.pos.gas',
+                'proposal.curriculum.curriculumCourses.course',
+                'proposal.curriculum.curriculumCourses.courseCategory',
+                'proposal.curriculum.curriculumCourses.semester',
+                'proposal.curriculum.curriculumCourses.pos',
+            ]);
+
+            // Get counts for meta information
+            $counts = [
+                'total_pending' => Program::where('status', 'pending'),
+                'total_active' => Program::where('status', 'active'),
+                'total_archived' => Program::where('status', 'archived'),
+            ];
+
+            // Apply department filter to counts if needed
+            if ($user->role->name === 'Department') {
+                foreach ($counts as &$countQuery) {
+                    $countQuery->where('department_id', $user->department_id);
+                }
+            }
+
+            // Use proper pagination if needed
+            if (request()->has('per_page')) {
+                // Since we've already loaded the data, let's do manual pagination
+                $perPage = (int)request()->per_page;
+                $currentPage = (int)request()->input('page', 1);
+                $offset = ($currentPage - 1) * $perPage;
+
+                $paginatedPrograms = $programs->slice($offset, $perPage);
+                $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+                    $paginatedPrograms,
+                    $programs->count(),
+                    $perPage,
+                    $currentPage,
+                    ['path' => request()->url()]
+                );
+
+                $programsCollection = $paginator;
+            } else {
+                $programsCollection = $programs;
+            }
+
+            return ProgramResource::collection($programsCollection)->additional([
                 'message' => 'Programs retrieved successfully',
                 'meta' => [
-                    'total_pending' => Program::where('status', 'pending')->count(),
-                    'total_active' => Program::where('status', 'active')->count(),
-                    'total_archived' => Program::where('status', 'archived')->count(),
+                    'total_pending' => $counts['total_pending']->count(),
+                    'total_active' => $counts['total_active']->count(),
+                    'total_archived' => $counts['total_archived']->count(),
                 ],
             ]);
         } catch (Exception $e) {
@@ -144,18 +185,25 @@ class ProgramController extends Controller
     public function show(Program $program)
     {
         try {
-            // Load all necessary relationships
+            // Load all necessary relationships at the controller level
             $program->load([
                 'department',
-                'programEducationalObjectives.missions',
-                'programEducationalObjectives.gas',
-                'programOutcomes.peos',
-                'programOutcomes.gas',
-                'curriculum.curriculumCourses.course',
-                'curriculum.curriculumCourses.courseCategory',
-                'curriculum.curriculumCourses.semester',
-                'curriculum.curriculumCourses.pos',
-                'proposal',
+                'proposal' => function ($query) use ($program) {
+                    if ($program->status === 'pending') {
+                        $query->where('status', 'pending');
+                    } else {
+                        $query->where('status', 'approved');
+                    }
+                    $query->latest();
+                },
+                'proposal.peos.missions',
+                'proposal.peos.gas',
+                'proposal.pos.peos',
+                'proposal.pos.gas',
+                'proposal.curriculum.curriculumCourses.course',
+                'proposal.curriculum.curriculumCourses.courseCategory',
+                'proposal.curriculum.curriculumCourses.semester',
+                'proposal.curriculum.curriculumCourses.pos',
             ]);
 
             return (new ProgramResource($program))->additional([
