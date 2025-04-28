@@ -12,7 +12,7 @@ class ProgramOutcome extends Model
     use HasFactory;
 
     protected $fillable = [
-        'program_id',
+        'program_proposal_id',
         'name',
         'statement',
     ];
@@ -21,9 +21,9 @@ class ProgramOutcome extends Model
     //     'program'
     // ];
 
-    public function program(): BelongsTo
+    public function programProposal(): BelongsTo
     {
-        return $this->belongsTo(Program::class, 'program_id');
+        return $this->belongsTo(ProgramProposal::class, 'program_proposal_id');
     }
     public function peos(): BelongsToMany
     {
@@ -38,5 +38,15 @@ class ProgramOutcome extends Model
     {
         return $this->belongsToMany(CurriculumCourse::class, 'curriculum_course_po', 'po_id', 'curriculum_course_id')
             ->withPivot('ird');
+    }
+
+    public function cos(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            CourseOutcome::class,
+            'course_outcome_po',
+            'po_id',
+            'co_id',
+        )->withTimestamps();
     }
 }

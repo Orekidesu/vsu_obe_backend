@@ -18,7 +18,7 @@ class ProgramEducationalObjectiveResource extends JsonResource
         return [
             'id' => $this->id,
             'statement' => $this->statement,
-            'program' => new ProgramResource($this->whenLoaded('program')),
+            'program' => new ProgramResource($this->programProposal->program),
             'missions' =>  MissionResource::collection($this->whenLoaded('missions')),
         ];
     }
