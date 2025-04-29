@@ -36,7 +36,7 @@ class UserController extends Controller
             } else {
                 // as for the department:
                 $users->whereHas('role', function ($query) {
-                    $query->where('roles.name', '=', 'Staff');
+                    $query->where('roles.name', '=', 'Faculty_Member');
                 });
             }
             $result = $users->orderBy('first_name', 'asc')->get();
