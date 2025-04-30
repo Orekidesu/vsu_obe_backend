@@ -22,9 +22,30 @@ class CurriculumCourseController extends Controller
 
     public function index()
     {
-        //
         try {
-            $curriculumCourses = CurriculumCourse::with(['curriculum', 'course', 'semester', 'courseCategory'])->get();
+            $user = auth()->user();
+            $query = CurriculumCourse::with(['curriculum', 'course', 'semester', 'courseCategory']);
+
+            // If user is Faculty_Member, only fetch courses assigned to them as committee member
+            if ($user->role->name === 'Faculty_Member') {
+                // Find committees for this user
+                $committees = $user->committees;
+
+                if ($committees->isEmpty()) {
+                    return CurriculumCourseResource::collection(collect([]))->additional([
+                        'message' => 'No curriculum courses assigned to you',
+                    ]);
+                }
+
+                // Get curriculum courses assigned to this faculty member through committees
+                $committeeIds = $committees->pluck('id')->toArray();
+
+                $query->whereHas('committees', function ($q) use ($committeeIds) {
+                    $q->whereIn('committees.id', $committeeIds);
+                });
+            }
+
+            $curriculumCourses = $query->get();
 
             return CurriculumCourseResource::collection($curriculumCourses)->additional([
                 'message' => 'curriculum courses retrieved successfully',
