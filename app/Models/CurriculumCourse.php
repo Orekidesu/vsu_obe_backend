@@ -60,4 +60,9 @@ class CurriculumCourse extends Model
     {
         return $this->hasMany(CourseOutcome::class, 'curriculum_course_id');
     }
+
+    public function revisionRequests(): HasMany
+    {
+        return $this->hasMany(ProgramProposalRevision::class, 'curriculum_course_id');
+    }
 }

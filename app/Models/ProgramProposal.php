@@ -50,6 +50,11 @@ class ProgramProposal extends Model
         return $this->hasMany(Committee::class, 'program_proposal_id');
     }
 
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(ProgramProposalRevision::class, 'program_proposal_id');
+    }
+
 
 
 
