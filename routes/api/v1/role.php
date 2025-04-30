@@ -24,7 +24,7 @@ use App\Http\Controllers\Api\V1\Department\SemesterController;
 
 use Illuminate\Support\Facades\Route;
 
-// Admin Routes
+// Admin Route List
 
 Route::middleware(['role:Admin'])->prefix('admin')->group(function () {
   //   sample route
@@ -60,7 +60,7 @@ Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
 });
 
 
-// Department Routes
+// Department Route List
 Route::middleware(['role:Department'])->prefix('department')->group(function () {
   Route::get('/department/dashboard', function () {
     return response()->json(['message' => 'Welcome Department']);
@@ -146,3 +146,12 @@ Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
   // Review a proposal
 });
 //=================== Department & Dean Route Program Proposal Controller =====================//
+
+
+
+//=================== Faculty Member Route List =====================//
+Route::middleware(['role:Faculty_Member'])->prefix('faculty')->group(function () {
+
+  // Curriculum Course Route
+  Route::apiResource('curriculum-courses', CurriculumCourseController::class);
+});
