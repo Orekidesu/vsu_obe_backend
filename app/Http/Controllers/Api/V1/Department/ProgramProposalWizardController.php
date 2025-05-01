@@ -276,16 +276,25 @@ class ProgramProposalWizardController extends Controller
                     continue; // skip if curriculum course is not found
                 }
 
-                // insert each IRD value
-                foreach ($mapping['ird'] as $ird) {
-                    DB::table('curriculum_course_po')->insert([
-                        'curriculum_course_id' => $curriculumCourseId,
-                        'po_id' => $poId,
-                        'ird' => json_encode($ird),
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-                }
+                // // insert each IRD value 
+                // foreach ($mapping['ird'] as $ird) {
+                //     DB::table('curriculum_course_po')->insert([
+                //         'curriculum_course_id' => $curriculumCourseId,
+                //         'po_id' => $poId,
+                //         'ird' => json_encode($ird),
+                //         'created_at' => now(),
+                //         'updated_at' => now()
+                //     ]);
+                // }
+
+                // Better implementation (creates one row with all IRD values)
+                DB::table('curriculum_course_po')->insert([
+                    'curriculum_course_id' => $curriculumCourseId,
+                    'po_id' => $poId,
+                    'ird' => json_encode($mapping['ird']),  // Stores the entire array like ["I", "R"]
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
             }
 
             /*13. Committees */

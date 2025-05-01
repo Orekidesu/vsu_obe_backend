@@ -41,7 +41,8 @@ class CurriculumCourseController extends Controller
                 $committeeIds = $committees->pluck('id')->toArray();
 
                 $query->whereHas('committees', function ($q) use ($committeeIds) {
-                    $q->whereIn('committees.id', $committeeIds);
+                    $q->whereIn('committees.id', $committeeIds)
+                        ->where('committee_course_assignments.is_completed', false);
                 });
             }
 
