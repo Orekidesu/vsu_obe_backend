@@ -247,7 +247,7 @@ class ProgramProposalWizardController extends Controller
                 ]);
             }
 
-            /*12. Curriculum Course to PO with IRD */
+            /*12. Curriculum Course to PO with IED */
             $coursePOMappings = $validated['course_po_mappings'];
             foreach ($coursePOMappings as $mapping) {
                 $courseId = $courseMap[$mapping['course_code']];
@@ -276,22 +276,13 @@ class ProgramProposalWizardController extends Controller
                     continue; // skip if curriculum course is not found
                 }
 
-                // // insert each IRD value 
-                // foreach ($mapping['ird'] as $ird) {
-                //     DB::table('curriculum_course_po')->insert([
-                //         'curriculum_course_id' => $curriculumCourseId,
-                //         'po_id' => $poId,
-                //         'ird' => json_encode($ird),
-                //         'created_at' => now(),
-                //         'updated_at' => now()
-                //     ]);
-                // }
 
-                // Better implementation (creates one row with all IRD values)
+
+                // Better implementation (creates one row with all IED values)
                 DB::table('curriculum_course_po')->insert([
                     'curriculum_course_id' => $curriculumCourseId,
                     'po_id' => $poId,
-                    'ird' => json_encode($mapping['ird']),  // Stores the entire array like ["I", "R"]
+                    'ied' => json_encode($mapping['ied']),  // Stores the entire array like ["I", "R"]
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);

@@ -123,7 +123,7 @@ class ProgramProposalResource extends JsonResource
                             return [
                                 'po_id' => $po->id,
                                 'po_name' => $po->name,
-                                'ird' => json_decode($pivot->ird),
+                                'ied' => json_decode($pivot->ied),
                             ];
                         }) : [],
                     ];

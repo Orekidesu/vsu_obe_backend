@@ -16,7 +16,7 @@ class CurriculumCoursePo extends Model
     protected $fillable = [
         'curriculum_course_id',
         'po_id',
-        'ird',
+        'ied',
     ];
 
     public function curriculumCourse(): BelongsTo

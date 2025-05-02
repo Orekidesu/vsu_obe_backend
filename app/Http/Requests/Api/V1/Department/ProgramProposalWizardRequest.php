@@ -224,7 +224,7 @@ class ProgramProposalWizardRequest extends FormRequest
             ],
 
 
-            // Curriculum Course to PO (IRD)
+            // Curriculum Course to PO (IED)
             'course_po_mappings' => [
                 'required',
                 'array',
@@ -238,14 +238,14 @@ class ProgramProposalWizardRequest extends FormRequest
                 'required',
                 'string'
             ],
-            'course_po_mappings.*.ird' => [
+            'course_po_mappings.*.ied' => [
                 'required',
                 'array',
                 'min:1'
             ],
-            'course_po_mappings.*.ird.*' => [
+            'course_po_mappings.*.ied.*' => [
                 'required',
-                'in:I,R,D'
+                'in:I,E,D'
             ],
             'committees' => [
                 'required',
