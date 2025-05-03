@@ -18,7 +18,7 @@ class CourseOutcomeABCD extends Model
         'degree',
     ];
 
-    public function courseOutcome(): BelongsTo
+    public function co(): BelongsTo
     {
         return $this->belongsTo(CourseOutcome::class, 'co_id');
     }
