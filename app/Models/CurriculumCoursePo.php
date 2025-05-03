@@ -1,4 +1,7 @@
 <?php
+/*
+
+// =====Currently useless since we're using pivot instead =====
 
 namespace App\Models;
 
@@ -28,4 +31,4 @@ class CurriculumCoursePo extends Model
     {
         return $this->belongsTo(ProgramOutcome::class, 'po_id');
     }
-}
+}*/
