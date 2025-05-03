@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('course_outcome_cpa', function (Blueprint $table) {
+        Schema::create('tla_methods', function (Blueprint $table) {
             $table->id();
             $table->foreignId('co_id')->constrained('course_outcomes')->cascadeOnDelete();
-            $table->json('cpa')->nullable();
+            $table->json('teaching_methods')->nullable();
+            $table->json('learning_resources')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('course_outcome_cpa');
+        Schema::dropIfExists('tla_methods');
     }
 };

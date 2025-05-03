@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('course_outcome_cpa', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('co_id')->constrained('course_outcomes')->cascadeOnDelete();
-            $table->json('cpa')->nullable();
-            $table->softDeletes();
-            $table->timestamps();
+        Schema::table('course_outcome_po', function (Blueprint $table) {
+            //
+            $table->enum('ied', ['I', 'E', 'D'])->after('po_id');
         });
     }
 
@@ -25,6 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('course_outcome_cpa');
+        Schema::table('course_outcome_po', function (Blueprint $table) {
+            //
+            $table->dropColumn('ied');
+        });
     }
 };
