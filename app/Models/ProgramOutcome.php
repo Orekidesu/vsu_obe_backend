@@ -47,6 +47,6 @@ class ProgramOutcome extends Model
             'course_outcome_po',
             'po_id',
             'co_id',
-        )->withTimestamps();
+        )->withPivot('ied')->withTimestamps();
     }
 }
