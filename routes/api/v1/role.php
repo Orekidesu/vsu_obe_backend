@@ -21,7 +21,8 @@ use App\Http\Controllers\Api\V1\Department\ProgramOutcomePeoController;
 use App\Http\Controllers\Api\V1\Department\ProgramProposalController;
 use App\Http\Controllers\Api\V1\Department\ProgramProposalWizardController;
 use App\Http\Controllers\Api\V1\Department\SemesterController;
-
+use App\Http\Controllers\Api\V1\Shared\CurriculumCoursePOController;
+use App\Models\CurriculumCourse;
 use Illuminate\Support\Facades\Route;
 
 // Admin Route List
@@ -154,4 +155,7 @@ Route::middleware(['role:Faculty_Member'])->prefix('faculty')->group(function ()
 
   // Curriculum Course Route
   Route::apiResource('curriculum-courses', CurriculumCourseController::class);
+
+
+  Route::get('/curriculum-courses/{curriculum_course}/program-outcomes', [CurriculumCoursePOController::class, 'getProgramOutcomes']);
 });
