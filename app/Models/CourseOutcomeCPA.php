@@ -10,9 +10,15 @@ class CourseOutcomeCPA extends Model
 {
     use HasFactory;
 
+    protected $table = 'course_outcome_cpa';
+
     protected $fillable = [
         'co_id',
         'cpa',
+    ];
+
+    protected $casts = [
+        'cpa' => 'json',
     ];
 
     public function co(): BelongsTo

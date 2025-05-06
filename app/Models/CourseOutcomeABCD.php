@@ -10,10 +10,12 @@ class CourseOutcomeABCD extends Model
 {
     use HasFactory;
 
+    protected $table = 'course_outcome_abcd';
+
     protected $fillable = [
         'co_id',
         'audience',
-        'behaviour',
+        'behavior',
         'condition',
         'degree',
     ];
