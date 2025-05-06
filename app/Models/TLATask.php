@@ -10,6 +10,7 @@ class TLATask extends Model
 {
     use HasFactory;
 
+    protected $table = 'tla_tasks';
     protected $fillable = [
         'co_id',
         'at_code',

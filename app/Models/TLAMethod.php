@@ -10,10 +10,15 @@ class TLAMethod extends Model
 {
     use HasFactory;
 
+    protected $table = 'tla_methods';
     protected $fillable = [
         'co_id',
         'teaching_methods',
         'learning_resources',
+    ];
+    protected $casts = [
+        'teaching_methods' => 'json',
+        'learning_resources' => 'json',
     ];
 
     public function co(): BelongsTo
