@@ -74,13 +74,7 @@ class ProgramProposalController extends Controller
             // Return collection with additional metadata
             return ProgramProposalResource::collection($proposals)->additional([
                 'message' => 'Program proposals retrieved successfully',
-                // 'meta' => [
-                //     'total_pending' => ProgramProposal::where('status', 'pending')->count(),
-                //     'total_approved' => ProgramProposal::where('status', 'approved')->count(),
-                //     'total_rejected' => ProgramProposal::where('status', 'rejected')->count(),
-                //     'total_revision' => ProgramProposal::where('status', 'revision')->count(),
-                //     'department_counts' => $this->getDepartmentProposalCounts(),
-                // ],
+
             ]);
         } catch (Exception $e) {
             Log::error('Failed to retrieve program proposals', ['error' => $e->getMessage()]);
