@@ -148,6 +148,8 @@ class ProgramProposalResource extends JsonResource
                             'curriculum_course_id' => $cc->id,
                             'course_code' => $cc->course->code,
                             'descriptive_title' => $cc->course->descriptive_title,
+                            'is_completed' => $cc->pivot->is_completed ?? false,
+
                         ];
                     }),
                 ];

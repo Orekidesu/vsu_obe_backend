@@ -38,6 +38,8 @@ class ProgramResource extends JsonResource
         $peos = $relevantProposal && $relevantProposal->relationLoaded('peos') ? $relevantProposal->peos : collect([]);
         $pos = $relevantProposal && $relevantProposal->relationLoaded('pos') ? $relevantProposal->pos : collect([]);
         $curriculum = $relevantProposal && $relevantProposal->relationLoaded('curriculum') ? $relevantProposal->curriculum : null;
+        $committees = $relevantProposal && $relevantProposal->relationLoaded('committees') ? $relevantProposal->committees : collect([]);
+
 
         return [
             'id' => $this->id,
@@ -121,6 +123,32 @@ class ProgramResource extends JsonResource
                     ];
                 })->all() : [],
             ] : null,
+            'committees' => $committees->map(function ($committee) {
+                return [
+                    'id' => $committee->id,
+                    'user' => [
+                        'id' => $committee->user->id,
+                        'first_name' => $committee->user->first_name,
+                        'last_name' => $committee->user->last_name,
+                        'email' => $committee->user->email,
+                    ],
+                    'assigned_by' => [
+                        'id' => $committee->assignedBy->id,
+                        'first_name' => $committee->assignedBy->first_name,
+                        'last_name' => $committee->assignedBy->last_name,
+                    ],
+                    'assigned_courses' => $committee->relationLoaded('curriculumCourses') ?
+                        $committee->curriculumCourses->map(function ($cc) {
+                            return [
+                                'curriculum_course_id' => $cc->id,
+                                'course_code' => $cc->course->code,
+                                'descriptive_title' => $cc->course->descriptive_title,
+                                'is_completed' => $cc->pivot->is_completed ?? false,
+                            ];
+                        }) : [],
+                ];
+            }),
+
             'proposal' => $relevantProposal ? [
                 'id' => $relevantProposal->id,
                 'status' => $relevantProposal->status,

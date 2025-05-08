@@ -59,6 +59,9 @@ class ProgramController extends Controller
                 'proposal.curriculum.curriculumCourses.courseCategory',
                 'proposal.curriculum.curriculumCourses.semester',
                 'proposal.curriculum.curriculumCourses.pos',
+                'proposal.committees.user',
+                'proposal.committees.assignedBy',
+                'proposal.committees.curriculumCourses.course',
             ]);
 
             // Get counts for meta information
