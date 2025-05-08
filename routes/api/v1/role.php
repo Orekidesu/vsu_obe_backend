@@ -124,6 +124,12 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   // Users
   Route::apiResource('users', UserController::class);
 
+  // Route to check if proposal is ready for review
+  Route::patch(
+    '/program-proposals/{programProposal}/check-ready-for-review',
+    [ProgramProposalController::class, 'checkReadyForReview']
+  );
+
   // Curriculum Course to PO
   // Route::apiResource('curriculum-course-po',CurriculumCourseP);
 });

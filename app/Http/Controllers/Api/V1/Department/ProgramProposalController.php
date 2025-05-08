@@ -188,52 +188,7 @@ class ProgramProposalController extends Controller
 
 
 
-    // public function review(Request $request, ProgramProposal $programProposal)
-    // {
-    //     Log::info('Authenticated user role:', ['role' => auth()->user()->role->name]);
 
-    //     $request->validate([
-    //         'status' => 'required|in:approved,rejected,revision',
-    //         'comment' => 'nullable|string',
-    //     ]);
-
-    //     try {
-    //         DB::transaction(function () use ($request, $programProposal) {
-    //             // Check if the program has already been reviewed
-    //             if ($programProposal->status !== 'pending') {
-    //                 throw new Exception('This proposal has already been reviewed');
-    //             }
-
-    //             // Update the proposal's status and comment
-    //             $programProposal->update([
-    //                 'status' => $request->status,
-    //                 'comment' => $request->comment,
-    //             ]);
-
-    //             // If approved, update the associated program status and archive
-    //             if ($request->status === 'approved') {
-    //                 $program = $programProposal->program;
-    //                 // Archive the currently active program (if there's any)
-    //                 Program::where('name', $program->name)
-    //                     ->where('abbreviation', $program->abbreviation)
-    //                     ->where('status', 'active') // Find the currently active program
-    //                     ->update(['status' => 'archived']);
-
-    //                 // Update the newly approved program proposal to be the new active program
-    //                 $programProposal->program()->update(['status' => 'active']);
-    //             }
-    //         });
-
-    //         return response()->json([
-    //             'message' => 'Proposal reviewed successfully',
-    //         ]);
-    //     } catch (Exception $e) {
-    //         return response()->json([
-    //             'message' => 'Failed to review proposal',
-    //             'error' => $e->getMessage(),
-    //         ], 500);
-    //     }
-    // }
     public function review(Request $request, ProgramProposal $programProposal)
     {
         $request->validate([
@@ -295,8 +250,78 @@ class ProgramProposalController extends Controller
         }
     }
 
+    public function checkReadyForReview(ProgramProposal $programProposal)
+    {
+        try {
+            // Load the proposal with all necessary relationships
+            $programProposal->load([
+                'committees.curriculumCourses' => function ($query) {
+                    // Eager load pivot data that contains is_completed status
+                    $query->withPivot('is_completed');
+                }
+            ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
+            // Get all committees
+            $committees = $programProposal->committees;
+
+            // If no committees, return error
+            if ($committees->isEmpty()) {
+                return response()->json([
+                    'message' => 'No committees assigned to this proposal',
+                    'status' => 'error'
+                ], 400);
+            }
+
+            // Check if all courses for all committees are completed
+            $allCoursesCompleted = true;
+            $totalAssignedCourses = 0;
+            $completedCourses = 0;
+
+            foreach ($committees as $committee) {
+                $assignedCourses = $committee->curriculumCourses;
+
+                // Count courses
+                $totalAssignedCourses += $assignedCourses->count();
+                $completedCourses += $assignedCourses->where('pivot.is_completed', true)->count();
+
+                // Check if this committee has any incomplete courses
+                if ($assignedCourses->where('pivot.is_completed', false)->count() > 0) {
+                    $allCoursesCompleted = false;
+                }
+            }
+
+            // Update proposal status if all courses are completed
+            if ($allCoursesCompleted && $totalAssignedCourses > 0) {
+                // Only update if current status is 'pending'
+                if ($programProposal->status === 'pending') {
+                    $programProposal->update([
+                        'status' => 'review'
+                    ]);
+
+                    return response()->json([
+                        'message' => 'Program proposal is now ready for review',
+
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'All courses are completed, but proposal status cannot be updated because it is not in pending state',
+
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Not all assigned courses are completed',
+                    'status' => 'incomplete',
+                    'completed_courses' => $completedCourses,
+                    'total_courses' => $totalAssignedCourses,
+                    'completion_percentage' => $totalAssignedCourses > 0 ? round(($completedCourses / $totalAssignedCourses) * 100) : 0
+                ]);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Failed to check proposal status',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
