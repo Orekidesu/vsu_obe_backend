@@ -59,6 +59,8 @@ Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
   Route::get('/dashboard', function () {
     return response()->json(['message' => 'Welcome Dean']);
   });
+
+  Route::apiResource('programs', ProgramController::class);
 });
 
 

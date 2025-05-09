@@ -20,7 +20,7 @@ class ProgramController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->middleware('role:Department');
+        $this->middleware('role:Department,Dean');
     }
 
     public function index()
