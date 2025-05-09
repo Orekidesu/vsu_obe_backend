@@ -7,6 +7,7 @@ use App\Http\Requests\Api\V1\Department\ProgramRequest;
 use App\Http\Resources\Api\V1\Department\ProgramProposalResource;
 use App\Http\Resources\Api\V1\Department\ProgramResource;
 use App\Models\Program;
+use App\Models\Department;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Models\ProgramProposal;
@@ -23,30 +24,34 @@ class ProgramController extends Controller
         $this->middleware('role:Department,Dean');
     }
 
+
     public function index()
     {
         try {
-            // Get user for role-based filtering
+
             $user = auth()->user();
 
-            // Start building the query with the department relationship
             $query = Program::with('department');
 
-            // Filter by department if user is from Department role
+
             if ($user->role->name === 'Department') {
                 $departmentId = $user->department_id;
                 $query->where('department_id', $departmentId);
+            } elseif ($user->role->name === 'Dean' && $user->faculty_id) {
+                $departmentIds = Department::where('faculty_id', $user->faculty_id)
+                    ->pluck('id')
+                    ->toArray();
+
+                if (!empty($departmentIds)) {
+                    $query->whereIn('department_id', $departmentIds);
+                }
             }
 
-            // Filter by status if provided
             if (request()->has('status') && in_array(request()->status, ['active', 'pending', 'archived'])) {
                 $query->where('status', request()->status);
             }
 
-            // First get programs without loading heavy relationships yet
             $programs = $query->latest()->get();
-
-            // Now load relevant proposals for each program based on program status
             $programs->load([
                 'proposal' => function ($query) {
                     $query->latest(); // Always get the latest proposals first
@@ -64,20 +69,27 @@ class ProgramController extends Controller
                 'proposal.committees.curriculumCourses.course',
             ]);
 
-            // Get counts for meta information
             $counts = [
                 'total_pending' => Program::where('status', 'pending'),
                 'total_active' => Program::where('status', 'active'),
                 'total_archived' => Program::where('status', 'archived'),
             ];
 
-            // Apply department filter to counts if needed
             if ($user->role->name === 'Department') {
                 foreach ($counts as &$countQuery) {
                     $countQuery->where('department_id', $user->department_id);
                 }
-            }
+            } elseif ($user->role->name === 'Dean' && $user->faculty_id) {
+                $departmentIds = \App\Models\Department::where('faculty_id', $user->faculty_id)
+                    ->pluck('id')
+                    ->toArray();
 
+                if (!empty($departmentIds)) {
+                    foreach ($counts as &$countQuery) {
+                        $countQuery->whereIn('department_id', $departmentIds);
+                    }
+                }
+            }
             // Use proper pagination if needed
             if (request()->has('per_page')) {
                 // Since we've already loaded the data, let's do manual pagination
@@ -108,6 +120,7 @@ class ProgramController extends Controller
                 ],
             ]);
         } catch (Exception $e) {
+            //throw $th;
             return response()->json([
                 'message' => 'Failed to retrieve programs',
                 'error' => $e->getMessage(),
