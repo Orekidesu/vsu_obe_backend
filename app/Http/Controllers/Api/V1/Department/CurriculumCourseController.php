@@ -80,10 +80,8 @@ class CurriculumCourseController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(CurriculumCourse $curriculumCourse)
+
+    /* public function show(CurriculumCourse $curriculumCourse)
     {
 
         try {
@@ -98,7 +96,37 @@ class CurriculumCourseController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }*/
+
+    public function show(CurriculumCourse $curriculumCourse)
+    {
+        try {
+            // Load all necessary relationships
+            $curriculumCourse->load([
+                'curriculum',
+                'course',
+                'courseCategory',
+                'semester',
+                'cos', // Load course outcomes
+                'cos.abcd', // Load ABCD components
+                'cos.cpa', // Load CPA information
+                'cos.pos', // Load program outcome mappings
+                'cos.tlaTasks', // Load TLA tasks
+                'cos.tlaMethod' // Load teaching/learning methods
+            ]);
+
+            return (new CurriculumCourseResource($curriculumCourse))->additional([
+                'message' => 'Curriculum course retrieved successfully',
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Failed to retrieve curriculum course',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
+
+
 
     /**
      * Update the specified resource in storage.
