@@ -17,7 +17,8 @@ class ProgramProposal extends Model
         'abbreviation',
         'status',
         'version',
-        'comment'
+        'comment',
+        'proposed_by_id',
     ];
 
     protected $casts = [
@@ -28,6 +29,11 @@ class ProgramProposal extends Model
     public function program(): BelongsTo
     {
         return $this->belongsTo(Program::class, 'program_id');
+    }
+
+    public function proposedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'proposed_by_id');
     }
 
     public function peos(): HasMany
