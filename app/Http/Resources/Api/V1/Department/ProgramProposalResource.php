@@ -65,6 +65,8 @@ class ProgramProposalResource extends JsonResource
                 'name' => $program->name,
                 'abbreviation' => $program->abbreviation,
                 'department_id' => $program->department_id,
+                'department_name' => $program->department->name,
+                'department_abbreviation' => $program->department->abbreviation,
                 'version' => $program->version,
                 'status' => $program->status,
             ],

@@ -61,6 +61,7 @@ Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
   });
 
   Route::apiResource('programs', ProgramController::class);
+  Route::apiResource('program-proposals', ProgramProposalController::class);
 });
 
 
