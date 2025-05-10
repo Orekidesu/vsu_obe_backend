@@ -8,6 +8,7 @@ use App\Http\Resources\Api\V1\Department\CurriculumCourseResource;
 use App\Models\CurriculumCourse;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class CurriculumCourseController extends Controller
 {
@@ -20,7 +21,7 @@ class CurriculumCourseController extends Controller
         $this->middleware('role:Department,Faculty_Member');
     }
 
-    public function index()
+    /* public function index()
     {
         try {
             $user = auth()->user();
@@ -55,6 +56,44 @@ class CurriculumCourseController extends Controller
             return response()->json([
                 'message' => 'failed to retrieve curriculum courses',
                 'error' => $e->getMessage(),
+            ], 500);
+        }
+    }*/
+
+    public function index(Request $request)
+    {
+        try {
+            // Start with the base query
+            $query = CurriculumCourse::with([
+                'curriculum',
+                'course',
+                'courseCategory',
+                'semester'
+            ]);
+
+            // Conditionally load course outcomes if requested
+            if ($request->has('include_outcomes') && $request->input('include_outcomes') == 'true') {
+                $query->with([
+                    'cos',
+                    'cos.abcd',
+                    'cos.cpa',
+                    'cos.pos',
+                    'cos.tlaTasks',
+                    'cos.tlaMethod'
+                ]);
+            }
+
+            // Execute the query with pagination. save for the future
+            // $curriculumCourses = $query->paginate($request->input('per_page', 15));
+            $curriculumCourses = $query->get();
+
+            return CurriculumCourseResource::collection($curriculumCourses)->additional([
+                'message' => 'Curriculum courses retrieved successfully'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Failed to retrieve curriculum courses',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
