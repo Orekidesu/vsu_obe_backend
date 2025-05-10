@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api\V1\Department;
 
+use App\Http\Resources\Api\V1\Faculty\CourseOutcomeResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,6 +22,11 @@ class CurriculumCourseResource extends JsonResource
             'course_category' => new CourseCategoryResource($this->whenLoaded('courseCategory')),
             'semester' => new SemesterResource($this->whenLoaded('semester')),
             'units' => $this->unit,
+
+            'course_outcomes' => $this->whenLoaded('cos', function () {
+                return CourseOutcomeResource::collection($this->cos);
+            }),
+
         ];
     }
 }

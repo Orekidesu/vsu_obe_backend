@@ -49,7 +49,7 @@ class CourseOutcome extends Model
         return $this->hasMany(TLATask::class, 'co_id');
     }
 
-    public function tlaMethods(): HasOne
+    public function tlaMethod(): HasOne
     {
         return $this->hasOne(TLAMethod::class, 'co_id');
     }
