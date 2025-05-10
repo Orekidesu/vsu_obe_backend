@@ -41,6 +41,7 @@ class ProgramProposalResource extends JsonResource
 
         // Get Committees
         $committees = $this->committees;
+
         return [
             'id' => $this->id,
             'status' => $this->status,
@@ -48,6 +49,17 @@ class ProgramProposalResource extends JsonResource
             'version' => $this->version,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+
+            // Add the proposer (department user)
+            'proposed_by' => $this->whenLoaded('proposedBy', function () {
+                return [
+                    'id' => $this->proposedBy->id,
+                    'first_name' => $this->proposedBy->first_name,
+                    'last_name' => $this->proposedBy->last_name,
+                    'email' => $this->proposedBy->email,
+                ];
+            }),
+
             'program' => [
                 'id' => $program->id,
                 'name' => $program->name,

@@ -37,6 +37,7 @@ class ProgramProposalController extends Controller
 
             // Start building the query with all relationships needed for detailed view
             $query = ProgramProposal::with([
+                'proposedBy',
                 'program.department',
                 'peos.missions',
                 'peos.gas',
@@ -46,6 +47,7 @@ class ProgramProposalController extends Controller
                 'curriculum.curriculumCourses.courseCategory',
                 'curriculum.curriculumCourses.semester',
                 'curriculum.curriculumCourses.pos',
+
             ]);
 
             // Filter by department if user is from Department role
@@ -140,6 +142,7 @@ class ProgramProposalController extends Controller
         try {
             // Load all necessary relationships
             $programProposal->load([
+                'proposedBy',
                 'program.department',
                 'peos.missions',
                 'peos.gas',

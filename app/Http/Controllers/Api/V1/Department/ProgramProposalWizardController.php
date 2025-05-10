@@ -70,6 +70,7 @@ class ProgramProposalWizardController extends Controller
                 'version' => $program->version,
                 'status' => 'pending',
                 'comment' =>  null,
+                'proposed_by_id' => auth()->user()->id,
             ]);
 
             /*2. PEOs */
