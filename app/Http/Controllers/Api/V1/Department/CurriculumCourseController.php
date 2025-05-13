@@ -18,7 +18,7 @@ class CurriculumCourseController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->middleware('role:Department,Faculty_Member');
+        $this->middleware('role:Department,Faculty_Member,Dean');
     }
 
     /* public function index()

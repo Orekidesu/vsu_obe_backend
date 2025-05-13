@@ -23,7 +23,6 @@ use App\Http\Controllers\Api\V1\Department\ProgramProposalWizardController;
 use App\Http\Controllers\Api\V1\Department\SemesterController;
 use App\Http\Controllers\Api\V1\Faculty\CourseDetailsWizardController;
 use App\Http\Controllers\Api\V1\Shared\CurriculumCoursePOController;
-use App\Models\CurriculumCourse;
 use Illuminate\Support\Facades\Route;
 
 // Admin Route List
@@ -62,6 +61,7 @@ Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
 
   Route::apiResource('programs', ProgramController::class);
   Route::apiResource('program-proposals', ProgramProposalController::class);
+  Route::apiResource('curriculum-courses', CurriculumCourseController::class);
 });
 
 
@@ -155,6 +155,7 @@ Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
   // Program Proposal Review Route
   Route::patch('/program-proposals/{programProposal}/review', [ProgramProposalController::class, 'review']);
   // Review a proposal
+
 });
 //=================== Department & Dean Route Program Proposal Controller =====================//
 
