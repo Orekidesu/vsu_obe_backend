@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Admin\MissionController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\VisionController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
+use App\Http\Controllers\Api\V1\Dean\ProposalReviewController;
 use App\Http\Controllers\Api\V1\Department\CourseCategoryController;
 use App\Http\Controllers\Api\V1\Department\CourseController;
 use App\Http\Controllers\Api\V1\Department\CurriculumController;
@@ -62,6 +63,7 @@ Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
   Route::apiResource('programs', ProgramController::class);
   Route::apiResource('program-proposals', ProgramProposalController::class);
   Route::apiResource('curriculum-courses', CurriculumCourseController::class);
+  Route::post('/program-proposals/{programProposal}/review', [ProposalReviewController::class, 'review']);
 });
 
 
@@ -153,7 +155,7 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
 // Dean Routes
 Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
   // Program Proposal Review Route
-  Route::patch('/program-proposals/{programProposal}/review', [ProgramProposalController::class, 'review']);
+  // Route::patch('/program-proposals/{programProposal}/review', [ProgramProposalController::class, 'review']);
   // Review a proposal
 
 });
