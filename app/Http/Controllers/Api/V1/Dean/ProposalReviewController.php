@@ -26,7 +26,7 @@ class ProposalReviewController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->validated();
-            if ($programProposal->status !== 'pending') {
+            if ($programProposal->status !== 'review') {
                 return response()->json([
                     'message' => 'This proposal has already been reviewed.',
                 ], 409);
@@ -103,7 +103,7 @@ class ProposalReviewController extends Controller
     //     $data = $request->validated();
 
     //     //  Check if the proposal is still pending
-    //     if ($programProposal->status !== 'pending') {
+    //     if ($programProposal->status !== 'review') {
     //         return response()->json([
     //             'message' => 'This proposal has already been reviewed.',
     //         ], 409);
