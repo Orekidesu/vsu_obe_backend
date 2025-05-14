@@ -114,9 +114,14 @@ class ProposalReviewController extends Controller
             DB::transaction(function () use ($data, $programProposal) {
                 //  Approval Process
                 if ($data['status'] === 'approved') {
-                    // Archive any existing active version of the program
-                    Program::where('id', $programProposal->program_id)
+                    // Get the program details to find others with the same name/abbreviation
+                    $program = $programProposal->program;
+
+                    // Archive any existing active version of the program with the same name and abbreviation
+                    Program::where('name', $program->name)
+                        ->where('abbreviation', $program->abbreviation)
                         ->where('status', 'active')
+                        ->where('id', '!=', $programProposal->program_id) // Exclude the current program
                         ->update(['status' => 'archived']);
 
                     // Activate the new program version
