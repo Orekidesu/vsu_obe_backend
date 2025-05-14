@@ -32,19 +32,21 @@ class ProposalReviewController extends Controller
                 ], 409);
             }
 
+            //  Approval Process
             if ($data['status'] === 'approved') {
-                Program::where('id', $programProposal->program_id)
+                // Get the program details to find others with the same name/abbreviation
+                $program = $programProposal->program;
+
+                // Archive any existing active version of the program with the same name and abbreviation
+                Program::where('name', $program->name)
+                    ->where('abbreviation', $program->abbreviation)
                     ->where('status', 'active')
+                    ->where('id', '!=', $programProposal->program_id) // Exclude the current program
                     ->update(['status' => 'archived']);
 
+                // Activate the new program version
                 $programProposal->program()->update(['status' => 'active']);
                 $programProposal->update(['status' => 'approved']);
-
-                DB::commit();
-
-                return response()->json([
-                    'message' => 'Program proposal approved successfully.',
-                ], 200);
             }
             if ($data['status'] === 'revision') {
                 // 1. Update the program proposal status to "revision"
