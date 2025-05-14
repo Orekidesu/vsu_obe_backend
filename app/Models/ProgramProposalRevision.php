@@ -19,7 +19,7 @@ class ProgramProposalRevision extends Model
     ];
 
     protected $casts = [
-        'level' => ['string'],
+        'level' => 'string',
     ];
 
     public function programProposal(): BelongsTo
