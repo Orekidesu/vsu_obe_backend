@@ -55,33 +55,41 @@ class ProposalReviewController extends Controller
                 ]);
 
                 //  2. Loop through the Department Level Issues
-                foreach ($data['department_level'] as $departmentIssue) {
-                    ProgramProposalRevision::create([
-                        'program_proposal_id' => $programProposal->id,
-                        'level' => 'department',
-                        'section' => $departmentIssue['section'],
-                        'details' => $departmentIssue['details']
-                    ]);
+                if (!empty($data['department_level'])) {
+
+                    $programProposal->update(['department_revision_required' => true]);
+
+                    foreach ($data['department_level'] as $departmentIssue) {
+                        ProgramProposalRevision::create([
+                            'program_proposal_id' => $programProposal->id,
+                            'level' => 'department',
+                            'section' => $departmentIssue['section'],
+                            'details' => $departmentIssue['details']
+                        ]);
+                    }
                 }
 
                 //  3. Loop through the Committee Level Issues
-                foreach ($data['committee_level'] as $committeeIssue) {
-                    ProgramProposalRevision::create([
-                        'program_proposal_id' => $programProposal->id,
-                        'level' => 'committee',
-                        'curriculum_course_id' => $committeeIssue['curriculum_course_id'],
-                        'section' => null,
-                        'details' => $committeeIssue['details']
-                    ]);
+                if (!empty($data['committee_level'])) {
+                    $programProposal->update(['committee_revision_required' => true]);
+                    foreach ($data['committee_level'] as $committeeIssue) {
+                        ProgramProposalRevision::create([
+                            'program_proposal_id' => $programProposal->id,
+                            'level' => 'committee',
+                            'curriculum_course_id' => $committeeIssue['curriculum_course_id'],
+                            'section' => null,
+                            'details' => $committeeIssue['details']
+                        ]);
 
-                    //  4. Mark the curriculum course as incomplete
-                    $committees = $programProposal->committees;
-                    foreach ($committees as $committee) {
-                        // Update the pivot entries for this curriculum course
-                        $committee->curriculumCourses()->updateExistingPivot(
-                            $committeeIssue['curriculum_course_id'],
-                            ['is_completed' => false]
-                        );
+                        //  4. Mark the curriculum course as incomplete
+                        $committees = $programProposal->committees;
+                        foreach ($committees as $committee) {
+                            // Update the pivot entries for this curriculum course
+                            $committee->curriculumCourses()->updateExistingPivot(
+                                $committeeIssue['curriculum_course_id'],
+                                ['is_completed' => false]
+                            );
+                        }
                     }
                 }
             }

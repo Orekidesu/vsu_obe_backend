@@ -19,11 +19,15 @@ class ProgramProposal extends Model
         'version',
         'comment',
         'proposed_by_id',
+        'department_revision_required',
+        'committee_revision_required'
     ];
 
     protected $casts = [
         'status' => 'string',
-        'version' => 'integer'
+        'version' => 'integer',
+        'department_revision_required' => 'boolean',
+        'committee_revision_required' => 'boolean'
     ];
 
     public function program(): BelongsTo
