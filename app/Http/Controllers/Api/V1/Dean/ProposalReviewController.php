@@ -149,7 +149,6 @@ class ProposalReviewController extends Controller
                         ProgramProposalRevision::create([
                             'program_proposal_id' => $programProposal->id,
                             'level' => 'committee',
-                            'section' => 'course_outcomes',
                             'curriculum_course_id' => $committeeIssue['curriculum_course_id'],
                             'details' => $committeeIssue['details']
                         ]);
