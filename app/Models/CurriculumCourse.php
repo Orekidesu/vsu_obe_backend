@@ -65,4 +65,9 @@ class CurriculumCourse extends Model
     {
         return $this->hasMany(ProgramProposalRevision::class, 'curriculum_course_id');
     }
+
+    public function proposalVersionDetails(): HasMany
+    {
+        return $this->hasMany(ProgramProposalVersionDetail::class, 'curriculum_course_id');
+    }
 }
