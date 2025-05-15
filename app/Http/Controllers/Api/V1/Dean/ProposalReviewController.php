@@ -77,7 +77,7 @@ class ProposalReviewController extends Controller
                             'program_proposal_id' => $programProposal->id,
                             'level' => 'committee',
                             'curriculum_course_id' => $committeeIssue['curriculum_course_id'],
-                            'section' => null,
+                            'section' => $committeeIssue['section'],
                             'details' => $committeeIssue['details']
                         ]);
 
