@@ -20,7 +20,7 @@ class ProgramProposalVersionDetail extends Model
 
     protected $casts = [
         'previous_data' => 'json',
-        'new_data' => 'json,'
+        'new_data' => 'json',
     ];
 
     public function proposalVersion(): BelongsTo
