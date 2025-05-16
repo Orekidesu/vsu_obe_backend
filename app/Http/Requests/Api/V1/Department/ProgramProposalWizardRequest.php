@@ -28,7 +28,7 @@ class ProgramProposalWizardRequest extends FormRequest
             'program.name' => [
                 'required',
                 'string',
-                'max:50',
+                'max:255',
             ],
             'program.abbreviation' => [
                 'required',
