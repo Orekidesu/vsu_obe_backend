@@ -22,7 +22,7 @@ class ProposalReviewRequest extends FormRequest
             $rules['committee_level'] = 'present|array';
 
             // Field validations when items exist
-            $rules['department_level.*.section'] = 'required|string|in:program,peos,peo_mission_mappings,ga_peo_mappings,pos,po_peo_mappings,curriculum,course_categories,curriculum_courses,course_po_mappings';
+            $rules['department_level.*.section'] = 'required|string|in:program,peos,peo_mission_mappings,ga_peo_mappings,pos,po_peo_mappings,po_ga_mappings,curriculum,course_categories,curriculum_courses,course_po_mappings';
             $rules['department_level.*.details'] = 'required|string';
 
             $rules['committee_level.*.curriculum_course_id'] = 'required|exists:curriculum_courses,id';
