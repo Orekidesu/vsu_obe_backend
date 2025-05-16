@@ -66,10 +66,7 @@ class ProgramProposal extends Model
     }
 
 
-    public function proposalVersions(): HasMany
-    {
-        return $this->hasMany(ProgramProposalVersion::class, 'program_proposal_id');
-    }
+
 
 
     // in the future, might add submitted by, and reviewed by
