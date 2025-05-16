@@ -39,6 +39,6 @@ class Committee extends Model
             'committee_course_assignments',
             'committee_id',
             'curriculum_course_id'
-        )->withPivot('is_completed')->withTimestamps();
+        )->withPivot(['is_completed', 'is_in_revision'])->withTimestamps();
     }
 }

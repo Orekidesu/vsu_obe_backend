@@ -53,7 +53,7 @@ class CurriculumCourse extends Model
             'committee_course_assignments',
             'curriculum_course_id',
             'committee_id'
-        )->withPivot('is_completed')->withTimestamps();
+        )->withPivot(['is_completed', 'is_in_revision'])->withTimestamps();
     }
 
     public function cos(): HasMany
