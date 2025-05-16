@@ -68,7 +68,8 @@ class CurriculumCourseController extends Controller
                 'curriculum',
                 'course',
                 'courseCategory',
-                'semester'
+                'semester',
+                'committees',
             ]);
 
             // Conditionally load course outcomes if requested
@@ -146,6 +147,7 @@ class CurriculumCourseController extends Controller
                 'course',
                 'courseCategory',
                 'semester',
+                'committees',
                 'cos', // Load course outcomes
                 'cos.abcd', // Load ABCD components
                 'cos.cpa', // Load CPA information
