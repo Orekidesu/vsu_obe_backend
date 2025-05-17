@@ -88,7 +88,16 @@ class CourseDetailsWizardController extends Controller
                         $q->where('curriculum_course_id', $curriculumCourseId);
                     })->first();
 
-                $committee->curriculumCourses()->updateExistingPivot($curriculumCourseId, ['is_completed' => true]);
+                if ($committee) {
+                    $committee->curriculumCourses()->updateExistingPivot($curriculumCourseId, ['is_completed' => true]);
+                } else {
+                    // Log or handle the missing committee case
+                    DB::rollBack();
+                    return response()->json([
+                        'message' => 'You are not authorized to mark this course as complete',
+                        'error' => 'No committee assignment found for this user and curriculum course'
+                    ], 403);
+                }
 
                 DB::commit();
 
