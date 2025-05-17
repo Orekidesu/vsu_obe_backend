@@ -27,6 +27,11 @@ class CurriculumCourseResource extends JsonResource
                     return $committee->pivot->is_in_revision;
                 });
             }),
+            'is_completed' => $this->whenLoaded('committees', function () {
+                return $this->committees->contains(function ($committee) {
+                    return $committee->pivot->is_completed;
+                });
+            }),
 
             'course_outcomes' => $this->whenLoaded('cos', function () {
                 return CourseOutcomeResource::collection($this->cos);
