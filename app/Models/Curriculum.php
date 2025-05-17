@@ -11,7 +11,8 @@ class Curriculum extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'program_id',
+        // 'program_id',
+        'program_proposal_id',
         'name',
     ];
 
