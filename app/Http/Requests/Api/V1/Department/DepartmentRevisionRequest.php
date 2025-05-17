@@ -23,8 +23,8 @@ class DepartmentRevisionRequest extends FormRequest
     {
         return [
             // 1️ Program Section
-            'program.name' => 'required|string|max:255',
-            'program.abbreviation' => 'required|string|max:20',
+            'program.name' => 'sometimes|required|string|max:255',
+            'program.abbreviation' => 'sometimes|required|string|max:20',
 
             // 2️ PEOs
             'peos' => 'array',
@@ -58,7 +58,7 @@ class DepartmentRevisionRequest extends FormRequest
             'po_ga_mappings.*.ga_id' => 'required|exists:graduate_attributes,id',
 
             // 8 Curriculum
-            'curriculum.name' => 'required|string|max:255',
+            'curriculum.name' => 'sometimes|required|string|max:255',
 
             // 9 Course Categories
             'course_categories' => 'array',

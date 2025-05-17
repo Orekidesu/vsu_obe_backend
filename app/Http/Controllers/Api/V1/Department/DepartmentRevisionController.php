@@ -53,14 +53,24 @@ class DepartmentRevisionController extends Controller
              * 3️ PEO to Mission Mappings
              */
             if (isset($data['peo_mission_mappings'])) {
-                $syncData = collect($data['peo_mission_mappings'])->mapWithKeys(function ($map) use ($peoMap) {
-                    $peoId = $map['peo_id'] ?? $peoMap[$map['peo_statement']] ?? null;
-                    return [$peoId => ['mission_id' => $map['mission_id']]];
-                })->toArray();
+                // Group mappings by PEO ID
+                $mappingsByPeoId = collect($data['peo_mission_mappings'])
+                    ->groupBy(function ($map) use ($peoMap) {
+                        return $map['peo_id'] ?? $peoMap[$map['peo_statement']] ?? null;
+                    });
 
-                $programProposal->peos()->each(function ($peo) use ($syncData) {
-                    $peo->missions()->sync($syncData[$peo->id] ?? []);
-                });
+                foreach ($mappingsByPeoId as $peoId => $mappings) {
+                    if (!$peoId) continue; // Skip if no valid PEO ID
+
+                    // Get all mission IDs for this PEO
+                    $missionIds = $mappings->pluck('mission_id')->toArray();
+
+                    // Sync missions for this PEO
+                    $peo = $programProposal->peos()->find($peoId);
+                    if ($peo) {
+                        $peo->missions()->sync($missionIds);
+                    }
+                }
             }
 
 
@@ -68,14 +78,22 @@ class DepartmentRevisionController extends Controller
              * 4️ GA to PEO Mappings
              */
             if (isset($data['ga_peo_mappings'])) {
-                $syncData = collect($data['ga_peo_mappings'])->mapWithKeys(function ($map) use ($peoMap) {
-                    $peoId = $map['peo_id'] ?? $peoMap[$map['peo_statement']] ?? null;
-                    return [$peoId => ['ga_id' => $map['ga_id']]];
-                })->toArray();
+                // Group mappings by PEO ID
+                $mappingsByPeoId = collect($data['ga_peo_mappings'])
+                    ->groupBy(function ($map) use ($peoMap) {
+                        return $map['peo_id'] ?? $peoMap[$map['peo_statement']] ?? null;
+                    });
 
-                $programProposal->peos()->each(function ($peo) use ($syncData) {
-                    $peo->graduateAttributes()->sync($syncData[$peo->id] ?? []);
-                });
+                foreach ($mappingsByPeoId as $peoId => $mappings) {
+                    if (!$peoId) continue;
+
+                    $gaIds = $mappings->pluck('ga_id')->toArray();
+
+                    $peo = $programProposal->peos()->find($peoId);
+                    if ($peo) {
+                        $peo->gas()->sync($gaIds);
+                    }
+                }
             }
             /**
              * 5️ Program Outcomes (POs)
@@ -99,28 +117,45 @@ class DepartmentRevisionController extends Controller
              * 6️ PO to PEO Mappings
              */
             if (isset($data['po_peo_mappings'])) {
-                $syncData = collect($data['po_peo_mappings'])->mapWithKeys(function ($map) use ($poMap, $peoMap) {
-                    $poId = $map['po_id'] ?? $poMap[$map['po_name']] ?? null;
-                    $peoId = $map['peo_id'] ?? $peoMap[$map['peo_statement']] ?? null;
-                    return [$poId => ['peo_id' => $peoId]];
-                })->toArray();
+                // Group mappings by PO ID
+                $mappingsByPoId = collect($data['po_peo_mappings'])
+                    ->groupBy(function ($map) use ($poMap, $peoMap) {
+                        return $map['po_id'] ?? $poMap[$map['po_name']] ?? null;
+                    });
 
-                $programProposal->pos()->each(function ($po) use ($syncData) {
-                    $po->programEducationalObjectives()->sync($syncData[$po->id] ?? []);
-                });
+                foreach ($mappingsByPoId as $poId => $mappings) {
+                    if (!$poId) continue;
+
+                    $peoIds = $mappings->map(function ($map) use ($peoMap) {
+                        return $map['peo_id'] ?? $peoMap[$map['peo_statement']] ?? null;
+                    })->filter()->toArray();
+
+                    $po = $programProposal->pos()->find($poId);
+                    if ($po) {
+                        $po->peos()->sync($peoIds);
+                    }
+                }
             }
             /**
              * 7️ PO to GA Mappings
              */
             if (isset($data['po_ga_mappings'])) {
-                $syncData = collect($data['po_ga_mappings'])->mapWithKeys(function ($map) use ($poMap) {
-                    $poId = $map['po_id'] ?? $poMap[$map['po_name']] ?? null;
-                    return [$poId => ['ga_id' => $map['ga_id']]];
-                })->toArray();
+                // Group mappings by PO ID
+                $mappingsByPoId = collect($data['po_ga_mappings'])
+                    ->groupBy(function ($map) use ($poMap) {
+                        return $map['po_id'] ?? $poMap[$map['po_name']] ?? null;
+                    });
 
-                $programProposal->pos()->each(function ($po) use ($syncData) {
-                    $po->gas()->sync($syncData[$po->id] ?? []);
-                });
+                foreach ($mappingsByPoId as $poId => $mappings) {
+                    if (!$poId) continue;
+
+                    $gaIds = $mappings->pluck('ga_id')->toArray();
+
+                    $po = $programProposal->pos()->find($poId);
+                    if ($po) {
+                        $po->gas()->sync($gaIds);
+                    }
+                }
             }
             /**
              * 8 Curriculum
@@ -181,22 +216,30 @@ class DepartmentRevisionController extends Controller
              * 11 Curriculum Course to PO Mappings
              */
             if (isset($data['course_po_mappings'])) {
-                $syncData = collect($data['course_po_mappings'])->map(function ($mapping) use ($curriculumCourseMap) {
-                    $curriculumCourseId = $mapping['curriculum_course_id'] ?? $curriculumCourseMap[$mapping['course_id']] ?? null;
-                    return [
-                        'curriculum_course_id' => $curriculumCourseId,
-                        'po_id' => $mapping['po_id'],
-                        'ird' => json_encode($mapping['ird']),
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ];
-                })->filter(function ($mapping) {
-                    return !is_null($mapping['curriculum_course_id']); // Ensure valid IDs
-                });
+                // Group mappings by curriculum course ID
+                $mappingsByCurriculumCourseId = collect($data['course_po_mappings'])
+                    ->groupBy(function ($mapping) use ($curriculumCourseMap) {
+                        return $mapping['curriculum_course_id'] ?? $curriculumCourseMap[$mapping['course_id']] ?? null;
+                    });
 
-                // Sync operation: Deletes missing, updates existing, and inserts new
-                DB::table('curriculum_course_po')->whereIn('curriculum_course_id', array_column($syncData->toArray(), 'curriculum_course_id'))->delete();
-                DB::table('curriculum_course_po')->insert($syncData->toArray());
+                foreach ($mappingsByCurriculumCourseId as $curriculumCourseId => $mappings) {
+                    if (!$curriculumCourseId) continue;
+
+                    // Prepare the pivot data for sync
+                    $pivotData = [];
+                    foreach ($mappings as $mapping) {
+                        $pivotData[$mapping['po_id']] = [
+                            'ied' => json_encode($mapping['ied']),
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                    }
+
+                    $curriculumCourse = $programProposal->curriculum->curriculumCourses()->find($curriculumCourseId);
+                    if ($curriculumCourse) {
+                        $curriculumCourse->programOutcomes()->sync($pivotData);
+                    }
+                }
             }
 
             DB::commit();

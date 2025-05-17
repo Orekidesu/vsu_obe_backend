@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\Department\CourseCategoryController;
 use App\Http\Controllers\Api\V1\Department\CourseController;
 use App\Http\Controllers\Api\V1\Department\CurriculumController;
 use App\Http\Controllers\Api\V1\Department\CurriculumCourseController;
+use App\Http\Controllers\Api\V1\Department\DepartmentRevisionController;
 use App\Http\Controllers\Api\V1\Department\GraduateAttributePeoController;
 use App\Http\Controllers\Api\V1\Department\PeoMissionController;
 use App\Http\Controllers\Api\V1\Department\ProgramController;
@@ -134,6 +135,9 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
     '/program-proposals/{programProposal}/check-ready-for-review',
     [ProgramProposalController::class, 'checkReadyForReview']
   );
+
+  Route::patch('/program-proposals/{programProposal}/revision', [DepartmentRevisionController::class, 'handleDepartmentLevelRevision']);
+
 
   // Curriculum Course to PO
   // Route::apiResource('curriculum-course-po',CurriculumCourseP);
