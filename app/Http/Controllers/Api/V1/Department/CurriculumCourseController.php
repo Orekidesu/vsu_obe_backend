@@ -72,6 +72,25 @@ class CurriculumCourseController extends Controller
                 'committees',
             ]);
 
+            $user = auth()->user();
+            if ($user->role->name === 'Faculty_Member') {
+                // Find committees for this user
+                $committees = $user->committees;
+
+                if ($committees->isEmpty()) {
+                    return CurriculumCourseResource::collection(collect([]))->additional([
+                        'message' => 'No curriculum courses assigned to you',
+                    ]);
+                }
+
+                // Get curriculum courses assigned to this faculty member through committees
+                $committeeIds = $committees->pluck('id')->toArray();
+
+                $query->whereHas('committees', function ($q) use ($committeeIds) {
+                    $q->whereIn('committees.id', $committeeIds);
+                });
+            }
+
             // Conditionally load course outcomes if requested
             if ($request->has('include_outcomes') && $request->input('include_outcomes') == 'true') {
                 $query->with([
