@@ -62,6 +62,7 @@ class CourseOutcomeResource extends JsonResource
             // TLA methods
             'tla_assessment_method' => $this->whenLoaded('tlaMethod', function () {
                 return [
+                    'id' => $this->tlaMethod->id,
                     'teaching_methods' => $this->tlaMethod->teaching_methods,
                     'learning_resources' => $this->tlaMethod->learning_resources,
                 ];
