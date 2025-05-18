@@ -87,7 +87,10 @@ class ProposalReviewController extends Controller
                             // Update the pivot entries for this curriculum course
                             $committee->curriculumCourses()->updateExistingPivot(
                                 $committeeIssue['curriculum_course_id'],
-                                ['is_completed' => false]
+                                [
+                                    'is_completed' => false,
+                                    'is_in_revision' => true,
+                                ]
                             );
                         }
                     }
