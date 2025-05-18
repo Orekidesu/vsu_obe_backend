@@ -45,9 +45,9 @@ class CommitteeRevisionRequest extends FormRequest
             'course_outcomes.*.cpa' => 'required|in:C,P,A',
 
             // CO-PO Mappings
-            'course_outcomes.*.co_po_mappings' => 'required|array|min:1',
-            'course_outcomes.*.co_po_mappings.*.po_id' => 'required|integer|exists:program_outcomes,id',
-            'course_outcomes.*.co_po_mappings.*.ied' => 'required|in:I,E,D',
+            'course_outcomes.*.po_mappings' => 'required|array|min:1',
+            'course_outcomes.*.po_mappings.*.po_id' => 'required|integer|exists:program_outcomes,id',
+            'course_outcomes.*.po_mappings.*.ied' => 'required|in:I,E,D',
 
             // Teaching-Learning-Assessment(TLA) Tasks
             'course_outcomes.*.tla_tasks' => 'required|array|min:1',
@@ -55,7 +55,7 @@ class CommitteeRevisionRequest extends FormRequest
             'course_outcomes.*.tla_tasks.*.at_code' => 'required_with:course_outcomes.*.tla_tasks|string',
             'course_outcomes.*.tla_tasks.*.at_name' => 'required_with:course_outcomes.*.tla_tasks|string',
             'course_outcomes.*.tla_tasks.*.at_tool' => 'required_with:course_outcomes.*.tla_tasks|string',
-            'course_outcomes.*.tla_tasks.*.at_weight' => 'required_with:course_outcomes.*.tla_tasks|numeric',
+            'course_outcomes.*.tla_tasks.*.weight' => 'required_with:course_outcomes.*.tla_tasks|numeric',
 
             // TLA Assessment Methods
             'course_outcomes.*.tla_assessment_method.*.id' => 'nullable|integer|exists:tla_methods,id',
