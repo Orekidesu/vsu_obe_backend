@@ -78,7 +78,7 @@ class DepartmentRevisionRequest extends FormRequest
             'course_po_mappings' => 'array',
             'course_po_mappings.*.curriculum_course_id' => 'required|exists:curriculum_courses,id',
             'course_po_mappings.*.po_id' => 'required|exists:program_outcomes,id',
-            'course_po_mappings.*.ird' => 'required|array|min:1'
+            'course_po_mappings.*.ied' => 'required|array|min:1'
         ];
     }
 }

@@ -117,21 +117,28 @@ class DepartmentRevisionController extends Controller
              * 6️ PO to PEO Mappings
              */
             if (isset($data['po_peo_mappings'])) {
-                // Group mappings by PO ID
-                $mappingsByPoId = collect($data['po_peo_mappings'])
-                    ->groupBy(function ($map) use ($poMap, $peoMap) {
-                        return $map['po_id'] ?? $poMap[$map['po_name']] ?? null;
-                    });
+                // Get all PO IDs for this proposal
+                $allPoIds = $programProposal->pos()->pluck('id')->toArray();
 
-                foreach ($mappingsByPoId as $poId => $mappings) {
-                    if (!$poId) continue;
+                // Organize mappings by PO ID
+                $poToPeoMappings = [];
+                foreach ($data['po_peo_mappings'] as $mapping) {
+                    $poId = $mapping['po_id'] ?? $poMap[$mapping['po_name']] ?? null;
+                    $peoId = $mapping['peo_id'] ?? $peoMap[$mapping['peo_statement']] ?? null;
 
-                    $peoIds = $mappings->map(function ($map) use ($peoMap) {
-                        return $map['peo_id'] ?? $peoMap[$map['peo_statement']] ?? null;
-                    })->filter()->toArray();
+                    if ($poId && $peoId) {
+                        if (!isset($poToPeoMappings[$poId])) {
+                            $poToPeoMappings[$poId] = [];
+                        }
+                        $poToPeoMappings[$poId][] = $peoId;
+                    }
+                }
 
+                // Process ALL POs, with empty arrays for those not in payload
+                foreach ($allPoIds as $poId) {
                     $po = $programProposal->pos()->find($poId);
                     if ($po) {
+                        $peoIds = $poToPeoMappings[$poId] ?? [];
                         $po->peos()->sync($peoIds);
                     }
                 }
@@ -140,19 +147,28 @@ class DepartmentRevisionController extends Controller
              * 7️ PO to GA Mappings
              */
             if (isset($data['po_ga_mappings'])) {
-                // Group mappings by PO ID
-                $mappingsByPoId = collect($data['po_ga_mappings'])
-                    ->groupBy(function ($map) use ($poMap) {
-                        return $map['po_id'] ?? $poMap[$map['po_name']] ?? null;
-                    });
+                // Get all PO IDs for this proposal
+                $allPoIds = $programProposal->pos()->pluck('id')->toArray();
 
-                foreach ($mappingsByPoId as $poId => $mappings) {
-                    if (!$poId) continue;
+                // Organize mappings by PO ID
+                $poToGaMappings = [];
+                foreach ($data['po_ga_mappings'] as $mapping) {
+                    $poId = $mapping['po_id'] ?? $poMap[$mapping['po_name']] ?? null;
+                    $gaId = $mapping['ga_id'];
 
-                    $gaIds = $mappings->pluck('ga_id')->toArray();
+                    if ($poId && $gaId) {
+                        if (!isset($poToGaMappings[$poId])) {
+                            $poToGaMappings[$poId] = [];
+                        }
+                        $poToGaMappings[$poId][] = $gaId;
+                    }
+                }
 
+                // Process ALL POs, with empty arrays for those not in payload
+                foreach ($allPoIds as $poId) {
                     $po = $programProposal->pos()->find($poId);
                     if ($po) {
+                        $gaIds = $poToGaMappings[$poId] ?? [];
                         $po->gas()->sync($gaIds);
                     }
                 }
@@ -216,28 +232,33 @@ class DepartmentRevisionController extends Controller
              * 11 Curriculum Course to PO Mappings
              */
             if (isset($data['course_po_mappings'])) {
+                // Get all curriculum course IDs
+                $allCurriculumCourseIds = $programProposal->curriculum->curriculumCourses()->pluck('id')->toArray();
+
                 // Group mappings by curriculum course ID
                 $mappingsByCurriculumCourseId = collect($data['course_po_mappings'])
                     ->groupBy(function ($mapping) use ($curriculumCourseMap) {
                         return $mapping['curriculum_course_id'] ?? $curriculumCourseMap[$mapping['course_id']] ?? null;
                     });
 
-                foreach ($mappingsByCurriculumCourseId as $curriculumCourseId => $mappings) {
-                    if (!$curriculumCourseId) continue;
-
-                    // Prepare the pivot data for sync
-                    $pivotData = [];
-                    foreach ($mappings as $mapping) {
-                        $pivotData[$mapping['po_id']] = [
-                            'ied' => json_encode($mapping['ied']),
-                            'created_at' => now(),
-                            'updated_at' => now()
-                        ];
-                    }
-
+                // Process ALL courses, with empty arrays for those not in payload
+                foreach ($allCurriculumCourseIds as $curriculumCourseId) {
                     $curriculumCourse = $programProposal->curriculum->curriculumCourses()->find($curriculumCourseId);
                     if ($curriculumCourse) {
-                        $curriculumCourse->programOutcomes()->sync($pivotData);
+                        $pivotData = [];
+
+                        if (isset($mappingsByCurriculumCourseId[$curriculumCourseId])) {
+                            $mappings = $mappingsByCurriculumCourseId[$curriculumCourseId];
+                            foreach ($mappings as $mapping) {
+                                $pivotData[$mapping['po_id']] = [
+                                    'ied' => json_encode($mapping['ied']),
+                                    'created_at' => now(),
+                                    'updated_at' => now()
+                                ];
+                            }
+                        }
+
+                        $curriculumCourse->pos()->sync($pivotData);
                     }
                 }
             }
