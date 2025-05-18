@@ -263,7 +263,9 @@ class DepartmentRevisionController extends Controller
                         ['id' => $courseData['id'] ?? null],
                         [
                             'course_id' => $courseData['course_id'],
-                            'course_category_id' => $categoryMap[$courseData['category_code']] ?? $courseData['course_category_id'],
+                            'course_category_id' => isset($courseData['category_code']) && isset($categoryMap[$courseData['category_code']])
+                                ? $categoryMap[$courseData['category_code']]
+                                : $courseData['course_category_id'],
                             'semester_id' => $courseData['semester_id'],
                             'unit' => $courseData['unit']
                         ]
