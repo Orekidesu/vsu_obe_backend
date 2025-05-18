@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\V1\Department\ProgramOutcomePeoController;
 use App\Http\Controllers\Api\V1\Department\ProgramProposalController;
 use App\Http\Controllers\Api\V1\Department\ProgramProposalWizardController;
 use App\Http\Controllers\Api\V1\Department\SemesterController;
+use App\Http\Controllers\Api\V1\Faculty\CommitteeRevisionController;
 use App\Http\Controllers\Api\V1\Faculty\CourseDetailsWizardController;
 use App\Http\Controllers\Api\V1\Shared\CurriculumCoursePOController;
 use Illuminate\Support\Facades\Route;
@@ -175,6 +176,8 @@ Route::middleware(['role:Faculty_Member'])->prefix('faculty')->group(function ()
 
 
   Route::get('/curriculum-courses/{curriculum_course}/program-outcomes', [CurriculumCoursePOController::class, 'getProgramOutcomes']);
+
+  Route::patch('/curriculum-courses/{curriculum_course}/revision', [CommitteeRevisionController::class, 'handleCommitteeLevelRevision']);
 
   Route::post('/curriculum-courses/submit', [CourseDetailsWizardController::class, 'submit']);
 });
