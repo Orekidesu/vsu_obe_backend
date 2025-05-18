@@ -8,6 +8,8 @@ use App\Models\ProgramProposal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use App\Models\CurriculumCourse;
+use App\Models\CourseCategory;
 
 class DepartmentRevisionController extends Controller
 {
@@ -219,14 +221,10 @@ class DepartmentRevisionController extends Controller
              */
             $categoryMap = [];
             if (isset($data['course_categories'])) {
-                $newCategoryIds = collect($data['course_categories'])->pluck('id')->filter()->toArray();
-
-                // Delete categories that are not in the request
-                $programProposal->curriculum->courseCategories()->whereNotIn('id', $newCategoryIds)->delete();
-
-                // Create or update categories and map them
+                // Only create or update categories in the payload
+                // No deletion of categories not in payload since they're global entities
                 foreach ($data['course_categories'] as $categoryData) {
-                    $category = $programProposal->curriculum->courseCategories()->updateOrCreate(
+                    $category = CourseCategory::updateOrCreate(
                         ['id' => $categoryData['id'] ?? null],
                         [
                             'name' => $categoryData['name'],
@@ -237,7 +235,6 @@ class DepartmentRevisionController extends Controller
                     $categoryMap[$categoryData['code']] = $category->id;
                 }
             }
-
             /**
              * 10 Curriculum Courses
              */
