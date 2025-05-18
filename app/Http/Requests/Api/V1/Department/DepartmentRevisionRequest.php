@@ -71,6 +71,7 @@ class DepartmentRevisionRequest extends FormRequest
             'curriculum_courses.*.id' => 'nullable|exists:curriculum_courses,id',
             'curriculum_courses.*.course_id' => 'required|exists:courses,id',
             'curriculum_courses.*.course_category_id' => 'required|exists:course_categories,id',
+            'curriculum_courses.*.category_code' => 'sometimes|string', // Add this new rule
             'curriculum_courses.*.semester_id' => 'required|exists:semesters,id',
             'curriculum_courses.*.unit' => 'required|numeric',
 
