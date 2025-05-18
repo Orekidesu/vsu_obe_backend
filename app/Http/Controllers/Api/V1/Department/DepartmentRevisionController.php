@@ -224,13 +224,26 @@ class DepartmentRevisionController extends Controller
                 // Only create or update categories in the payload
                 // No deletion of categories not in payload since they're global entities
                 foreach ($data['course_categories'] as $categoryData) {
-                    $category = CourseCategory::updateOrCreate(
-                        ['id' => $categoryData['id'] ?? null],
-                        [
-                            'name' => $categoryData['name'],
-                            'code' => $categoryData['code']
-                        ]
-                    );
+                    // First check if category with this code already exists
+                    $existingCategory = CourseCategory::where('code', $categoryData['code'])->first();
+
+                    if ($existingCategory) {
+                        // Update the existing category
+                        $existingCategory->update([
+                            'name' => $categoryData['name']
+                        ]);
+                        $category = $existingCategory;
+                    } else {
+                        // Create new category only if it doesn't exist
+                        $category = CourseCategory::updateOrCreate(
+                            ['id' => $categoryData['id'] ?? null],
+                            [
+                                'name' => $categoryData['name'],
+                                'code' => $categoryData['code']
+                            ]
+                        );
+                    }
+
                     // Map to track for Curriculum Courses
                     $categoryMap[$categoryData['code']] = $category->id;
                 }
