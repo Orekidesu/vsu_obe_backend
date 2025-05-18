@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Api\V1\Department;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Department\DepartmentRevisionRequest;
 use App\Models\ProgramProposal;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
-use App\Models\CurriculumCourse;
 use App\Models\CourseCategory;
 
 class DepartmentRevisionController extends Controller
