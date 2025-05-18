@@ -307,6 +307,11 @@ class DepartmentRevisionController extends Controller
                 }
             }
 
+            // Now make the proposal pending again
+            $programProposal->update([
+                'status' => 'pending'
+            ]);
+
             DB::commit();
             return response()->json(['message' => 'Department revision handled successfully.'], 200);
         } catch (Exception $e) {
