@@ -23,8 +23,6 @@ class CommitteeRevisionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
-            'curriculum_course_id' => 'required|exists:curriculum_courses,id',
 
             // Course Outcome
             'course_outcomes' => 'required|array',

@@ -10,6 +10,7 @@ use App\Models\TLATask;
 use App\Models\CourseOutcomeABCD;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use App\Models\Committee;
 
 class CommitteeRevisionController extends Controller
 {
@@ -20,6 +21,8 @@ class CommitteeRevisionController extends Controller
         $this->middleware('role:Faculty_Member');
     }
 
+
+
     public function handleCommitteeLevelRevision(CommitteeRevisionRequest $request, CurriculumCourse $curriculumCourse)
     {
         DB::beginTransaction();
@@ -27,7 +30,10 @@ class CommitteeRevisionController extends Controller
             $data = $request->validated();
             $courseOutcomeMap = [];
 
-            $committee = auth()->user()->committee;
+            $committee = Committee::where('user_id', auth()->id())
+                ->whereHas('curriculumCourses', function ($q) use ($curriculumCourse) {
+                    $q->where('curriculum_course_id', $curriculumCourse->id);
+                })->first();
 
             /**
              * Full Sync for Course Outcomes 
@@ -57,7 +63,7 @@ class CommitteeRevisionController extends Controller
                             'curriculum_course_id' => $curriculumCourse->id,
                             'name' => $outcomeData['name'],
                             'statement' => $outcomeData['statement'],
-                            'cpa' => $outcomeData['cpa']
+
                         ]
                     );
                 } else {
@@ -65,27 +71,29 @@ class CommitteeRevisionController extends Controller
                         'curriculum_course_id' => $curriculumCourse->id,
                         'name' => $outcomeData['name'],
                         'statement' => $outcomeData['statement'],
-                        'cpa' => $outcomeData['cpa']
+                        'cpa' => $outcomeData['cpa'] ?? 'C' // Default to C if missing
                     ]);
                 }
 
                 $courseOutcomeMap[$outcomeData['name']] = $courseOutcome->id;
 
                 /**
-                 * 2️. Update ABCD Model
+                 * 2️. Update ABCD Model (conditional)
                  */
-                CourseOutcomeAbcd::updateOrCreate(
-                    ['co_id' => $courseOutcome->id],
-                    [
-                        'audience' => $outcomeData['abcd']['audience'],
-                        'behavior' => $outcomeData['abcd']['behavior'],
-                        'condition' => $outcomeData['abcd']['condition'],
-                        'degree' => $outcomeData['abcd']['degree']
-                    ]
-                );
+                if (isset($outcomeData['abcd'])) {
+                    CourseOutcomeAbcd::updateOrCreate(
+                        ['co_id' => $courseOutcome->id],
+                        [
+                            'audience' => $outcomeData['abcd']['audience'],
+                            'behavior' => $outcomeData['abcd']['behavior'],
+                            'condition' => $outcomeData['abcd']['condition'],
+                            'degree' => $outcomeData['abcd']['degree']
+                        ]
+                    );
+                }
 
                 /**
-                 * 3️. Update CO-PO Mappings (Full Sync)
+                 * 3️. Update CO-PO Mappings (Full Sync, conditional)
                  */
                 if (isset($outcomeData['po_mappings'])) {
                     $poIds = collect($outcomeData['po_mappings'])->pluck('po_id')->toArray();
@@ -110,43 +118,54 @@ class CommitteeRevisionController extends Controller
                 }
 
                 /**
-                 * 4️. Update TLA Tasks (Full Sync)
+                 * 4️. Update TLA Tasks (Full Sync, conditional)
                  */
-                $tlaTaskIds = collect($outcomeData['tla_tasks'])->pluck('id')->filter()->toArray();
-                TlaTask::where('co_id', $courseOutcome->id)
-                    ->whereNotIn('id', $tlaTaskIds)
-                    ->delete();
+                if (isset($outcomeData['tla_tasks'])) {
+                    $tlaTaskIds = collect($outcomeData['tla_tasks'])->pluck('id')->filter()->toArray();
+                    TlaTask::where('co_id', $courseOutcome->id)
+                        ->whereNotIn('id', $tlaTaskIds)
+                        ->delete();
 
-                foreach ($outcomeData['tla_tasks'] as $taskData) {
-                    TlaTask::updateOrCreate(
-                        ['id' => $taskData['id'] ?? null],
-                        [
-                            'co_id' => $courseOutcome->id,
-                            'at_code' => $taskData['at_code'],
-                            'at_name' => $taskData['at_name'],
-                            'at_tool' => $taskData['at_tool'],
-                            'weight' => $taskData['weight']
-                        ]
-                    );
+                    foreach ($outcomeData['tla_tasks'] as $taskData) {
+                        TlaTask::updateOrCreate(
+                            ['id' => $taskData['id'] ?? null],
+                            [
+                                'co_id' => $courseOutcome->id,
+                                'at_code' => $taskData['at_code'],
+                                'at_name' => $taskData['at_name'],
+                                'at_tool' => $taskData['at_tool'],
+                                'weight' => $taskData['weight'] ?? $taskData['at_weight'] ?? 0 // Flexible field name
+                            ]
+                        );
+                    }
                 }
 
                 /**
-                 * 5️. Update TLA Assessment Method
+                 * 5️. Update TLA Assessment Method (conditional)
                  */
-                $courseOutcome->tlaAssessmentMethod()->updateOrCreate(
-                    ['co_id' => $courseOutcome->id],
-                    [
-                        'teaching_methods' => json_encode($outcomeData['tla_assessment_method']['teaching_methods']),
-                        'learning_resources' => json_encode($outcomeData['tla_assessment_method']['learning_resources']),
-                    ]
-                );
+                if (isset($outcomeData['tla_assessment_method'])) {
+                    $courseOutcome->tlaAssessmentMethod()->updateOrCreate(
+                        ['co_id' => $courseOutcome->id],
+                        [
+                            'teaching_methods' => json_encode($outcomeData['tla_assessment_method']['teaching_methods'] ?? []),
+                            'learning_resources' => json_encode($outcomeData['tla_assessment_method']['learning_resources'] ?? []),
+                        ]
+                    );
+                }
             }
 
-            //  Mark the Curriculum Course as completed
-            $committee->curriculumCourses()->updateExistingPivot(
-                $curriculumCourse->id,
-                ['is_completed' => true]
-            );
+            // Mark the Curriculum Course as completed
+            if ($committee) {
+                // Mark the Curriculum Course as completed
+                $committee->curriculumCourses()->updateExistingPivot(
+                    $curriculumCourse,
+                    ['is_completed' => true]
+                );
+            } else {
+                return response()->json([
+                    'message' => 'attempted to update curriculum course but has no committee assignment'
+                ], 500);
+            }
 
             DB::commit();
 
