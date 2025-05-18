@@ -64,11 +64,18 @@ class DepartmentRevisionController extends Controller
 
                     // Get all mission IDs for this PEO
                     $missionIds = $mappings->pluck('mission_id')->toArray();
-
                     // Sync missions for this PEO
                     $peo = $programProposal->peos()->find($peoId);
+
                     if ($peo) {
-                        $peo->missions()->sync($missionIds);
+                        $pivotData = [];
+                        foreach ($missionIds as $missionId) {
+                            $pivotData[$missionId] = [
+                                'created_at' => now(),
+                                'updated_at' => now()
+                            ];
+                        }
+                        $peo->missions()->sync($pivotData);
                     }
                 }
             }
@@ -91,7 +98,14 @@ class DepartmentRevisionController extends Controller
 
                     $peo = $programProposal->peos()->find($peoId);
                     if ($peo) {
-                        $peo->gas()->sync($gaIds);
+                        $pivotData = [];
+                        foreach ($gaIds as $gaId) {
+                            $pivotData[$gaId] = [
+                                'created_at' => now(),
+                                'updated_at' => now()
+                            ];
+                        }
+                        $peo->gas()->sync($pivotData);
                     }
                 }
             }
@@ -139,7 +153,17 @@ class DepartmentRevisionController extends Controller
                     $po = $programProposal->pos()->find($poId);
                     if ($po) {
                         $peoIds = $poToPeoMappings[$poId] ?? [];
-                        $po->peos()->sync($peoIds);
+
+                        // Create pivot data with timestamps
+                        $pivotData = [];
+                        foreach ($peoIds as $peoId) {
+                            $pivotData[$peoId] = [
+                                'created_at' => now(),
+                                'updated_at' => now()
+                            ];
+                        }
+
+                        $po->peos()->sync($pivotData);
                     }
                 }
             }
@@ -169,7 +193,17 @@ class DepartmentRevisionController extends Controller
                     $po = $programProposal->pos()->find($poId);
                     if ($po) {
                         $gaIds = $poToGaMappings[$poId] ?? [];
-                        $po->gas()->sync($gaIds);
+
+                        // Create pivot data with timestamps
+                        $pivotData = [];
+                        foreach ($gaIds as $gaId) {
+                            $pivotData[$gaId] = [
+                                'created_at' => now(),
+                                'updated_at' => now()
+                            ];
+                        }
+
+                        $po->gas()->sync($pivotData);
                     }
                 }
             }
