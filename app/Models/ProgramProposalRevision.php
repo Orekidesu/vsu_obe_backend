@@ -12,14 +12,17 @@ class ProgramProposalRevision extends Model
 
     protected $fillable = [
         'program_proposal_id',
+        'version',
         'curriculum_course_id',
         'level',
         'section',
         'details',
+
     ];
 
     protected $casts = [
         'level' => 'string',
+        'version' => 'integer',
     ];
 
     public function programProposal(): BelongsTo
