@@ -11,6 +11,8 @@ use App\Models\CourseOutcomeABCD;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Models\Committee;
+// use Illuminate\Support\Facades\Log;
+use App\Models\TLAMethod;
 
 class CommitteeRevisionController extends Controller
 {
@@ -143,14 +145,46 @@ class CommitteeRevisionController extends Controller
                 /**
                  * 5️. Update TLA Assessment Method (conditional)
                  */
+
+                // if (isset($outcomeData['tla_assessment_method'])) {
+                //     Log::info('TLA Method Data:', [
+                //         'co_id' => $courseOutcome->id,
+                //         'data' => $outcomeData['tla_assessment_method']
+                //     ]);
+
+                //     $result = $courseOutcome->tlaMethod()->updateOrCreate(
+                //         ['co_id' => $courseOutcome->id],
+                //         [
+                //             'teaching_methods' => $outcomeData['tla_assessment_method']['teaching_methods'],
+                //             'learning_resources' => $outcomeData['tla_assessment_method']['learning_resources'],
+                //         ]
+                //     );
+
+                //     Log::info('Update result:', ['success' => $result ? true : false]);
+                // }
                 if (isset($outcomeData['tla_assessment_method'])) {
-                    $courseOutcome->tlaAssessmentMethod()->updateOrCreate(
-                        ['co_id' => $courseOutcome->id],
-                        [
-                            'teaching_methods' => json_encode($outcomeData['tla_assessment_method']['teaching_methods'] ?? []),
-                            'learning_resources' => json_encode($outcomeData['tla_assessment_method']['learning_resources'] ?? []),
-                        ]
-                    );
+                    $tlaMethodData = $outcomeData['tla_assessment_method'];
+
+                    // Prepare data with validation/fallbacks for missing keys
+                    $updateData = [
+                        'co_id' => $courseOutcome->id,
+                        'teaching_methods' => $tlaMethodData['teaching_methods'] ?? [],
+                        'learning_resources' => $tlaMethodData['learning_resources'] ?? []
+                    ];
+
+                    // If ID is provided, use it as the primary condition
+                    if (!empty($tlaMethodData['id'])) {
+                        TLAMethod::updateOrCreate(
+                            ['id' => $tlaMethodData['id']],
+                            $updateData
+                        );
+                    } else {
+                        // Otherwise use co_id
+                        TLAMethod::updateOrCreate(
+                            ['co_id' => $courseOutcome->id],
+                            $updateData
+                        );
+                    }
                 }
             }
 
@@ -159,7 +193,10 @@ class CommitteeRevisionController extends Controller
                 // Mark the Curriculum Course as completed
                 $committee->curriculumCourses()->updateExistingPivot(
                     $curriculumCourse,
-                    ['is_completed' => true]
+                    [
+                        'is_completed' => true,
+                        'is_in_revision' => false,
+                    ],
                 );
             } else {
                 return response()->json([

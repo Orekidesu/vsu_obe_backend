@@ -56,10 +56,10 @@ class CommitteeRevisionRequest extends FormRequest
             'course_outcomes.*.tla_tasks.*.weight' => 'required_with:course_outcomes.*.tla_tasks|numeric',
 
             // TLA Assessment Methods
-            'course_outcomes.*.tla_assessment_method.*.id' => 'nullable|integer|exists:tla_methods,id',
+            'course_outcomes.*.tla_assessment_method.id' => 'nullable|integer|exists:tla_methods,id',
             'course_outcomes.*.tla_assessment_method' => 'required|array',
-            'course_outcomes.*.tla_assessment_method.teaching_methods' => 'array|min:1',
-            'course_outcomes.*.tla_assessment_method.learning_resources' => 'array|min:1',
+            'course_outcomes.*.tla_assessment_method.teaching_methods' => 'nullable|array',
+            'course_outcomes.*.tla_assessment_method.learning_resources' => 'nullable|array',
 
 
         ];
