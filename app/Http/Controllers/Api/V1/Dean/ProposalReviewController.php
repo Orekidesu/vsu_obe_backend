@@ -54,6 +54,10 @@ class ProposalReviewController extends Controller
                     'status' => 'revision'
                 ]);
 
+                $currentMaxVersion = ProgramProposalRevision::where('program_proposal_id', $programProposal->id)
+                    ->max('version') ?? 0;
+                $nextVersion = $currentMaxVersion + 1;
+
                 //  2. Loop through the Department Level Issues
                 if (!empty($data['department_level'])) {
 
@@ -62,6 +66,7 @@ class ProposalReviewController extends Controller
                     foreach ($data['department_level'] as $departmentIssue) {
                         ProgramProposalRevision::create([
                             'program_proposal_id' => $programProposal->id,
+                            'version' => $nextVersion,
                             'level' => 'department',
                             'section' => $departmentIssue['section'],
                             'details' => $departmentIssue['details']
@@ -75,6 +80,7 @@ class ProposalReviewController extends Controller
                     foreach ($data['committee_level'] as $committeeIssue) {
                         ProgramProposalRevision::create([
                             'program_proposal_id' => $programProposal->id,
+                            'version' => $nextVersion,
                             'level' => 'committee',
                             'curriculum_course_id' => $committeeIssue['curriculum_course_id'],
                             'section' => $committeeIssue['section'],
