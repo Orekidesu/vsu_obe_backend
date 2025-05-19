@@ -13,6 +13,7 @@ use Exception;
 use App\Models\Committee;
 // use Illuminate\Support\Facades\Log;
 use App\Models\TLAMethod;
+use App\Models\CourseOutcomeCPA;
 
 class CommitteeRevisionController extends Controller
 {
@@ -73,7 +74,7 @@ class CommitteeRevisionController extends Controller
                         'curriculum_course_id' => $curriculumCourse->id,
                         'name' => $outcomeData['name'],
                         'statement' => $outcomeData['statement'],
-                        'cpa' => $outcomeData['cpa'] ?? 'C' // Default to C if missing
+
                     ]);
                 }
 
@@ -93,6 +94,18 @@ class CommitteeRevisionController extends Controller
                         ]
                     );
                 }
+
+                /**
+                 * 3.Update/Create CPA Classification
+                 */
+                if (isset($outcomeData['cpa'])) {
+                    CourseOutcomeCPA::updateOrCreate(
+                        ['co_id' => $courseOutcome->id],
+                        ['cpa' => $outcomeData['cpa']],
+
+                    );
+                }
+
 
                 /**
                  * 3️. Update CO-PO Mappings (Full Sync, conditional)
@@ -146,22 +159,7 @@ class CommitteeRevisionController extends Controller
                  * 5️. Update TLA Assessment Method (conditional)
                  */
 
-                // if (isset($outcomeData['tla_assessment_method'])) {
-                //     Log::info('TLA Method Data:', [
-                //         'co_id' => $courseOutcome->id,
-                //         'data' => $outcomeData['tla_assessment_method']
-                //     ]);
 
-                //     $result = $courseOutcome->tlaMethod()->updateOrCreate(
-                //         ['co_id' => $courseOutcome->id],
-                //         [
-                //             'teaching_methods' => $outcomeData['tla_assessment_method']['teaching_methods'],
-                //             'learning_resources' => $outcomeData['tla_assessment_method']['learning_resources'],
-                //         ]
-                //     );
-
-                //     Log::info('Update result:', ['success' => $result ? true : false]);
-                // }
                 if (isset($outcomeData['tla_assessment_method'])) {
                     $tlaMethodData = $outcomeData['tla_assessment_method'];
 
