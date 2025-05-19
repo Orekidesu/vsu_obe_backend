@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\Department\CourseController;
 use App\Http\Controllers\Api\V1\Department\CurriculumController;
 use App\Http\Controllers\Api\V1\Department\CurriculumCourseController;
 use App\Http\Controllers\Api\V1\Department\DepartmentRevisionController;
+use App\Http\Controllers\Api\V1\Department\FetchDepartmentRevisionController;
 use App\Http\Controllers\Api\V1\Department\GraduateAttributePeoController;
 use App\Http\Controllers\Api\V1\Department\PeoMissionController;
 use App\Http\Controllers\Api\V1\Department\ProgramController;
@@ -25,7 +26,9 @@ use App\Http\Controllers\Api\V1\Department\ProgramProposalWizardController;
 use App\Http\Controllers\Api\V1\Department\SemesterController;
 use App\Http\Controllers\Api\V1\Faculty\CommitteeRevisionController;
 use App\Http\Controllers\Api\V1\Faculty\CourseDetailsWizardController;
+use App\Http\Controllers\Api\V1\Faculty\FetchCommitteeRevisionController;
 use App\Http\Controllers\Api\V1\Shared\CurriculumCoursePOController;
+use App\Http\Controllers\Api\V1\Shared\ProgramProposalRevisionController;
 use Illuminate\Support\Facades\Route;
 
 // Admin Route List
@@ -139,6 +142,11 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
 
   Route::patch('/program-proposals/{programProposal}/revision', [DepartmentRevisionController::class, 'handleDepartmentLevelRevision']);
 
+  Route::get(
+    '/program-proposals/{program_proposal}/revisions',
+    [FetchDepartmentRevisionController::class, 'fetchRevisions']
+  );
+  // Proposal Revision Routes
 
   // Curriculum Course to PO
   // Route::apiResource('curriculum-course-po',CurriculumCourseP);
@@ -180,4 +188,10 @@ Route::middleware(['role:Faculty_Member'])->prefix('faculty')->group(function ()
   Route::patch('/curriculum-courses/{curriculum_course}/revision', [CommitteeRevisionController::class, 'handleCommitteeLevelRevision']);
 
   Route::post('/curriculum-courses/submit', [CourseDetailsWizardController::class, 'submit']);
+
+  // Committee Revision Fetch Route
+  Route::get(
+    'curriculum-courses/{curriculum_course}/revisions',
+    [FetchCommitteeRevisionController::class, 'fetchRevisions']
+  );
 });
