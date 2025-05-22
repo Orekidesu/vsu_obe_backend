@@ -15,7 +15,7 @@ class FetchCommitteeRevisionController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->middleware('role:Faculty_Member');
+        $this->middleware('role:Faculty_Member,Dean');
     }
 
     public function fetchRevisions(CurriculumCourse $curriculumCourse)
