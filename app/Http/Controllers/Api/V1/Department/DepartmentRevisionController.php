@@ -11,19 +11,27 @@ use App\Models\CourseCategory;
 
 class DepartmentRevisionController extends Controller
 {
-    //
     public function __construct()
     {
         $this->middleware('auth:sanctum');
         $this->middleware('role:Department');
     }
+
     public function handleDepartmentLevelRevision(DepartmentRevisionRequest $request, ProgramProposal $programProposal)
     {
         $data = $request->validated();
         DB::beginTransaction();
         try {
+            // Track IDs for newly created entities and existing ones
+            $entityMap = [
+                'peos' => [], // Maps both string and numeric IDs to real DB IDs
+                'pos' => [],
+                'categories' => [],
+                'courses' => []
+            ];
+
             /**
-             * 1️ PROGRAM DETAILS (if exists in the payload)
+             * 1️ PROGRAM DETAILS
              */
             if (isset($data['program'])) {
                 $programProposal->program()->update([
@@ -35,17 +43,37 @@ class DepartmentRevisionController extends Controller
             /**
              * 2️ PEOs
              */
-            $peoMap = [];
             if (isset($data['peos'])) {
-                $newPeoIds = collect($data['peos'])->pluck('id')->filter()->toArray();
-                $programProposal->peos()->whereNotIn('id', $newPeoIds)->delete();
+                // Get numeric IDs only for deletion check
+                $numericPeoIds = collect($data['peos'])
+                    ->pluck('id')
+                    ->filter(function ($id) {
+                        return is_numeric($id);
+                    })
+                    ->toArray();
+
+                // Delete PEOs not in the payload
+                $programProposal->peos()->whereNotIn('id', $numericPeoIds)->delete();
 
                 foreach ($data['peos'] as $peoData) {
-                    $peo = $programProposal->peos()->updateOrCreate(
-                        ['id' => $peoData['id'] ?? null],
-                        ['statement' => $peoData['statement']]
-                    );
-                    $peoMap[$peoData['statement']] = $peo->id;
+                    $isNew = !is_numeric($peoData['id']);
+
+                    if ($isNew) {
+                        // Create new PEO (string ID)
+                        $peo = $programProposal->peos()->create([
+                            'statement' => $peoData['statement']
+                        ]);
+                    } else {
+                        // Update existing PEO (numeric ID)
+                        $peo = $programProposal->peos()->updateOrCreate(
+                            ['id' => $peoData['id']],
+                            ['statement' => $peoData['statement']]
+                        );
+                    }
+
+                    // Map both original ID and statement for lookup
+                    $entityMap['peos'][$peoData['id']] = $peo->id;
+                    $entityMap['peos'][$peoData['statement']] = $peo->id;
                 }
             }
 
@@ -53,20 +81,23 @@ class DepartmentRevisionController extends Controller
              * 3️ PEO to Mission Mappings
              */
             if (isset($data['peo_mission_mappings'])) {
-                // Group mappings by PEO ID
+                // Group mappings by resolved PEO ID
                 $mappingsByPeoId = collect($data['peo_mission_mappings'])
-                    ->groupBy(function ($map) use ($peoMap) {
-                        return $map['peo_id'] ?? $peoMap[$map['peo_statement']] ?? null;
+                    ->groupBy(function ($map) use ($entityMap) {
+                        $peoId = $map['peo_id'];
+                        // Resolve the PEO ID (could be string for new or numeric for existing)
+                        return $entityMap['peos'][$peoId] ?? $peoId;
                     });
 
                 foreach ($mappingsByPeoId as $peoId => $mappings) {
-                    if (!$peoId) continue; // Skip if no valid PEO ID
+                    // Skip invalid PEO IDs
+                    if (!is_numeric($peoId)) continue;
 
                     // Get all mission IDs for this PEO
                     $missionIds = $mappings->pluck('mission_id')->toArray();
+
                     // Sync missions for this PEO
                     $peo = $programProposal->peos()->find($peoId);
-
                     if ($peo) {
                         $pivotData = [];
                         foreach ($missionIds as $missionId) {
@@ -80,19 +111,19 @@ class DepartmentRevisionController extends Controller
                 }
             }
 
-
             /**
              * 4️ GA to PEO Mappings
              */
             if (isset($data['ga_peo_mappings'])) {
-                // Group mappings by PEO ID
+                // Group mappings by resolved PEO ID
                 $mappingsByPeoId = collect($data['ga_peo_mappings'])
-                    ->groupBy(function ($map) use ($peoMap) {
-                        return $map['peo_id'] ?? $peoMap[$map['peo_statement']] ?? null;
+                    ->groupBy(function ($map) use ($entityMap) {
+                        $peoId = $map['peo_id'];
+                        return $entityMap['peos'][$peoId] ?? $peoId;
                     });
 
                 foreach ($mappingsByPeoId as $peoId => $mappings) {
-                    if (!$peoId) continue;
+                    if (!is_numeric($peoId)) continue;
 
                     $gaIds = $mappings->pluck('ga_id')->toArray();
 
@@ -109,23 +140,44 @@ class DepartmentRevisionController extends Controller
                     }
                 }
             }
+
             /**
              * 5️ Program Outcomes (POs)
              */
-            $poMap = [];
             if (isset($data['pos'])) {
-                $newPoIds = collect($data['pos'])->pluck('id')->filter()->toArray();
-                $programProposal->pos()->whereNotIn('id', $newPoIds)->delete();
+                // Get numeric IDs only for deletion check
+                $numericPoIds = collect($data['pos'])
+                    ->pluck('id')
+                    ->filter(function ($id) {
+                        return is_numeric($id);
+                    })
+                    ->toArray();
+
+                // Delete POs not in the payload
+                $programProposal->pos()->whereNotIn('id', $numericPoIds)->delete();
 
                 foreach ($data['pos'] as $poData) {
-                    $po = $programProposal->pos()->updateOrCreate(
-                        ['id' => $poData['id'] ?? null],
-                        ['name' => $poData['name'], 'statement' => $poData['statement']]
-                    );
-                    $poMap[$poData['name']] = $po->id;
+                    $isNew = !is_numeric($poData['id']);
+
+                    if ($isNew) {
+                        // Create new PO (string ID)
+                        $po = $programProposal->pos()->create([
+                            'name' => $poData['name'],
+                            'statement' => $poData['statement']
+                        ]);
+                    } else {
+                        // Update existing PO (numeric ID)
+                        $po = $programProposal->pos()->updateOrCreate(
+                            ['id' => $poData['id']],
+                            ['name' => $poData['name'], 'statement' => $poData['statement']]
+                        );
+                    }
+
+                    // Map both original ID and name for lookup
+                    $entityMap['pos'][$poData['id']] = $po->id;
+                    $entityMap['pos'][$poData['name']] = $po->id;
                 }
             }
-
 
             /**
              * 6️ PO to PEO Mappings
@@ -134,13 +186,14 @@ class DepartmentRevisionController extends Controller
                 // Get all PO IDs for this proposal
                 $allPoIds = $programProposal->pos()->pluck('id')->toArray();
 
-                // Organize mappings by PO ID
+                // Organize mappings by resolved PO ID
                 $poToPeoMappings = [];
                 foreach ($data['po_peo_mappings'] as $mapping) {
-                    $poId = $mapping['po_id'] ?? $poMap[$mapping['po_name']] ?? null;
-                    $peoId = $mapping['peo_id'] ?? $peoMap[$mapping['peo_statement']] ?? null;
+                    // Resolve both PO and PEO IDs
+                    $poId = $entityMap['pos'][$mapping['po_id']] ?? $mapping['po_id'];
+                    $peoId = $entityMap['peos'][$mapping['peo_id']] ?? $mapping['peo_id'];
 
-                    if ($poId && $peoId) {
+                    if (is_numeric($poId) && is_numeric($peoId)) {
                         if (!isset($poToPeoMappings[$poId])) {
                             $poToPeoMappings[$poId] = [];
                         }
@@ -148,13 +201,12 @@ class DepartmentRevisionController extends Controller
                     }
                 }
 
-                // Process ALL POs, with empty arrays for those not in payload
+                // Process ALL POs
                 foreach ($allPoIds as $poId) {
                     $po = $programProposal->pos()->find($poId);
                     if ($po) {
                         $peoIds = $poToPeoMappings[$poId] ?? [];
 
-                        // Create pivot data with timestamps
                         $pivotData = [];
                         foreach ($peoIds as $peoId) {
                             $pivotData[$peoId] = [
@@ -167,6 +219,7 @@ class DepartmentRevisionController extends Controller
                     }
                 }
             }
+
             /**
              * 7️ PO to GA Mappings
              */
@@ -174,13 +227,13 @@ class DepartmentRevisionController extends Controller
                 // Get all PO IDs for this proposal
                 $allPoIds = $programProposal->pos()->pluck('id')->toArray();
 
-                // Organize mappings by PO ID
+                // Organize mappings by resolved PO ID
                 $poToGaMappings = [];
                 foreach ($data['po_ga_mappings'] as $mapping) {
-                    $poId = $mapping['po_id'] ?? $poMap[$mapping['po_name']] ?? null;
+                    $poId = $entityMap['pos'][$mapping['po_id']] ?? $mapping['po_id'];
                     $gaId = $mapping['ga_id'];
 
-                    if ($poId && $gaId) {
+                    if (is_numeric($poId) && is_numeric($gaId)) {
                         if (!isset($poToGaMappings[$poId])) {
                             $poToGaMappings[$poId] = [];
                         }
@@ -188,13 +241,12 @@ class DepartmentRevisionController extends Controller
                     }
                 }
 
-                // Process ALL POs, with empty arrays for those not in payload
+                // Process ALL POs
                 foreach ($allPoIds as $poId) {
                     $po = $programProposal->pos()->find($poId);
                     if ($po) {
                         $gaIds = $poToGaMappings[$poId] ?? [];
 
-                        // Create pivot data with timestamps
                         $pivotData = [];
                         foreach ($gaIds as $gaId) {
                             $pivotData[$gaId] = [
@@ -207,6 +259,7 @@ class DepartmentRevisionController extends Controller
                     }
                 }
             }
+
             /**
              * 8 Curriculum
              */
@@ -217,11 +270,10 @@ class DepartmentRevisionController extends Controller
             /**
              * 9 Course Categories
              */
-            $categoryMap = [];
             if (isset($data['course_categories'])) {
-                // Only create or update categories in the payload
-                // No deletion of categories not in payload since they're global entities
                 foreach ($data['course_categories'] as $categoryData) {
+                    $isNew = !is_numeric($categoryData['id']);
+
                     // First check if category with this code already exists
                     $existingCategory = CourseCategory::where('code', $categoryData['code'])->first();
 
@@ -231,10 +283,16 @@ class DepartmentRevisionController extends Controller
                             'name' => $categoryData['name']
                         ]);
                         $category = $existingCategory;
+                    } else if ($isNew) {
+                        // Create new category (string ID)
+                        $category = CourseCategory::create([
+                            'name' => $categoryData['name'],
+                            'code' => $categoryData['code']
+                        ]);
                     } else {
-                        // Create new category only if it doesn't exist
+                        // Update existing category (numeric ID)
                         $category = CourseCategory::updateOrCreate(
-                            ['id' => $categoryData['id'] ?? null],
+                            ['id' => $categoryData['id']],
                             [
                                 'name' => $categoryData['name'],
                                 'code' => $categoryData['code']
@@ -242,33 +300,42 @@ class DepartmentRevisionController extends Controller
                         );
                     }
 
-                    // Map to track for Curriculum Courses
-                    $categoryMap[$categoryData['code']] = $category->id;
+                    // Map both ID and code
+                    $entityMap['categories'][$categoryData['id']] = $category->id;
+                    $entityMap['categories'][$categoryData['code']] = $category->id;
                 }
             }
+
             /**
              * 10 Curriculum Courses
              */
-            $curriculumCourseMap = [];
             if (isset($data['curriculum_courses'])) {
-                $newCurriculumCourseIds = collect($data['curriculum_courses'])->pluck('id')->filter()->toArray();
+                // Gather all course IDs used in the curriculum
+                $courseIds = collect($data['curriculum_courses'])->pluck('course_id')->unique()->toArray();
 
-                // Delete courses that are not in the payload
-                $programProposal->curriculum->curriculumCourses()->whereNotIn('id', $newCurriculumCourseIds)->delete();
+                // Find which ones don't exist
+                $existingCourseIds = DB::table('courses')->whereIn('id', $courseIds)->pluck('id')->toArray();
+                $missingCourseIds = array_diff($courseIds, $existingCourseIds);
 
+                // Create the missing courses 
                 foreach ($data['curriculum_courses'] as $courseData) {
-                    $curriculumCourse = $programProposal->curriculum->curriculumCourses()->updateOrCreate(
-                        ['id' => $courseData['id'] ?? null],
-                        [
-                            'course_id' => $courseData['course_id'],
-                            'course_category_id' => isset($courseData['category_code']) && isset($categoryMap[$courseData['category_code']])
-                                ? $categoryMap[$courseData['category_code']]
-                                : $courseData['course_category_id'],
-                            'semester_id' => $courseData['semester_id'],
-                            'unit' => $courseData['unit']
-                        ]
-                    );
-                    $curriculumCourseMap[$courseData['course_id']] = $curriculumCourse->id;
+                    if (in_array($courseData['course_id'], $missingCourseIds)) {
+                        // Make sure we have the required fields for a course
+                        if (isset($courseData['course_code']) && isset($courseData['course_title'])) {
+                            // Create the missing course
+                            $course = \App\Models\Course::create([
+                                'id' => $courseData['course_id'],
+                                'code' => $courseData['course_code'],
+                                'descriptive_title' => $courseData['course_title']
+                            ]);
+
+                            // Log that we created this course
+                            // \Log::info("Created missing course: {$course->code} - {$course->descriptive_title}");
+                        } else {
+                            // Log a warning if course data is incomplete
+                            // \Log::warning("Cannot create course with ID {$courseData['course_id']} - missing code or title");
+                        }
+                    }
                 }
             }
 
@@ -279,13 +346,15 @@ class DepartmentRevisionController extends Controller
                 // Get all curriculum course IDs
                 $allCurriculumCourseIds = $programProposal->curriculum->curriculumCourses()->pluck('id')->toArray();
 
-                // Group mappings by curriculum course ID
+                // Group mappings by resolved curriculum course ID
                 $mappingsByCurriculumCourseId = collect($data['course_po_mappings'])
-                    ->groupBy(function ($mapping) use ($curriculumCourseMap) {
-                        return $mapping['curriculum_course_id'] ?? $curriculumCourseMap[$mapping['course_id']] ?? null;
+                    ->groupBy(function ($mapping) use ($entityMap) {
+                        // Resolve curriculum course ID
+                        $courseId = $mapping['curriculum_course_id'];
+                        return $entityMap['courses'][$courseId] ?? $courseId;
                     });
 
-                // Process ALL courses, with empty arrays for those not in payload
+                // Process ALL courses
                 foreach ($allCurriculumCourseIds as $curriculumCourseId) {
                     $curriculumCourse = $programProposal->curriculum->curriculumCourses()->find($curriculumCourseId);
                     if ($curriculumCourse) {
@@ -294,11 +363,16 @@ class DepartmentRevisionController extends Controller
                         if (isset($mappingsByCurriculumCourseId[$curriculumCourseId])) {
                             $mappings = $mappingsByCurriculumCourseId[$curriculumCourseId];
                             foreach ($mappings as $mapping) {
-                                $pivotData[$mapping['po_id']] = [
-                                    'ied' => json_encode($mapping['ied']),
-                                    'created_at' => now(),
-                                    'updated_at' => now()
-                                ];
+                                // Resolve PO ID
+                                $poId = $entityMap['pos'][$mapping['po_id']] ?? $mapping['po_id'];
+
+                                if (is_numeric($poId)) {
+                                    $pivotData[$poId] = [
+                                        'ied' => json_encode($mapping['ied']),
+                                        'created_at' => now(),
+                                        'updated_at' => now()
+                                    ];
+                                }
                             }
                         }
 
@@ -313,7 +387,10 @@ class DepartmentRevisionController extends Controller
             ]);
 
             DB::commit();
-            return response()->json(['message' => 'Department revision handled successfully.'], 200);
+            return response()->json([
+                'message' => 'Department revision handled successfully.',
+                'entity_map' => $entityMap // Return ID mappings for frontend reference
+            ], 200);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
