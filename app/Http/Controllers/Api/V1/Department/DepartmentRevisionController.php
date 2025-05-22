@@ -8,6 +8,7 @@ use App\Models\ProgramProposal;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Models\CourseCategory;
+use Illuminate\Support\Facades\Log;
 
 class DepartmentRevisionController extends Controller
 {
@@ -29,6 +30,14 @@ class DepartmentRevisionController extends Controller
                 'categories' => [],
                 'courses' => []
             ];
+
+            if (empty($data)) {
+                Log::info('Department revision requested with empty data');
+
+                return response()->json([
+                    'message' => 'no revision requests.'
+                ]);
+            }
 
             /**
              * 1️ PROGRAM DETAILS
@@ -328,14 +337,50 @@ class DepartmentRevisionController extends Controller
                                 'code' => $courseData['course_code'],
                                 'descriptive_title' => $courseData['course_title']
                             ]);
-
-                            // Log that we created this course
-                            // \Log::info("Created missing course: {$course->code} - {$course->descriptive_title}");
-                        } else {
-                            // Log a warning if course data is incomplete
-                            // \Log::warning("Cannot create course with ID {$courseData['course_id']} - missing code or title");
                         }
                     }
+                }
+
+                // ADDED: Process each curriculum course
+                foreach ($data['curriculum_courses'] as $courseData) {
+                    $isNew = !is_numeric($courseData['id']);
+
+                    // Determine the category ID
+                    $categoryId = null;
+                    if (isset($courseData['course_category_id'])) {
+                        $categoryId = $entityMap['categories'][$courseData['course_category_id']]
+                            ?? $courseData['course_category_id'];
+                    } elseif (isset($courseData['category_code'])) {
+                        $category = CourseCategory::where('code', $courseData['category_code'])->first();
+                        if ($category) {
+                            $categoryId = $category->id;
+                        }
+                    }
+
+                    // Create or update the curriculum course
+                    if ($isNew) {
+                        // Create new curriculum course
+                        $curriculumCourse = $programProposal->curriculum->curriculumCourses()->create([
+                            'course_id' => $courseData['course_id'],
+                            'course_category_id' => $categoryId,
+                            'semester_id' => $courseData['semester_id'],
+                            'unit' => $courseData['unit']
+                        ]);
+                    } else {
+                        // Update existing curriculum course
+                        $curriculumCourse = $programProposal->curriculum->curriculumCourses()
+                            ->findOrFail($courseData['id']);
+
+                        $curriculumCourse->update([
+                            'course_id' => $courseData['course_id'],
+                            'course_category_id' => $categoryId,
+                            'semester_id' => $courseData['semester_id'],
+                            'unit' => $courseData['unit']
+                        ]);
+                    }
+
+                    // Add to entity map
+                    $entityMap['courses'][$courseData['id']] = $curriculumCourse->id;
                 }
             }
 
