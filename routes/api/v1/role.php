@@ -140,7 +140,7 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
     [ProgramProposalController::class, 'checkReadyForReview']
   );
 
-  Route::patch('/program-proposals/{programProposal}/revision', [DepartmentRevisionController::class, 'handleDepartmentLevelRevision']);
+  Route::patch('/program-proposals/{programProposal}/revise', [DepartmentRevisionController::class, 'handleDepartmentLevelRevision']);
 
   Route::get(
     '/program-proposals/{program_proposal}/revisions',
@@ -185,7 +185,7 @@ Route::middleware(['role:Faculty_Member'])->prefix('faculty')->group(function ()
 
   Route::get('/curriculum-courses/{curriculum_course}/program-outcomes', [CurriculumCoursePOController::class, 'getProgramOutcomes']);
 
-  Route::patch('/curriculum-courses/{curriculum_course}/revision', [CommitteeRevisionController::class, 'handleCommitteeLevelRevision']);
+  Route::patch('/curriculum-courses/{curriculum_course}/revise', [CommitteeRevisionController::class, 'handleCommitteeLevelRevision']);
 
   Route::post('/curriculum-courses/submit', [CourseDetailsWizardController::class, 'submit']);
 
