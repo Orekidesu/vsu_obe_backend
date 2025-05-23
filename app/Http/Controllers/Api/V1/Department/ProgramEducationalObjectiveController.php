@@ -24,7 +24,7 @@ class ProgramEducationalObjectiveController extends Controller
     {
         try {
 
-            $peos = ProgramEducationalObjective::with(['program' => function ($query) {
+            $peos = ProgramEducationalObjective::with(['programProposal' => function ($query) {
                 $query->without('department');
             }])->get();
             return ProgramEducationalObjectiveResource::collection($peos)->additional([

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CurriculumCourse extends Model
 {
@@ -42,6 +43,26 @@ class CurriculumCourse extends Model
     public function pos(): BelongsToMany
     {
         return $this->belongsToMany(ProgramOutcome::class, 'curriculum_course_po', 'curriculum_course_id', 'po_id')
-            ->withPivot('ird');
+            ->withPivot('ied');
+    }
+
+    public function committees(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Committee::class,
+            'committee_course_assignments',
+            'curriculum_course_id',
+            'committee_id'
+        )->withPivot(['is_completed', 'is_in_revision'])->withTimestamps();
+    }
+
+    public function cos(): HasMany
+    {
+        return $this->hasMany(CourseOutcome::class, 'curriculum_course_id');
+    }
+
+    public function revisionRequests(): HasMany
+    {
+        return $this->hasMany(ProgramProposalRevision::class, 'curriculum_course_id');
     }
 }

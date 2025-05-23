@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Department\ProgramProposalRequest;
 use App\Http\Resources\Api\V1\Department\ProgramProposalResource;
 use App\Models\ProgramProposal;
+use App\Models\ProgramProposalRevision;
 use App\Models\Program;
 use Illuminate\Http\Request;
 use Exception;
@@ -26,63 +27,7 @@ class ProgramProposalController extends Controller
         $this->middleware('role:Dean')->only(['review']);
     }
 
-    // public function index(Request $request)
-    // {
-    //     try {
-    //         // Get user for role-based filtering
-    //         $user = auth()->user();
 
-    //         // Start building the query
-    //         $query = ProgramProposal::with([
-    //             'program.department',
-    //             'program.programEducationalObjectives:id,program_id,statement',
-    //             'program.programOutcomes:id,program_id,name,statement',
-    //             'program.curriculum:id,program_id,name'
-    //         ]);
-
-    //         // Filter by department if user is from Department role
-    //         if ($user->role->name === 'Department') {
-    //             $departmentId = $user->department_id;
-    //             $query->whereHas('program', function ($q) use ($departmentId) {
-    //                 $q->where('department_id', $departmentId);
-    //             });
-    //         }
-
-    //         // Filter by status if provided
-    //         if ($request->has('status') && in_array($request->status, ['pending', 'approved', 'rejected', 'revision'])) {
-    //             $query->where('status', $request->status);
-    //         }
-
-    //         // Order by latest first
-    //         $query->latest();
-
-    //         // Paginate results if requested
-    //         if ($request->has('per_page')) {
-    //             $proposals = $query->paginate($request->per_page);
-    //         } else {
-    //             $proposals = $query->get();
-    //         }
-
-    //         // Return collection with additional metadata
-    //         return ProgramProposalResource::collection($proposals)->additional([
-    //             'message' => 'Program proposals retrieved successfully',
-    //             'meta' => [
-    //                 'total_pending' => ProgramProposal::where('status', 'pending')->count(),
-    //                 'total_approved' => ProgramProposal::where('status', 'approved')->count(),
-    //                 'total_rejected' => ProgramProposal::where('status', 'rejected')->count(),
-    //                 'total_revision' => ProgramProposal::where('status', 'revision')->count(),
-    //                 'department_counts' => $this->getDepartmentProposalCounts(),
-    //             ],
-    //         ]);
-    //     } catch (Exception $e) {
-    //         Log::error('Failed to retrieve program proposals', ['error' => $e->getMessage()]);
-
-    //         return response()->json([
-    //             'message' => 'Failed to retrieve program proposals',
-    //             'error' => $e->getMessage(),
-    //         ], 500);
-    //     }
-    // }
 
     public function index(Request $request)
     {
@@ -92,15 +37,17 @@ class ProgramProposalController extends Controller
 
             // Start building the query with all relationships needed for detailed view
             $query = ProgramProposal::with([
+                'proposedBy',
                 'program.department',
-                'program.programEducationalObjectives.missions',
-                'program.programEducationalObjectives.gas',
-                'program.programOutcomes.peos',
-                'program.programOutcomes.gas',
-                'program.curriculum.curriculumCourses.course',
-                'program.curriculum.curriculumCourses.courseCategory',
-                'program.curriculum.curriculumCourses.semester',
-                'program.curriculum.curriculumCourses.pos',
+                'peos.missions',
+                'peos.gas',
+                'pos.peos',
+                'pos.gas',
+                'curriculum.curriculumCourses.course',
+                'curriculum.curriculumCourses.courseCategory',
+                'curriculum.curriculumCourses.semester',
+                'curriculum.curriculumCourses.pos',
+
             ]);
 
             // Filter by department if user is from Department role
@@ -129,13 +76,7 @@ class ProgramProposalController extends Controller
             // Return collection with additional metadata
             return ProgramProposalResource::collection($proposals)->additional([
                 'message' => 'Program proposals retrieved successfully',
-                // 'meta' => [
-                //     'total_pending' => ProgramProposal::where('status', 'pending')->count(),
-                //     'total_approved' => ProgramProposal::where('status', 'approved')->count(),
-                //     'total_rejected' => ProgramProposal::where('status', 'rejected')->count(),
-                //     'total_revision' => ProgramProposal::where('status', 'revision')->count(),
-                //     'department_counts' => $this->getDepartmentProposalCounts(),
-                // ],
+
             ]);
         } catch (Exception $e) {
             Log::error('Failed to retrieve program proposals', ['error' => $e->getMessage()]);
@@ -201,14 +142,16 @@ class ProgramProposalController extends Controller
         try {
             // Load all necessary relationships
             $programProposal->load([
-                'program.programEducationalObjectives.missions',
-                'program.programEducationalObjectives.gas',
-                'program.programOutcomes.peos',
-                'program.programOutcomes.gas',
-                'program.curriculum.curriculumCourses.course',
-                'program.curriculum.curriculumCourses.courseCategory',
-                'program.curriculum.curriculumCourses.semester',
-                'program.curriculum.curriculumCourses.pos',
+                'proposedBy',
+                'program.department',
+                'peos.missions',
+                'peos.gas',
+                'pos.peos',
+                'pos.gas',
+                'curriculum.curriculumCourses.course',
+                'curriculum.curriculumCourses.courseCategory',
+                'curriculum.curriculumCourses.semester',
+                'curriculum.curriculumCourses.pos',
             ]);
 
             return (new ProgramProposalResource($programProposal))->additional([
@@ -246,56 +189,142 @@ class ProgramProposalController extends Controller
             ->toArray();
     }
 
+
+
+
     public function review(Request $request, ProgramProposal $programProposal)
     {
-        Log::info('Authenticated user role:', ['role' => auth()->user()->role->name]);
-
         $request->validate([
             'status' => 'required|in:approved,rejected,revision',
-            'comment' => 'nullable|string',
+            'department_level' => 'array',
+            'department_level.*.section' => 'required_with:department_level|string',
+            'department_level.*.details' => 'required_with:department_level|string',
+            'committee_level' => 'array',
+            'committee_level.*.curriculum_course_id' => 'required_with:committee_level|exists:curriculum_courses,id',
+            'committee_level.*.section' => 'required_with:committee_level|string|in:course_outcomes,co_po_mappings,co_abcd',
+            'committee_level.*.details' => 'required_with:committee_level|string',
+            'comment' => 'nullable|string'
         ]);
 
+        if ($programProposal->status !== 'pending') {
+            return response()->json(['message' => 'This proposal has already been reviewed'], 400);
+        }
+
+        DB::beginTransaction();
         try {
-            DB::transaction(function () use ($request, $programProposal) {
-                // Check if the program has already been reviewed
-                if ($programProposal->status !== 'pending') {
-                    throw new Exception('This proposal has already been reviewed');
-                }
-
-                // Update the proposal's status and comment
-                $programProposal->update([
-                    'status' => $request->status,
-                    'comment' => $request->comment,
-                ]);
-
-                // If approved, update the associated program status and archive
-                if ($request->status === 'approved') {
-                    $program = $programProposal->program;
-                    // Archive the currently active program (if there's any)
-                    Program::where('name', $program->name)
-                        ->where('abbreviation', $program->abbreviation)
-                        ->where('status', 'active') // Find the currently active program
-                        ->update(['status' => 'archived']);
-
-                    // Update the newly approved program proposal to be the new active program
-                    $programProposal->program()->update(['status' => 'active']);
-                }
-            });
-
-            return response()->json([
-                'message' => 'Proposal reviewed successfully',
+            $programProposal->update([
+                'status' => $request->status,
+                'comment' => $request->comment
             ]);
+
+            // Insert revision entries
+            if ($request->status === 'revision') {
+                // Clear old revisions if needed (optional)
+                // ProgramProposalRevision::where('program_proposal_id', $programProposal->id)->delete();
+
+                foreach ($request->input('department_level', []) as $item) {
+                    ProgramProposalRevision::create([
+                        'program_proposal_id' => $programProposal->id,
+                        'level' => 'department',
+                        'section' => $item['section'],
+                        'details' => $item['details']
+                    ]);
+                }
+
+                foreach ($request->input('committee_level', []) as $item) {
+                    ProgramProposalRevision::create([
+                        'program_proposal_id' => $programProposal->id,
+                        'level' => 'committee',
+                        'curriculum_course_id' => $item['curriculum_course_id'],
+                        'section' => $item['section'],
+                        'details' => $item['details']
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Proposal reviewed successfully']);
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'message' => 'Failed to review proposal',
-                'error' => $e->getMessage(),
+                'error' => $e->getMessage()
             ], 500);
         }
     }
 
+    public function checkReadyForReview(ProgramProposal $programProposal)
+    {
+        try {
+            // Load the proposal with all necessary relationships
+            $programProposal->load([
+                'committees.curriculumCourses' => function ($query) {
+                    // Eager load pivot data that contains is_completed status
+                    $query->withPivot('is_completed');
+                }
+            ]);
 
+            // Get all committees
+            $committees = $programProposal->committees;
 
-    /**
-     * Update the specified resource in storage.
-     */
+            // If no committees, return error
+            if ($committees->isEmpty()) {
+                return response()->json([
+                    'message' => 'No committees assigned to this proposal',
+                    'status' => 'error'
+                ], 400);
+            }
+
+            // Check if all courses for all committees are completed
+            $allCoursesCompleted = true;
+            $totalAssignedCourses = 0;
+            $completedCourses = 0;
+
+            foreach ($committees as $committee) {
+                $assignedCourses = $committee->curriculumCourses;
+
+                // Count courses
+                $totalAssignedCourses += $assignedCourses->count();
+                $completedCourses += $assignedCourses->where('pivot.is_completed', true)->count();
+
+                // Check if this committee has any incomplete courses
+                if ($assignedCourses->where('pivot.is_completed', false)->count() > 0) {
+                    $allCoursesCompleted = false;
+                }
+            }
+
+            // Update proposal status if all courses are completed
+            if ($allCoursesCompleted && $totalAssignedCourses > 0) {
+                // Only update if current status is 'pending'
+                if ($programProposal->status === 'pending') {
+                    $programProposal->update([
+                        'status' => 'review'
+                    ]);
+
+                    return response()->json([
+                        'message' => 'Program proposal is now ready for review',
+
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'All courses are completed, but proposal status cannot be updated because it is not in pending state',
+
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Not all assigned courses are completed',
+                    'status' => 'incomplete',
+                    'completed_courses' => $completedCourses,
+                    'total_courses' => $totalAssignedCourses,
+                    'completion_percentage' => $totalAssignedCourses > 0 ? round(($completedCourses / $totalAssignedCourses) * 100) : 0
+                ]);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Failed to check proposal status',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

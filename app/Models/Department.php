@@ -33,9 +33,4 @@ class Department extends Model
     {
         return $this->hasMany(Program::class, 'department_id');
     }
-
-    public function courses(): HasMany
-    {
-        return $this->hasMany(Course::class, 'department_id');
-    }
 }

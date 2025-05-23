@@ -23,21 +23,13 @@ class CourseRequest extends FormRequest
     public function rules(): array
     {
         $courseId = request()->route('course');
-        $departmentId = $this->input('department_id');
         return [
-            'department_id' => [
-                'sometimes',
-                'required',
-                Rule::exists('departments', 'id'),
-            ],
             'code' => [
                 'sometimes',
                 'required',
                 'string',
                 'max:20',
                 Rule::unique('courses', 'code')
-                    ->where('department_id', $departmentId)
-                    ->ignore($courseId),
 
             ],
             'descriptive_title' => [
@@ -45,8 +37,7 @@ class CourseRequest extends FormRequest
                 'required',
                 'string',
                 Rule::unique('courses', 'descriptive_title')
-                    ->where('department_id', $departmentId)
-                    ->ignore($courseId),
+
             ],
         ];
     }

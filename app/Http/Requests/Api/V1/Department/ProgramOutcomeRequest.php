@@ -22,13 +22,13 @@ class ProgramOutcomeRequest extends FormRequest
      */
     public function rules(): array
     {
-        $userId = $this->route('program-outcome');
+        $userId = request()->route('program-outcome');
         return [
             //
-            'program_id' => [
+            'program_proposal_id' => [
                 'sometimes',
                 'required',
-                Rule::exists('programs', 'id')
+                Rule::exists('program_proposals', 'id')
 
             ],
             'name' => [
@@ -49,8 +49,8 @@ class ProgramOutcomeRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'program_id.required' => 'The program ID is required.',
-            'program_id.exists' => 'The selected program ID is invalid.',
+            'program_proposal_id.required' => 'The program proposal ID is required.',
+            'program_proposal_id.exists' => 'The selected program proposal ID is invalid.',
             'name.required' => 'The name is required.',
             'name.string' => 'The name must be a string.',
             'name.max' => 'The name may not be greater than 50 characters.',

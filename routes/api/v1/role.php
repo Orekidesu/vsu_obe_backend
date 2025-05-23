@@ -7,10 +7,13 @@ use App\Http\Controllers\Api\V1\Admin\MissionController;
 use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\VisionController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
+use App\Http\Controllers\Api\V1\Dean\ProposalReviewController;
 use App\Http\Controllers\Api\V1\Department\CourseCategoryController;
 use App\Http\Controllers\Api\V1\Department\CourseController;
 use App\Http\Controllers\Api\V1\Department\CurriculumController;
 use App\Http\Controllers\Api\V1\Department\CurriculumCourseController;
+use App\Http\Controllers\Api\V1\Department\DepartmentRevisionController;
+use App\Http\Controllers\Api\V1\Department\FetchDepartmentRevisionController;
 use App\Http\Controllers\Api\V1\Department\GraduateAttributePeoController;
 use App\Http\Controllers\Api\V1\Department\PeoMissionController;
 use App\Http\Controllers\Api\V1\Department\ProgramController;
@@ -21,10 +24,14 @@ use App\Http\Controllers\Api\V1\Department\ProgramOutcomePeoController;
 use App\Http\Controllers\Api\V1\Department\ProgramProposalController;
 use App\Http\Controllers\Api\V1\Department\ProgramProposalWizardController;
 use App\Http\Controllers\Api\V1\Department\SemesterController;
-
+use App\Http\Controllers\Api\V1\Faculty\CommitteeRevisionController;
+use App\Http\Controllers\Api\V1\Faculty\CourseDetailsWizardController;
+use App\Http\Controllers\Api\V1\Faculty\FetchCommitteeRevisionController;
+use App\Http\Controllers\Api\V1\Shared\CurriculumCoursePOController;
+use App\Http\Controllers\Api\V1\Shared\ProgramProposalRevisionController;
 use Illuminate\Support\Facades\Route;
 
-// Admin Routes
+// Admin Route List
 
 Route::middleware(['role:Admin'])->prefix('admin')->group(function () {
   //   sample route
@@ -57,10 +64,15 @@ Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
   Route::get('/dashboard', function () {
     return response()->json(['message' => 'Welcome Dean']);
   });
+
+  Route::apiResource('programs', ProgramController::class);
+  Route::apiResource('program-proposals', ProgramProposalController::class);
+  Route::apiResource('curriculum-courses', CurriculumCourseController::class);
+  Route::post('/program-proposals/{programProposal}/review', [ProposalReviewController::class, 'review']);
 });
 
 
-// Department Routes
+// Department Route List
 Route::middleware(['role:Department'])->prefix('department')->group(function () {
   Route::get('/department/dashboard', function () {
     return response()->json(['message' => 'Welcome Department']);
@@ -119,7 +131,22 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
   // Curriculum Course
   Route::apiResource('curriculum-courses', CurriculumCourseController::class);
 
+  // Users
+  Route::apiResource('users', UserController::class);
 
+  // Route to check if proposal is ready for review
+  Route::patch(
+    '/program-proposals/{programProposal}/check-ready-for-review',
+    [ProgramProposalController::class, 'checkReadyForReview']
+  );
+
+  Route::patch('/program-proposals/{programProposal}/revise', [DepartmentRevisionController::class, 'handleDepartmentLevelRevision']);
+
+  Route::get(
+    '/program-proposals/{program_proposal}/revisions',
+    [FetchDepartmentRevisionController::class, 'fetchRevisions']
+  );
+  // Proposal Revision Routes
 
   // Curriculum Course to PO
   // Route::apiResource('curriculum-course-po',CurriculumCourseP);
@@ -141,7 +168,30 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
 // Dean Routes
 Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
   // Program Proposal Review Route
-  Route::patch('/program-proposals/{programProposal}/review', [ProgramProposalController::class, 'review']);
+  // Route::patch('/program-proposals/{programProposal}/review', [ProgramProposalController::class, 'review']);
   // Review a proposal
+
 });
 //=================== Department & Dean Route Program Proposal Controller =====================//
+
+
+
+//=================== Faculty Member Route List =====================//
+Route::middleware(['role:Faculty_Member'])->prefix('faculty')->group(function () {
+
+  // Curriculum Course Route
+  Route::apiResource('curriculum-courses', CurriculumCourseController::class);
+
+
+  Route::get('/curriculum-courses/{curriculum_course}/program-outcomes', [CurriculumCoursePOController::class, 'getProgramOutcomes']);
+
+  Route::patch('/curriculum-courses/{curriculum_course}/revise', [CommitteeRevisionController::class, 'handleCommitteeLevelRevision']);
+
+  Route::post('/curriculum-courses/submit', [CourseDetailsWizardController::class, 'submit']);
+
+  // Committee Revision Fetch Route
+  Route::get(
+    'curriculum-courses/{curriculum_course}/revisions',
+    [FetchCommitteeRevisionController::class, 'fetchRevisions']
+  );
+});

@@ -12,15 +12,15 @@ class ProgramEducationalObjective extends Model
     use HasFactory;
 
     protected $fillable = [
-        'program_id',
+        'program_proposal_id',
         'statement',
     ];
 
     // protected $with = ['program'];
 
-    public function program(): BelongsTo
+    public function programProposal(): BelongsTo
     {
-        return $this->belongsTo(Program::class, 'program_id');
+        return $this->belongsTo(ProgramProposal::class, 'program_proposal_id');
     }
 
     public function missions(): BelongsToMany

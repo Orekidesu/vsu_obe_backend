@@ -26,7 +26,7 @@ class CourseController extends Controller
     {
         //
         try {
-            $courses = Course::with('department')->get();
+            $courses = Course::all();
 
             return CourseResource::collection($courses)->additional([
                 'message' => 'courses rettrived successfully',

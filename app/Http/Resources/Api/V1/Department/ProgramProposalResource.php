@@ -14,29 +14,33 @@ class ProgramProposalResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $program = $this->program;
 
-        $program->load([
-            'programEducationalObjectives.missions',
-            'programEducationalObjectives.gas',
-            'programOutcomes.peos',
-            'programOutcomes.gas',
+        $this->load([
+            'peos.missions',
+            'peos.gas',
+            'pos.peos',
+            'pos.gas',
             'curriculum.curriculumCourses.course',
             'curriculum.curriculumCourses.courseCategory',
             'curriculum.curriculumCourses.semester',
             'curriculum.curriculumCourses.pos',
+            'committees.user',
+            'committees.curriculumCourses.course',
         ]);
+        $program = $this->program;
 
         // Get Peos with relationships
-        $peos = $program->programEducationalObjectives;
+        $peos = $this->peos;
 
         // Get POs with relationsiops
 
-        $pos = $program->programOutcomes;
+        $pos = $this->pos;
 
         // getcurriculum with courses
+        $curriculum = $this->curriculum;
 
-        $curriculum = $program->curriculum;
+        // Get Committees
+        $committees = $this->committees;
 
         return [
             'id' => $this->id,
@@ -45,11 +49,24 @@ class ProgramProposalResource extends JsonResource
             'version' => $this->version,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+
+            // Add the proposer (department user)
+            'proposed_by' => $this->whenLoaded('proposedBy', function () {
+                return [
+                    'id' => $this->proposedBy->id,
+                    'first_name' => $this->proposedBy->first_name,
+                    'last_name' => $this->proposedBy->last_name,
+                    'email' => $this->proposedBy->email,
+                ];
+            }),
+
             'program' => [
                 'id' => $program->id,
                 'name' => $program->name,
                 'abbreviation' => $program->abbreviation,
                 'department_id' => $program->department_id,
+                'department_name' => $program->department->name,
+                'department_abbreviation' => $program->department->abbreviation,
                 'version' => $program->version,
                 'status' => $program->status,
             ],
@@ -120,12 +137,39 @@ class ProgramProposalResource extends JsonResource
                             return [
                                 'po_id' => $po->id,
                                 'po_name' => $po->name,
-                                'ird' => json_decode($pivot->ird),
+                                'ied' => json_decode($pivot->ied),
                             ];
                         }) : [],
                     ];
                 }),
             ] : null,
+            'committees' => $committees ? $committees->map(function ($committee) {
+                return [
+                    'id' => $committee->id,
+                    'user' => [
+                        'id' => $committee->user->id,
+                        'first_name' => $committee->user->first_name,
+                        'last_name' => $committee->user->last_name,
+                        'email' => $committee->user->email,
+                    ],
+                    'assigned_by' => [
+                        'id' => $committee->assignedBy->id,
+                        'first_name' => $committee->assignedBy->first_name,
+                        'last_name' => $committee->assignedBy->last_name,
+                    ],
+                    'assigned_courses' => $committee->curriculumCourses->map(function ($cc) {
+                        return [
+                            'curriculum_course_id' => $cc->id,
+                            'course_code' => $cc->course->code,
+                            'descriptive_title' => $cc->course->descriptive_title,
+                            'is_completed' => $cc->pivot->is_completed ?? false,
+                            'is_in_revision' => $cc->pivot->is_in_revision ?? false,
+
+                        ];
+                    }),
+                ];
+            }) : [],
+
 
         ];
     }
