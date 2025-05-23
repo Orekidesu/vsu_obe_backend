@@ -15,7 +15,7 @@ class ChangeUserPasswordController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->middleware("role:Admin,Department,Dean,Staff");
+        $this->middleware("role:Admin,Department,Dean,Faculty_Member");
     }
 
     public function store(ChangeUserPasswordRequest $request)

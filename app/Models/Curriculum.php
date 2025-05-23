@@ -11,13 +11,14 @@ class Curriculum extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'program_id',
+        // 'program_id',
+        'program_proposal_id',
         'name',
     ];
 
-    public function program(): BelongsTo
+    public function programProposal(): BelongsTo
     {
-        return $this->belongsTo(Program::class, 'program_id');
+        return $this->belongsTo(ProgramProposal::class, 'program_proposal_id');
     }
     public function curriculumCourses(): HasMany
     {

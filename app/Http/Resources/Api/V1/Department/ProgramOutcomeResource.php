@@ -16,9 +16,18 @@ class ProgramOutcomeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'program' => new ProgramResource($this->whenLoaded('program')),
+            // 'program' => new ProgramResource($this->programProposal->program),
+            'program' => $this->whenLoaded('programProposal', function () {
+                return new ProgramResource($this->programProposal->program);
+            }),
+
+            'ied' => $this->whenPivotLoaded('curriculum_course_po', function () {
+                return json_decode($this->pivot->ied);
+            }),
             'name' => $this->name,
             'statement' => $this->statement,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

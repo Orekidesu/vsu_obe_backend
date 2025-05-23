@@ -28,7 +28,7 @@ class ProgramProposalWizardRequest extends FormRequest
             'program.name' => [
                 'required',
                 'string',
-                'max:50',
+                'max:255',
             ],
             'program.abbreviation' => [
                 'required',
@@ -224,7 +224,7 @@ class ProgramProposalWizardRequest extends FormRequest
             ],
 
 
-            // Curriculum Course to PO (IRD)
+            // Curriculum Course to PO (IED)
             'course_po_mappings' => [
                 'required',
                 'array',
@@ -238,16 +238,46 @@ class ProgramProposalWizardRequest extends FormRequest
                 'required',
                 'string'
             ],
-            'course_po_mappings.*.ird' => [
+            'course_po_mappings.*.ied' => [
                 'required',
                 'array',
                 'min:1'
             ],
-            'course_po_mappings.*.ird.*' => [
+            'course_po_mappings.*.ied.*' => [
                 'required',
-                'in:I,R,D'
+                'in:I,E,D'
+            ],
+            'committees' => [
+                'required',
+                'array',
+                'min:1'
+            ],
+            'committees.*.user_id' => [
+                'required',
+                'integer',
+                'exists:users,id',
             ],
 
+            // Committee course assignments
+            'committee_course_assignments' => [
+                'required',
+                'array',
+                'min:1'
+            ],
+            'committee_course_assignments.*.user_id' => [
+                'required',
+                'integer',
+                'exists:users,id',
+            ],
+            'committee_course_assignments.*.course_codes' => [
+                'required',
+                'array',
+                'min:1'
+            ],
+            'committee_course_assignments.*.course_codes.*' => [
+                'required',
+                'string',
+            ],
 
 
 

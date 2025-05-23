@@ -5,6 +5,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
+
+  $user = $request->user();
+
+  $isCommittee = $user->committees()->exists();
+
   return response([
     'data' => [
       'Email' => $request->user()->email, //Username Before
@@ -13,6 +18,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
       'Role' => $request->user()->role->name,
       'Department' => $request->user()->department ? $request->user()->department : null,
       'Faculty' => !($request->user()->department) ? $request->user()->faculty : null,
+      'IsCommittee' => $isCommittee,
     ]
   ]);
 });

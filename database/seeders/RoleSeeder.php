@@ -18,7 +18,7 @@ class RoleSeeder extends Seeder
             ['name' => 'Admin'],
             ['name' => 'Dean'],
             ['name' => 'Department'],
-            ['name' => 'Staff'],
+            ['name' => 'Faculty_Member'],
         ]);
     }
 }

@@ -17,18 +17,30 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->middleware('role:Admin');
+        $this->middleware('role:Admin,Department');
     }
 
     public function index()
     {
         //
         try {
-            $users = User::whereHas('role', function ($query) {
-                $query->where('roles.name', '!=', 'Admin');
-            })->orderBy('first_name', 'asc')->get();
+            $currentUser = auth()->user();
 
-            return UserResource::collection($users)->additional([
+            $users = User::query();
+            if ($currentUser->role->name === 'Admin') {
+                // Admin gets all users except admins
+
+                $users->whereHas('role', function ($query) {
+                    $query->where('roles.name', '!=', 'Admin');
+                });
+            } else {
+                // as for the department:
+                $users->whereHas('role', function ($query) {
+                    $query->where('roles.name', '=', 'Faculty_Member');
+                });
+            }
+            $result = $users->orderBy('first_name', 'asc')->get();
+            return UserResource::collection($result)->additional([
                 'message' => 'users retrieved successfully'
             ]);
         } catch (Exception $e) {

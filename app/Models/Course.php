@@ -10,13 +10,7 @@ class Course extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'department_id',
         'code',
         'descriptive_title'
     ];
-
-    public function department(): BelongsTo
-    {
-        return $this->belongsTo(Department::class, 'department_id');
-    }
 }

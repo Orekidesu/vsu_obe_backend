@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('committee_course_assignments', function (Blueprint $table) {
+            //
+            $table->boolean('is_completed')->default(false)->after('curriculum_course_id');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('committee_course_assignments', function (Blueprint $table) {
+            //
+            $table->dropColumn('is_completed');
+        });
+    }
+};

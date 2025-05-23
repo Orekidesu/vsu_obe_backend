@@ -1,4 +1,7 @@
 <?php
+/*
+
+// =====Currently useless since we're using pivot instead =====
 
 namespace App\Models;
 
@@ -16,7 +19,7 @@ class CurriculumCoursePo extends Model
     protected $fillable = [
         'curriculum_course_id',
         'po_id',
-        'ird',
+        'ied',
     ];
 
     public function curriculumCourse(): BelongsTo
@@ -28,4 +31,4 @@ class CurriculumCoursePo extends Model
     {
         return $this->belongsTo(ProgramOutcome::class, 'po_id');
     }
-}
+}*/
