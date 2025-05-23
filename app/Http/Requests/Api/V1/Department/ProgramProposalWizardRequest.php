@@ -51,7 +51,7 @@ class ProgramProposalWizardRequest extends FormRequest
             'peos.*.statement' => [
                 'required',
                 'string',
-                'max:100',
+
             ],
 
             // PEO to Mission
