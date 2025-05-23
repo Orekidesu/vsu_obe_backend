@@ -295,7 +295,7 @@ class ProgramProposalController extends Controller
 
             // Update proposal status if all courses are completed
             if ($allCoursesCompleted && $totalAssignedCourses > 0) {
-                // Only update if current status is 'pending'
+                // Only update if current status is 'pending' or 'revision
                 if ($programProposal->status === 'pending' || $programProposal->status === 'revision') {
                     $programProposal->update([
                         'status' => 'review'
