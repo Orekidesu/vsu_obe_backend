@@ -47,6 +47,8 @@ class ProgramProposalResource extends JsonResource
             'status' => $this->status,
             'comment' => $this->comment,
             'version' => $this->version,
+            'department_revision_required' => $this->department_revision_required,
+            'committee_revision_required' => $this->committee_revision_required,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
 
