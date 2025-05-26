@@ -28,6 +28,7 @@ use App\Http\Controllers\Api\V1\Faculty\CommitteeRevisionController;
 use App\Http\Controllers\Api\V1\Faculty\CourseDetailsWizardController;
 use App\Http\Controllers\Api\V1\Faculty\FetchCommitteeRevisionController;
 use App\Http\Controllers\Api\V1\Shared\CurriculumCoursePOController;
+use App\Http\Controllers\Api\V1\Shared\FetchBothLevelRevisionController;
 use App\Http\Controllers\Api\V1\Shared\ProgramProposalRevisionController;
 use Illuminate\Support\Facades\Route;
 
@@ -69,6 +70,8 @@ Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
   Route::apiResource('program-proposals', ProgramProposalController::class);
   Route::apiResource('curriculum-courses', CurriculumCourseController::class);
   Route::post('/program-proposals/{programProposal}/review', [ProposalReviewController::class, 'review']);
+
+  Route::get('/program-proposals/{program_proposal}/revisions', [FetchBothLevelRevisionController::class, 'fetchRevisions']);
 });
 
 
