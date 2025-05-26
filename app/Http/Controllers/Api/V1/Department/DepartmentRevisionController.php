@@ -428,7 +428,8 @@ class DepartmentRevisionController extends Controller
 
             // Now make the proposal pending again
             $programProposal->update([
-                'status' => 'pending'
+                'status' => 'pending',
+                'department_revision_required' => false
             ]);
 
             DB::commit();

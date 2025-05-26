@@ -7,6 +7,7 @@ use App\Http\Requests\Api\V1\Department\ProgramOutcomeRequest;
 use App\Http\Resources\Api\V1\Department\ProgramOutcomeResource;
 use App\Models\ProgramOutcome;
 use Exception;
+use Illuminate\Http\Request;
 
 class ProgramOutcomeController extends Controller
 {
@@ -19,10 +20,17 @@ class ProgramOutcomeController extends Controller
         $this->middleware('role:Department');
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $pos = ProgramOutcome::with('program')->get();
+            $query = ProgramOutcome::with('programProposal');
+            // $pos = ProgramOutcome::all();
+
+            if ($request->has('program_proposal_id')) {
+                $query->where('program_proposal_id', $request->program_proposal_id);
+            }
+
+            $pos = $query->get();
 
             return ProgramOutcomeResource::collection($pos)->additional([
                 'message' => 'POS retrieved successfully'
