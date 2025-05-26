@@ -26,7 +26,7 @@ class ProposalReviewRequest extends FormRequest
             $rules['department_level.*.details'] = 'required|string';
 
             $rules['committee_level.*.curriculum_course_id'] = 'required|exists:curriculum_courses,id';
-            $rules['committee_level.*.section'] = 'required|string|in:course_outcomes,abcd,cpa,po_mappings,tla_tasks,tla_assessment_methods';
+            $rules['committee_level.*.section'] = 'required|string|in:course_outcomes,abcd,cpa,po_mappings,tla_tasks,tla_assessment_method';
             $rules['committee_level.*.details'] = 'required|string';
         }
 
