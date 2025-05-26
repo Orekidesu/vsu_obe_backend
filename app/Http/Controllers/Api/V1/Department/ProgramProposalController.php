@@ -295,8 +295,8 @@ class ProgramProposalController extends Controller
 
             // Update proposal status if all courses are completed
             if ($allCoursesCompleted && $totalAssignedCourses > 0) {
-                // Only update if current status is 'pending'
-                if ($programProposal->status === 'pending') {
+                // Only update if current status is 'pending' or 'revision
+                if ($programProposal->status === 'pending' || $programProposal->status === 'revision') {
                     $programProposal->update([
                         'status' => 'review'
                     ]);
@@ -307,7 +307,7 @@ class ProgramProposalController extends Controller
                     ]);
                 } else {
                     return response()->json([
-                        'message' => 'All courses are completed, but proposal status cannot be updated because it is not in pending state',
+                        'message' => 'All courses are completed, but proposal status cannot be updated because it is not in pending or revision state',
 
                     ]);
                 }
