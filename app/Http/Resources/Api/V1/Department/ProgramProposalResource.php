@@ -89,6 +89,7 @@ class ProgramProposalResource extends JsonResource
                             'id' => $ga->id,
                             'ga_no' => $ga->ga_no,
                             'name' => $ga->name,
+                            'description' => $ga->description
                         ];
                     }) : [],
                 ];
