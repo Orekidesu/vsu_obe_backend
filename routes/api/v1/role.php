@@ -70,6 +70,7 @@ Route::middleware(['role:Dean'])->prefix('dean')->group(function () {
   Route::apiResource('program-proposals', ProgramProposalController::class);
   Route::apiResource('curriculum-courses', CurriculumCourseController::class);
   Route::post('/program-proposals/{programProposal}/review', [ProposalReviewController::class, 'review']);
+  Route::apiResource('departments', DepartmentController::class)->except('store', 'update', 'destroy');
 
   Route::get('/program-proposals/{program_proposal}/revisions', [FetchBothLevelRevisionController::class, 'fetchRevisions']);
 });
