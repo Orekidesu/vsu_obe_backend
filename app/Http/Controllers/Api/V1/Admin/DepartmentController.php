@@ -18,18 +18,24 @@ class DepartmentController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->middleware('role:Admin');
+        $this->middleware('role:Admin,Dean');
     }
     public function index()
     {
         try {
-            // $departments = Department::all();
-            $departments = Department::with('program')->get();
+            $user = auth()->user();
+            $query = Department::query()->with('program');
+
+            // If user is a Dean, only show departments from their faculty
+            if ($user->role->name === 'Dean') {
+                $query->where('faculty_id', $user->faculty_id);
+            }
+
+            $departments = $query->get();
 
             return response()->json([
                 'data' => DepartmentResource::collection($departments),
                 'message' => 'Departments retrieved successfully',
-
             ]);
         } catch (Exception $e) {
             return response()->json([
