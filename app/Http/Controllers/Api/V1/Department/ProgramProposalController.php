@@ -56,7 +56,23 @@ class ProgramProposalController extends Controller
                 $query->whereHas('program', function ($q) use ($departmentId) {
                     $q->where('department_id', $departmentId);
                 });
+            } elseif ($user->role->name === 'Dean' && $user->faculty_id) {
+                $departmentIds = \App\Models\Department::where('faculty_id', $user->faculty_id)
+                    ->pluck('id')
+                    ->toArray();
+
+                if (!empty($departmentIds)) {
+                    $query->whereHas('program', function ($q) use ($departmentIds) {
+                        $q->whereIn('department_id', $departmentIds);
+                    });
+                }
             }
+
+            $query->whereIn('id', function ($subquery) {
+                $subquery->select(DB::raw('MAX(id)'))
+                    ->from('program_proposals')
+                    ->groupBy('program_id');
+            });
 
             // Filter by status if provided
             if ($request->has('status') && in_array($request->status, ['pending', 'approved', 'rejected', 'revision'])) {
