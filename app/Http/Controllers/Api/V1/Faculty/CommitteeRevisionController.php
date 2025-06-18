@@ -142,8 +142,15 @@ class CommitteeRevisionController extends Controller
                         ->delete();
 
                     foreach ($outcomeData['tla_tasks'] as $taskData) {
+                        $taskId = null;
+                        if (!empty($taskData['id'])) {
+                            $existsInDb = TlaTask::where('id', $taskData['id'])->exists();
+                            if ($existsInDb) {
+                                $taskId = $taskData['id'];
+                            }
+                        }
                         TlaTask::updateOrCreate(
-                            ['id' => $taskData['id'] ?? null],
+                            ['id' => $taskId],
                             [
                                 'co_id' => $courseOutcome->id,
                                 'at_code' => $taskData['at_code'],
