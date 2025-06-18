@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Admin\UserController;
 use App\Http\Controllers\Api\V1\Admin\VisionController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
 use App\Http\Controllers\Api\V1\Dean\ProposalReviewController;
+use App\Http\Controllers\Api\V1\Department\CommittteeCourseAssignmentController;
 use App\Http\Controllers\Api\V1\Department\CourseCategoryController;
 use App\Http\Controllers\Api\V1\Department\CourseController;
 use App\Http\Controllers\Api\V1\Department\CurriculumController;
@@ -151,6 +152,10 @@ Route::middleware(['role:Department'])->prefix('department')->group(function () 
     [FetchDepartmentRevisionController::class, 'fetchRevisions']
   );
   // Proposal Revision Routes
+
+  Route::get('/program-proposals/{programProposal}/committees', [CommittteeCourseAssignmentController::class, 'getAllCurriculumCommittees']);
+
+  Route::post('/committees/assign-course', [CommittteeCourseAssignmentController::class, 'assignCourseToCommittee']);
 
   // Curriculum Course to PO
   // Route::apiResource('curriculum-course-po',CurriculumCourseP);

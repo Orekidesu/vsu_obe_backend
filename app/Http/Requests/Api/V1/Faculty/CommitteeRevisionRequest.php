@@ -49,7 +49,8 @@ class CommitteeRevisionRequest extends FormRequest
 
             // Teaching-Learning-Assessment(TLA) Tasks
             'course_outcomes.*.tla_tasks' => 'required|array|min:1',
-            'course_outcomes.*.tla_tasks.*.id' => 'nullable|integer|exists:tla_tasks,id',
+            // 'course_outcomes.*.tla_tasks.*.id' => 'nullable|integer|exists:tla_tasks,id',
+            'course_outcomes.*.tla_tasks.*.id' => 'nullable|integer',
             'course_outcomes.*.tla_tasks.*.at_code' => 'required_with:course_outcomes.*.tla_tasks|string',
             'course_outcomes.*.tla_tasks.*.at_name' => 'required_with:course_outcomes.*.tla_tasks|string',
             'course_outcomes.*.tla_tasks.*.at_tool' => 'required_with:course_outcomes.*.tla_tasks|string',
